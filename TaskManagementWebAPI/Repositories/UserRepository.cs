@@ -5,9 +5,9 @@ using TaskManagementWebAPI.Data;
 using TaskManagementWebAPI.DTOs;
 using TaskManagementWebAPI.Models;
 
-namespace TaskManagement_Project.Repositories
+namespace TaskManagementWebAPI.Repositories
 {
-    public class UserRepository
+    public class UserRepository:IUserRepository
     {
         private readonly ApplicationDbContext _db;
         public UserRepository(ApplicationDbContext db)
@@ -47,12 +47,29 @@ namespace TaskManagement_Project.Repositories
                 Id = u.UserId,
                 UserName = u.UserName,
                 Email = u.Email,
+                RoleId = u.RoleID,
                 RoleName = u.Role.RoleName,
                 Status = u.IsActive
             })
             .ToListAsync();
 
             return usersWithRoles;
+        }
+
+        public async Task UpdateUser(int id, UpdateUserDTO obj)
+        {
+            var user = await _db.User.FindAsync(id);
+            if(user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            user.UserName = obj.UserName;
+            user.Email = obj.Email;
+            user.RoleID = obj.RoleID;
+           // user.IsActive = obj.IsActive;
+
+            await _db.SaveChangesAsync();
         }
 
         public async Task DeleteUser(int id)
