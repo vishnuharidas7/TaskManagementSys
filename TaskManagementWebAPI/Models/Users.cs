@@ -16,6 +16,9 @@ namespace TaskManagementWebAPI.Models
         [ForeignKey("RoleID")]
         public Roles Role { get; set; }
 
+        [Required, MaxLength(100)]
+        public string Name { get; set; }
+
 
         [Required,MaxLength(100)]
         public string UserName { get; set; }
@@ -29,6 +32,9 @@ namespace TaskManagementWebAPI.Models
 
         public string Email { get; set; }
 
+        [Required,MaxLength(10)]
+        public string PhoneNumber { get; set; }
+
         public DateTime CreatedDate { get; set; }=DateTime.Now;
 
         public DateTime? LastLoginDate { get; set; }
@@ -36,6 +42,9 @@ namespace TaskManagementWebAPI.Models
         public bool IsActive { get; set; } = true;
 
         public bool IsDelete { get; set; } = false;
+
+        [Required]
+        public string gender { get; set; }
 
 
         // Additional fields for token handling

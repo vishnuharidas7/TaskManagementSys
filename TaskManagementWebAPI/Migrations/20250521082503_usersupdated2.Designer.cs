@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TaskManagementWebAPI.Data;
 
@@ -11,9 +12,11 @@ using TaskManagementWebAPI.Data;
 namespace TaskManagement_Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521082503_usersupdated2")]
+    partial class usersupdated2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,42 +53,6 @@ namespace TaskManagement_Project.Migrations
                             RoleId = 2,
                             RoleName = "User"
                         });
-                });
-
-            modelBuilder.Entity("TaskManagementWebAPI.Models.Tasks", b =>
-                {
-                    b.Property<int>("taskId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("taskId"));
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("createdDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("dueDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("taskDescription")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("taskName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("taskStatus")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("taskId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Task");
                 });
 
             modelBuilder.Entity("TaskManagementWebAPI.Models.Users", b =>
@@ -151,17 +118,6 @@ namespace TaskManagement_Project.Migrations
                     b.HasIndex("RoleID");
 
                     b.ToTable("User");
-                });
-
-            modelBuilder.Entity("TaskManagementWebAPI.Models.Tasks", b =>
-                {
-                    b.HasOne("TaskManagementWebAPI.Models.Users", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TaskManagementWebAPI.Models.Users", b =>

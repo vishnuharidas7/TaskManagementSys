@@ -24,6 +24,13 @@ namespace TaskManagementWebAPI.Controllers
             _db = db;
         }
 
+        [HttpGet("check-username")]
+        public async Task<IActionResult> CheckUsernameExists([FromQuery] string username)
+        {
+            var exists = await _db.User.AnyAsync(u => u.UserName.ToLower() == username.ToLower());
+            return Ok(exists);
+        }
+
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(RegisterDTO dto)
         {
