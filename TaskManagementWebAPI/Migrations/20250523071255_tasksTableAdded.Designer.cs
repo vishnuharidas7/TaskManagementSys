@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TaskManagementWebAPI.Data;
@@ -11,22 +12,26 @@ using TaskManagementWebAPI.Data;
 namespace TaskManagement_Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250516061308_initialdb")]
-    partial class initialdb
+    [Migration("20250523071255_tasksTableAdded")]
+    partial class tasksTableAdded
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.3")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("TaskManagementWebAPI.Models.Roles", b =>
                 {
                     b.Property<int>("RoleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("RoleId"));
 
                     b.Property<string>("RoleName")
                         .IsRequired()
@@ -50,11 +55,39 @@ namespace TaskManagement_Project.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TaskManagementWebAPI.Models.Tasks", b =>
+                {
+                    b.Property<int>("taskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("taskId"));
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("taskDescription")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("taskName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("taskId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Task");
+                });
+
             modelBuilder.Entity("TaskManagementWebAPI.Models.Users", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime(6)");
@@ -73,10 +106,20 @@ namespace TaskManagement_Project.Migrations
                     b.Property<DateTime?>("LastLoginDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("longtext");
@@ -92,11 +135,26 @@ namespace TaskManagement_Project.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<string>("gender")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("UserId");
 
                     b.HasIndex("RoleID");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("TaskManagementWebAPI.Models.Tasks", b =>
+                {
+                    b.HasOne("TaskManagementWebAPI.Models.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TaskManagementWebAPI.Models.Users", b =>

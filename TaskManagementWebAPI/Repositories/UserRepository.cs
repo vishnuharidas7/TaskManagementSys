@@ -21,9 +21,12 @@ namespace TaskManagementWebAPI.Repositories
 
             var user = new Users
             {
+                Name = dto.Name,
                 UserName = dto.UserName,
                 Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber,
                 RoleID = dto.RoleId,
+                gender = dto.Gender,
                 Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
                 CreatedDate = DateTime.UtcNow,
                 IsActive = true,
@@ -45,8 +48,11 @@ namespace TaskManagementWebAPI.Repositories
             .Select(u => new ViewUserDTO
             {
                 Id = u.UserId,
+                Name = u.Name,
                 UserName = u.UserName,
                 Email = u.Email,
+                PhoneNumber = u.PhoneNumber,
+                Gender = u.gender,
                 RoleId = u.RoleID,
                 RoleName = u.Role.RoleName,
                 Status = u.IsActive

@@ -12,6 +12,8 @@ namespace TaskManagementWebAPI.Data
         public DbSet<Users> User{ get; set; }
         public DbSet<Roles> Role{ get; set; }
 
+        public DbSet<Tasks> Task { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
