@@ -3,6 +3,7 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using TaskManagement_Project.DTOs;
 using TaskManagementWebAPI.Data;
 using TaskManagementWebAPI.DTOs;
 using TaskManagementWebAPI.Models;
@@ -34,12 +35,31 @@ namespace TaskManagementWebAPI.Repositories
             return usersWithRoles;
         }
 
+        public async Task<List<ViewTasksDTO>> viewAllTasks()
+        {
+            var viewAlltasks = await _db.Task
+            .Include(u => u.User)
+            .Select(u => new ViewTasksDTO
+            {
+                taskId = u.taskId,
+                taskName = u.taskName,
+                userName = u.User.Name,
+                userId = u.UserId,
+                dueDate = u.dueDate,
+                taskDescription = u.taskDescription,
+                taskStatus = u.taskStatus
+            })
+            .ToListAsync();
+
+            return viewAlltasks;
+        }
+
         public async Task AddTask(AddTaskDTO dto)
         { 
             var task = new Tasks
             {
                taskName = dto.taskName,
-               taskDescription = dto.description,
+               taskDescription = dto.taskDescription,
                UserId = dto.UserId,
                dueDate = dto.dueDate,
                //taskStatus = dto.taskStatus
@@ -240,6 +260,34 @@ namespace TaskManagementWebAPI.Repositories
                 _db.Task.Add(taskEntity); // Or _db.Tasks.Add(...) based on your DbSet name
             }
 
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task DeleteTask(int id)
+        {
+            var task = await _db.Task.FindAsync(id);
+            if (task == null)
+            {
+                throw new Exception("Task not found");
+            }
+            _db.Task.Remove(task);
+            await _db.SaveChangesAsync();
+
+        }
+
+        public async Task UpdateTask(int id, AddTaskDTO obj)
+        {
+            var task = await _db.Task.FindAsync(id);
+            if (task == null)
+            {
+                throw new Exception("Task not found");
+            }
+
+            task.taskName = obj.taskName;
+            task.UserId = obj.UserId;
+            task.dueDate = obj.dueDate;
+            task.taskDescription = obj.taskDescription;
+      
             await _db.SaveChangesAsync();
         }
 
