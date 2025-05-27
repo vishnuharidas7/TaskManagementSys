@@ -1,4 +1,5 @@
-﻿using TaskManagementWebAPI.DTOs;
+﻿using TaskManagement_Project.DTOs;
+using TaskManagementWebAPI.DTOs;
 
 namespace TaskManagementWebAPI.Repositories
 {
@@ -9,5 +10,11 @@ namespace TaskManagementWebAPI.Repositories
         Task AddTask(AddTaskDTO dto);
 
         Task ProcessExcelFileAsync(IFormFile file);
+
+        Task<List<ViewTasksDTO>> viewAllTasks();
+
+        Task DeleteTask(int id);
+
+        Task UpdateTask(int id, AddTaskDTO obj);
     }
 }

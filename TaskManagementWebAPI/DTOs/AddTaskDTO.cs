@@ -7,7 +7,7 @@
 
         public DateTime dueDate { get; set; }
 
-        public string description { get; set; }
+        public string taskDescription { get; set; }
 
         //public string taskStatus { get; set; }
     }

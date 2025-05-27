@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TaskManagement_Project.DTOs;
 using TaskManagementWebAPI.DTOs;
 using TaskManagementWebAPI.Repositories;
 
@@ -21,11 +22,25 @@ namespace TaskManagementWebAPI.Controllers
             return Ok(allUser);
         }
 
+        [HttpGet("ViewAllTasks")]
+        public async Task<ActionResult> viewAllTask()
+        {
+            var allTasks = await _user.viewAllTasks();
+            return Ok(allTasks);
+        }
+
         [HttpPost("AddTask")]
         public async Task<IActionResult> AddTask(AddTaskDTO dto)
         {  
             await _user.AddTask(dto);
             return Ok(dto);
+        }
+
+        [HttpPut("UpdateTask/{id}")]
+        public async Task<ActionResult> UpdateUser(int id, [FromBody] AddTaskDTO obj)
+        {
+            await _user.UpdateTask(id, obj);
+            return Ok(obj);
         }
 
         [HttpPost("upload")]
@@ -49,6 +64,14 @@ namespace TaskManagementWebAPI.Controllers
             {
                 return BadRequest("Error processing file: " + ex.Message);
             }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteTask(int id)
+        {
+            await _user.DeleteTask(id);
+            return Ok();
+
         }
     }
 }
