@@ -4,6 +4,10 @@ using AuthenticationAPI.DTOs;
 using AuthenticationAPI.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace AuthenticationAPI.Services
 {
@@ -11,11 +15,12 @@ namespace AuthenticationAPI.Services
     {
         private readonly ApplicationDbContext _db;
         private readonly JwtHelper _jwtHelper;
-
-        public AuthService(ApplicationDbContext db,IOptions<JwtSettings> jwtSettings)
+        private readonly IConfiguration _config;
+        public AuthService(ApplicationDbContext db,IOptions<JwtSettings> jwtSettings, IConfiguration config)
         {
             _db = db;
             _jwtHelper=new JwtHelper(jwtSettings);
+            _config = config;
 
         }
         public async Task<Object>LoginAsync(LoginDTO dto)
@@ -39,6 +44,29 @@ namespace AuthenticationAPI.Services
                 AccessToken = accessToken,
                 RefreshToken = refreshToken  // Send back only the access token ideally
             };
+        }
+
+        public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:SecretKey"])),
+                ValidateLifetime = false // Ignore token expiration
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+
+            return principal;
         }
     }
 }
