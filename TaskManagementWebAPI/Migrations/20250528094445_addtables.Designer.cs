@@ -12,8 +12,8 @@ using TaskManagementWebAPI.Data;
 namespace TaskManagement_Project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250523071255_tasksTableAdded")]
-    partial class tasksTableAdded
+    [Migration("20250528094445_addtables")]
+    partial class addtables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,11 +66,25 @@ namespace TaskManagement_Project.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("createdDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("dueDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("priority")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("taskDescription")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("taskName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("taskStatus")
                         .IsRequired()
                         .HasColumnType("longtext");
 

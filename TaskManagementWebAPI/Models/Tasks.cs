@@ -25,5 +25,7 @@ namespace TaskManagementWebAPI.Models
 
         public DateTime dueDate { get; set; }
 
+        public string priority { get; set; }
+
     }
 }

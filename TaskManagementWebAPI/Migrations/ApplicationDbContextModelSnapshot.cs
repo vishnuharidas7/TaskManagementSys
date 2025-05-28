@@ -69,6 +69,10 @@ namespace TaskManagement_Project.Migrations
                     b.Property<DateTime>("dueDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("priority")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("taskDescription")
                         .IsRequired()
                         .HasColumnType("longtext");

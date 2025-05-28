@@ -1,4 +1,5 @@
-﻿using TaskManagement_Project.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using TaskManagement_Project.DTOs;
 using TaskManagementWebAPI.DTOs;
 
 namespace TaskManagementWebAPI.Repositories
@@ -16,5 +17,9 @@ namespace TaskManagementWebAPI.Repositories
         Task DeleteTask(int id);
 
         Task UpdateTask(int id, AddTaskDTO obj);
+
+        // Task<ActionResult<AddTaskDTO>> GetTaskById(int id);
+        //Task<ActionResult<IEnumerable<AddTaskDTO>>> GetTasksByUserId(int userId);
+        Task<IEnumerable<AddTaskDTO>> GetTasksByUserId(int userId);
     }
 }
