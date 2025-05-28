@@ -66,7 +66,7 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("deleteTask/{id}")]
         public async Task<ActionResult> DeleteTask(int id)
         {
             await _user.DeleteTask(id);
