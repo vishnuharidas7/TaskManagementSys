@@ -93,7 +93,7 @@ namespace TaskManagementWebAPI.Controllers
             return Ok(obj);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("deleteUser/{id}")]
         public async Task<ActionResult> DeleteUser(int id)
         {
             await _user.DeleteUser(id);
