@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Collections.Generic;
@@ -47,7 +48,8 @@ namespace TaskManagementWebAPI.Repositories
                 userId = u.UserId,
                 dueDate = u.dueDate,
                 taskDescription = u.taskDescription,
-                taskStatus = u.taskStatus
+                taskStatus = u.taskStatus,
+                priority = u.priority
             })
             .ToListAsync();
 
@@ -62,6 +64,7 @@ namespace TaskManagementWebAPI.Repositories
                taskDescription = dto.taskDescription,
                UserId = dto.UserId,
                dueDate = dto.dueDate,
+               priority = dto.priority
                //taskStatus = dto.taskStatus
             };
 
@@ -254,7 +257,8 @@ namespace TaskManagementWebAPI.Repositories
                     taskName = currentRow.GetCell(0)?.ToString(),
                     UserId = int.TryParse(currentRow.GetCell(1)?.ToString(), out var uid) ? uid : 0,
                     dueDate = DateTime.TryParse(currentRow.GetCell(2)?.ToString(), out var dt) ? dt : DateTime.MinValue,
-                    taskDescription = currentRow.GetCell(3)?.ToString()
+                    taskDescription = currentRow.GetCell(3)?.ToString(),
+                    priority = currentRow.GetCell(4)?.ToString()
                 };
 
                 _db.Task.Add(taskEntity); // Or _db.Tasks.Add(...) based on your DbSet name
@@ -287,8 +291,72 @@ namespace TaskManagementWebAPI.Repositories
             task.UserId = obj.UserId;
             task.dueDate = obj.dueDate;
             task.taskDescription = obj.taskDescription;
+            task.taskStatus = obj.taskStatus;
       
             await _db.SaveChangesAsync();
+        }
+
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<AddTaskDTO>> GetTaskById(int id)
+        //{
+        //    var task = await _db.Task
+        //       // .Include(t => t.User)
+        //        .Where(t => t.taskId == id)
+        //        .Select(t => new AddTaskDTO
+        //        {
+        //            taskId = t.taskId,
+        //            taskName = t.taskName,
+        //            taskDescription = t.taskDescription,
+        //            taskStatus = t.taskStatus,
+        //            dueDate = t.dueDate,
+        //            priority = t.priority,
+        //            UserId = t.UserId,
+        //            //userName = t.User.UserName
+        //        })
+        //        .FirstOrDefaultAsync();
+
+        //    return task;
+
+        //public async Task<ActionResult<IEnumerable<AddTaskDTO>>> GetTasksByUserId(int userId)
+        //{
+        //    var tasks = await _db.Task
+        //        .Include(t => t.User)
+        //        .Where(t => t.UserId == userId)
+        //        .Select(t => new AddTaskDTO
+        //        {
+        //            taskId = t.taskId,
+        //            taskName = t.taskName,
+        //            taskDescription = t.taskDescription,
+        //            taskStatus = t.taskStatus,
+        //            dueDate = t.dueDate,
+        //            priority = t.priority,
+        //            UserId = t.UserId,
+        //            userName = t.User.UserName
+        //        })
+        //        .ToListAsync();
+
+        //    return tasks;
+        //}
+
+        public async Task<IEnumerable<AddTaskDTO>> GetTasksByUserId(int userId)
+        {
+            var tasks = await _db.Task
+                .Include(t => t.User)
+                .Where(t => t.UserId == userId)
+                .Select(t => new AddTaskDTO
+                {
+                    taskId = t.taskId,
+                    taskName = t.taskName,
+                    taskDescription = t.taskDescription,
+                    taskStatus = t.taskStatus,
+                    dueDate = t.dueDate,
+                    priority = t.priority,
+                    UserId = t.UserId,
+                    userName = t.User.UserName
+                })
+                .ToListAsync();
+
+            return tasks;
         }
 
     }

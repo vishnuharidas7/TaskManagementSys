@@ -73,5 +73,13 @@ namespace TaskManagementWebAPI.Controllers
             return Ok();
 
         }
+
+        [HttpGet("task/{userId:int}")]  
+       // public async Task<ActionResult<IEnumerable<AddTaskDTO>>> GetTasksByUserId(int userId)
+       public async Task<IEnumerable<AddTaskDTO>> GetTasksByUserId(int userId)
+        {
+            var userTask = await _user.GetTasksByUserId(userId);
+            return userTask;
+        }
     }
 }

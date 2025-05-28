@@ -2,6 +2,8 @@
 {
     public class AddTaskDTO
     {
+        public int taskId { get; set; }
+
         public string taskName { get; set; }
         public int UserId { get; set; }
 
@@ -9,6 +11,10 @@
 
         public string taskDescription { get; set; }
 
-        //public string taskStatus { get; set; }
+        public string priority { get; set; }
+
+        public string taskStatus { get; set; }
+
+        public string userName { get; set; }
     }
 }

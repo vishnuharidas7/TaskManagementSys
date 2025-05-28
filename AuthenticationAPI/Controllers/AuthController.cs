@@ -35,39 +35,39 @@ namespace AuthenticationAPI.Controllers
         }
 
         // [Authorize]
-        [HttpGet("me")]
-        public IActionResult GetSomething()
-        {
-            var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+        //[HttpGet("me")]
+        //public IActionResult GetSomething()
+        //{
+        //    var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 
-            if (authHeader != null && authHeader.StartsWith("Bearer "))
-            {
-                var tokenStr = authHeader.Substring("Bearer ".Length).Trim();
+        //    if (authHeader != null && authHeader.StartsWith("Bearer "))
+        //    {
+        //        var tokenStr = authHeader.Substring("Bearer ".Length).Trim();
 
-                var handler = new JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(tokenStr);
+        //        var handler = new JwtSecurityTokenHandler();
+        //        var jwtToken = handler.ReadJwtToken(tokenStr);
 
-                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        //        var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-                if (userId == null)
-                    return Unauthorized("User ID not found in token");
+        //        if (userId == null)
+        //            return Unauthorized("User ID not found in token");
 
-                var parsedUserId = int.Parse(userId);
-                var user = _db.User.FirstOrDefault(u => u.UserId == parsedUserId);
-                if (user == null)
-                    return NotFound("User not found");
+        //        var parsedUserId = int.Parse(userId);
+        //        var user = _db.User.FirstOrDefault(u => u.UserId == parsedUserId);
+        //        if (user == null)
+        //            return NotFound("User not found");
 
-                return Ok(new
-                {
-                    user.UserId,
-                    user.UserName,
-                    user.Email,
-                    user.RefreshTokenExpiryTime
-                });
-            }
+        //        return Ok(new
+        //        {
+        //            user.UserId,
+        //            user.UserName,
+        //            user.Email,
+        //            user.RefreshTokenExpiryTime
+        //        });
+        //    }
 
-            return Unauthorized();
-        }
+        //    return Unauthorized();
+        //}
 
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenResponseDTO tokens)
