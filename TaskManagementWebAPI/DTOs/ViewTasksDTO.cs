@@ -12,5 +12,7 @@
         public DateTime dueDate { get; set; }
         public string taskStatus { get; set; }
 
+        public string priority { get; set; }
+
     }
 }

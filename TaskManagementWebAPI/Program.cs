@@ -14,6 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAssignUserRepository, AssignUserRepository>();
+builder.Services.AddHttpClient<IUserAuthRepository, UserAuthRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -22,19 +23,29 @@ builder.Services.AddSwaggerGen();
 
 
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend",
-        //policy => policy.WithOrigins("http://localhost:4200")
-        //                .AllowAnyHeader()
-        //                .AllowAnyMethod());
-        policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-});
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend",
+//        //policy => policy.WithOrigins("http://localhost:4200")
+//        //                .AllowAnyHeader()
+//        //                .AllowAnyMethod());
+//        policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+//});
 
 //builder.Services.Configure<IISServerOptions>(options =>
 //{
 //    options.MaxRequestBodySize = null; // Set to null to allow unlimited size
 //});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy
+        //.WithOrigins("http://localhost:4200")
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+});
 
 builder.WebHost.ConfigureKestrel(options =>
 {
