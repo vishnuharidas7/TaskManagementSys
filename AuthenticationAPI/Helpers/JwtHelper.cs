@@ -20,11 +20,17 @@ namespace AuthenticationAPI.Helpers
 
         public string GenerateAccessToken(Users User)
         {
+            string roleName = User.Role?.RoleId switch
+            {
+                1 => "Admin",
+                2 => "User",
+                // 3=>"Guest"
+            };
             var authClaims = new List<Claim>
             {
             new Claim(ClaimTypes.Name, User.UserName),
             new Claim(ClaimTypes.NameIdentifier, User.UserId.ToString()),
-            new Claim(ClaimTypes.Role, User.Role?.RoleId.ToString() ?? "")
+            new Claim(ClaimTypes.Role, roleName)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));

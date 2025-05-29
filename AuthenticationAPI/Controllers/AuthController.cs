@@ -34,40 +34,6 @@ namespace AuthenticationAPI.Controllers
             return Ok(token);
         }
 
-        // [Authorize]
-        //[HttpGet("me")]
-        //public IActionResult GetSomething()
-        //{
-        //    var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-
-        //    if (authHeader != null && authHeader.StartsWith("Bearer "))
-        //    {
-        //        var tokenStr = authHeader.Substring("Bearer ".Length).Trim();
-
-        //        var handler = new JwtSecurityTokenHandler();
-        //        var jwtToken = handler.ReadJwtToken(tokenStr);
-
-        //        var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-        //        if (userId == null)
-        //            return Unauthorized("User ID not found in token");
-
-        //        var parsedUserId = int.Parse(userId);
-        //        var user = _db.User.FirstOrDefault(u => u.UserId == parsedUserId);
-        //        if (user == null)
-        //            return NotFound("User not found");
-
-        //        return Ok(new
-        //        {
-        //            user.UserId,
-        //            user.UserName,
-        //            user.Email,
-        //            user.RefreshTokenExpiryTime
-        //        });
-        //    }
-
-        //    return Unauthorized();
-        //}
 
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenResponseDTO tokens)
@@ -90,16 +56,10 @@ namespace AuthenticationAPI.Controllers
             //    return BadRequest("Invalid refresh token");
             //}
             var newAccessToken = _jwtHelper.GenerateAccessToken(user);
-            //var newRefreshToken = _jwtHelper.GenerateRefreshToken(user);
-
-            // user.RefreshToken = newRefreshToken;
-            //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-           // _db.SaveChanges();
 
             return Ok(new
             {
                 AccessToken = newAccessToken,
-                //RefreshToken = tokens.RefreshToken  // Send back only the access token ideally
 
             });
         }
