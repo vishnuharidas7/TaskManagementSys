@@ -1,11 +1,12 @@
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
-using TaskManagementWebAPI.Data;
-using TaskManagementWebAPI.Repositories;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using System.Security.Claims;
+using System.Text;
+using TaskManagementWebAPI.Data;
+using TaskManagementWebAPI.Middlewares;
+using TaskManagementWebAPI.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,29 +18,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAssignUserRepository, AssignUserRepository>();
+builder.Services.AddScoped<ITaskManagementRepository, TaskManagementRepository>();
 builder.Services.AddHttpClient<IUserAuthRepository, UserAuthRepository>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowFrontend",
-//        //policy => policy.WithOrigins("http://localhost:4200")
-//        //                .AllowAnyHeader()
-//        //                .AllowAnyMethod());
-//        policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-//});
-
-//builder.Services.Configure<IISServerOptions>(options =>
-//{
-//    options.MaxRequestBodySize = null; // Set to null to allow unlimited size
-//});
 
 builder.Services.AddCors(options =>
 {
@@ -79,7 +65,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -89,7 +75,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowFrontend");
 app.UseAuthentication(); 
 app.UseAuthorization();

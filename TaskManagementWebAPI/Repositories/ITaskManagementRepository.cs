@@ -4,7 +4,7 @@ using TaskManagementWebAPI.DTOs;
 
 namespace TaskManagementWebAPI.Repositories
 {
-    public interface IAssignUserRepository
+    public interface ITaskManagementRepository
     {
         Task<List<AssignUserDTO>> ViewUsers();
 

@@ -10,76 +10,112 @@ namespace TaskManagementWebAPI.Controllers
     [ApiController]
     public class TasksController : ControllerBase
     {
-        private IAssignUserRepository _user;
-        public TasksController(IAssignUserRepository user)
+        private ITaskManagementRepository _user;
+        public TasksController(ITaskManagementRepository user)
         {
             _user = user;
         }
         [HttpGet("AssignUser")]
         public async Task<ActionResult> assignUserList()
         {
-            var allUser = await _user.ViewUsers();
-            return Ok(allUser);
+            try
+            {
+                var allUser = await _user.ViewUsers();
+                return Ok(allUser);
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         [HttpGet("ViewAllTasks")]
         public async Task<ActionResult> viewAllTask()
         {
-            var allTasks = await _user.viewAllTasks();
-            return Ok(allTasks);
+            try
+            {
+                var allTasks = await _user.viewAllTasks();
+                return Ok(allTasks);
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         [HttpPost("AddTask")]
         public async Task<IActionResult> AddTask(AddTaskDTO dto)
-        {  
-            await _user.AddTask(dto);
-            return Ok(dto);
+        {
+            try
+            {
+                await _user.AddTask(dto);
+                return Ok(dto);
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         [HttpPut("UpdateTask/{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] AddTaskDTO obj)
         {
-            await _user.UpdateTask(id, obj);
-            return Ok(obj);
+            try
+            {
+                await _user.UpdateTask(id, obj);
+                return Ok(obj);
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         [HttpPost("upload")]
         public async Task<IActionResult> UploadExcel(IFormFile file)
         {
-            //if (file == null || file.Length == 0)
-            //    return BadRequest("No file uploaded.");
-
-            //var result = await _user.ProcessExcelFileAsync(file);
-
-            //return Ok(result);
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded.");
-
             try
             {
+                if (file == null || file.Length == 0)
+                    return BadRequest("No file uploaded.");
+
+            
                 await _user.ProcessExcelFileAsync(file);
                 return Ok("File processed and tasks saved.");
             }
             catch (Exception ex)
             {
-                return BadRequest("Error processing file: " + ex.Message);
+                throw;
             }
         }
 
         [HttpDelete("deleteTask/{id}")]
         public async Task<ActionResult> DeleteTask(int id)
         {
-            await _user.DeleteTask(id);
-            return Ok();
+            try
+            {
+                await _user.DeleteTask(id);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
 
         }
 
-        [HttpGet("task/{userId:int}")]  
-       // public async Task<ActionResult<IEnumerable<AddTaskDTO>>> GetTasksByUserId(int userId)
+        [HttpGet("task/{userId:int}")]   
        public async Task<IEnumerable<AddTaskDTO>> GetTasksByUserId(int userId)
         {
-            var userTask = await _user.GetTasksByUserId(userId);
-            return userTask;
+            try
+            {
+                var userTask = await _user.GetTasksByUserId(userId);
+                return userTask;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

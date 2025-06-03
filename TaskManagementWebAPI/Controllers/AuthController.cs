@@ -26,7 +26,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                throw;
             }
         }
 
@@ -40,7 +40,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                throw;
             }
         }
 
