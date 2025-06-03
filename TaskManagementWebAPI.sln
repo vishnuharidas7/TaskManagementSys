@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskManagementWebAPI", "Tas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationAPI", "AuthenticationAPI\AuthenticationAPI.csproj", "{1FBB197B-CBF1-47AF-8B6E-1D96B4919718}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingLibrary", "LoggingLibrary\LoggingLibrary.csproj", "{BD3C300E-25AC-45C7-84C9-0796ADE6DCA7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1FBB197B-CBF1-47AF-8B6E-1D96B4919718}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FBB197B-CBF1-47AF-8B6E-1D96B4919718}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FBB197B-CBF1-47AF-8B6E-1D96B4919718}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD3C300E-25AC-45C7-84C9-0796ADE6DCA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD3C300E-25AC-45C7-84C9-0796ADE6DCA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD3C300E-25AC-45C7-84C9-0796ADE6DCA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD3C300E-25AC-45C7-84C9-0796ADE6DCA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
