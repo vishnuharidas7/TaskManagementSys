@@ -1,11 +1,14 @@
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Serilog;
+using System.Security.Claims;
+using System.Text;
 using TaskManagementWebAPI.Data;
 using TaskManagementWebAPI.Repositories;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Security.Claims;
+using LoggingLibrary;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +26,33 @@ builder.Services.AddHttpClient<IUserAuthRepository, UserAuthRepository>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme,
+        securityScheme: new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Description = "JWT Authorization header using the Bearer scheme",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference =new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = JwtBearerDefaults.AuthenticationScheme
+                        }
+                    },
+                    new string[] {}
+                }
+                });
+}
+);
 
 
 
@@ -76,6 +105,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]))
         };
     });
+
+
+// Centralized Serilog configuration
+LoggerConfigurator.ConfigureLogging(builder.Configuration);
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 

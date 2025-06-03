@@ -26,4 +26,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LoggingLibrary\LoggingLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

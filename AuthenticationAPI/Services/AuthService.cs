@@ -16,28 +16,55 @@ namespace AuthenticationAPI.Services
         private readonly ApplicationDbContext _db;
         private readonly JwtHelper _jwtHelper;
         private readonly IConfiguration _config;
-        public AuthService(ApplicationDbContext db,IOptions<JwtSettings> jwtSettings, IConfiguration config)
+        private readonly ILogger<AuthService> _logger;
+        public AuthService(ApplicationDbContext db,IOptions<JwtSettings> jwtSettings, IConfiguration config,ILogger<AuthService> logger)
         {
             _db = db;
             _jwtHelper=new JwtHelper(jwtSettings);
             _config = config;
+            _logger = logger?? throw new ArgumentNullException(nameof(logger));
 
         }
         public async Task<Object>LoginAsync(LoginDTO dto)
         {
+            _logger.LogInformation("AuthService-LoginAsync called");
             var user=await _db.User.Include(u=>u.Role).FirstOrDefaultAsync(u=>u.UserName==dto.UserName && u.IsActive && !u.IsDelete);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
+            {
+                _logger.LogWarning("Faild to login attempt for Username: {Username}", dto.UserName);
                 throw new UnauthorizedAccessException("Invalid Username or Password.");
+            }
+
 
 
             // Generate tokens
-            var accessToken = _jwtHelper.GenerateAccessToken(user);
-            var refreshToken = _jwtHelper.GenerateRefreshToken(user);
-
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(60);  // Set refresh token expiry time (can be longer)
-            await _db.SaveChangesAsync();
+            string accessToken;
+            string refreshToken;
+            try
+            {
+                 accessToken = _jwtHelper.GenerateAccessToken(user);
+                _logger.LogInformation("Access token generated successfully for User:{Username}",dto.UserName);
+            }
+            catch (Exception ex) {
+                _logger.LogError(ex, "Failed to generate access token for user: {Username}", user.UserName);
+                throw;
+            }
+            try
+            {
+                refreshToken = _jwtHelper.GenerateRefreshToken(user);
+                _logger.LogInformation("Refresh token generated successfully for User:{Username}", dto.UserName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to generate refresh token for user: {Username}", user.UserName);
+                throw;
+            }
+         
+            //user.RefreshToken = refreshToken;
+            //user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(60);  // Set refresh token expiry time (can be longer)
+            //await _db.SaveChangesAsync();
+            _logger.LogInformation("Login successful for username: {Username}", user.UserName);
 
             return new
             {
@@ -48,25 +75,36 @@ namespace AuthenticationAPI.Services
 
         public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
         {
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:SecretKey"])),
-                ValidateLifetime = false // Ignore token expiration
-            };
+            try {
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:SecretKey"])),
+                    ValidateLifetime = false // Ignore token expiration
+                };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
-            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new SecurityTokenException("Invalid token");
+                if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                    !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    _logger.LogWarning("Invalid token algorithm");
+                    throw new SecurityTokenException("Invalid token");
+                }
+                _logger.LogInformation("Successfully extracted principal from expired token");
+                return principal;
+
+
             }
-
-            return principal;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error validating refresh token");
+                throw;
+            }
+            
         }
     }
 }
