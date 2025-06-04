@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using System.Security.Claims;
 using System.Text;
 using TaskManagementWebAPI.Data;
 using TaskManagementWebAPI.Middlewares;
@@ -110,7 +109,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
-app.UseAuthentication(); 
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using System.Collections.Generic;
-using System.Xml.Linq;
-using TaskManagement_Project.DTOs;
 using TaskManagementWebAPI.Data;
 using TaskManagementWebAPI.DTOs;
 using TaskManagementWebAPI.Models;
@@ -15,10 +11,12 @@ namespace TaskManagementWebAPI.Repositories
     public class TaskManagementRepository : ITaskManagementRepository
     {
         private readonly ApplicationDbContext _db;
+        private readonly ILogger<TaskManagementRepository> _logger;
 
-        public TaskManagementRepository(ApplicationDbContext db)
+        public TaskManagementRepository(ApplicationDbContext db, ILogger<TaskManagementRepository> logger)
         {
             _db = db;
+            _logger = logger;
         }
 
         public async Task<List<AssignUserDTO>> ViewUsers()
@@ -37,8 +35,9 @@ namespace TaskManagementWebAPI.Repositories
 
                 return usersWithRoles;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("ViewUsers-Fetching faild");
                 throw;
             }
         }
@@ -46,7 +45,7 @@ namespace TaskManagementWebAPI.Repositories
         public async Task<List<ViewTasksDTO>> viewAllTasks()
         {
             try
-            { 
+            {
                 var viewAlltasks = await _db.Task
                 .Include(u => u.User)
                 .Select(u => new ViewTasksDTO
@@ -64,32 +63,35 @@ namespace TaskManagementWebAPI.Repositories
 
                 return viewAlltasks;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("viewAllTasks-Fetching faild");
                 throw;
             }
         }
 
         public async Task AddTask(AddTaskDTO dto)
         {
-            try { 
+            try
+            {
                 var task = new Tasks
                 {
-                   taskName = dto.taskName,
-                   taskDescription = dto.taskDescription,
-                   UserId = dto.UserId,
-                   dueDate = dto.dueDate,
-                   priority = dto.priority
-                   //taskStatus = dto.taskStatus
+                    taskName = dto.taskName,
+                    taskDescription = dto.taskDescription,
+                    UserId = dto.UserId,
+                    dueDate = dto.dueDate,
+                    priority = dto.priority
+                    //taskStatus = dto.taskStatus
                 };
 
                 _db.Task.Add(task);
                 await _db.SaveChangesAsync();
 
-                    // return user;
+                // return user;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("AddTask-Save to DB faild");
                 throw;
             }
         }
@@ -288,8 +290,9 @@ namespace TaskManagementWebAPI.Repositories
 
                 await _db.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("ProcessExcelFileAsync-Save file faild");
                 throw;
             }
         }
@@ -306,8 +309,9 @@ namespace TaskManagementWebAPI.Repositories
                 _db.Task.Remove(task);
                 await _db.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("DeleteTask-Delete Task faild");
                 throw;
             }
 
@@ -331,8 +335,9 @@ namespace TaskManagementWebAPI.Repositories
 
                 await _db.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("UpdateTask-Update Task faild");
                 throw;
             }
         }
@@ -401,8 +406,9 @@ namespace TaskManagementWebAPI.Repositories
 
                 return tasks;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("GetTasksByUserId- fetch faild");
                 throw;
             }
         }

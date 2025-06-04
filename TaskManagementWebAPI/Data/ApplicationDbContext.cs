@@ -1,16 +1,16 @@
-﻿using TaskManagementWebAPI.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManagementWebAPI.Models;
 
 namespace TaskManagementWebAPI.Data
 {
-    public class ApplicationDbContext:DbContext
+    public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext>options):base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
 
         }
-        public DbSet<Users> User{ get; set; }
-        public DbSet<Roles> Role{ get; set; }
+        public DbSet<Users> User { get; set; }
+        public DbSet<Roles> Role { get; set; }
 
         public DbSet<Tasks> Task { get; set; }
 
@@ -20,8 +20,8 @@ namespace TaskManagementWebAPI.Data
 
             //seed roles
             modelBuilder.Entity<Roles>().HasData(
-                new Roles {RoleId=1,RoleName="Admin" },
-                new Roles {RoleId=2,RoleName="User" }
+                new Roles { RoleId = 1, RoleName = "Admin" },
+                new Roles { RoleId = 2, RoleName = "User" }
                 );
 
             modelBuilder.Entity<Users>()

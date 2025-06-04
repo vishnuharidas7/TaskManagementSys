@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AuthenticationAPI.Models
@@ -17,7 +16,7 @@ namespace AuthenticationAPI.Models
         public Roles Role { get; set; }
 
 
-        [Required,MaxLength(100)]
+        [Required, MaxLength(100)]
         public string UserName { get; set; }
 
 
@@ -25,11 +24,11 @@ namespace AuthenticationAPI.Models
         public string Password { get; set; }
 
 
-        [Required,MaxLength(100)]
+        [Required, MaxLength(100)]
 
         public string Email { get; set; }
 
-        public DateTime CreatedDate { get; set; }=DateTime.Now;
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         public DateTime? LastLoginDate { get; set; }
 

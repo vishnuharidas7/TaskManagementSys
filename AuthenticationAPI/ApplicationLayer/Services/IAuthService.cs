@@ -1,4 +1,4 @@
-﻿using AuthenticationAPI.DTOs;
+﻿using AuthenticationAPI.ApplicationLayer.DTOs;
 using System.Security.Claims;
 
 namespace AuthenticationAPI.Services

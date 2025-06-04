@@ -1,16 +1,15 @@
-using AuthenticationAPI.Configurations;
-using AuthenticationAPI.Data;
+using AuthenticationAPI.ConfigurationLayer;
+using AuthenticationAPI.InfrastructureLayer.Data;
+using AuthenticationAPI.InfrastructureLayer.Helpers;
+using AuthenticationAPI.Repositories;
 using AuthenticationAPI.Services;
+using LoggingLibrary;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Security.Claims;
-using System.Text;
 using Serilog;
-using LoggingLibrary;
-using AuthenticationAPI.Helpers;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,7 +57,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 //Register JWT helper
-builder.Services.AddScoped<IJwtHelper,JwtHelper>();
+builder.Services.AddScoped<IJwtHelper, JwtHelper>();
+
+//Register Repository
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 
 // Add JWT authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

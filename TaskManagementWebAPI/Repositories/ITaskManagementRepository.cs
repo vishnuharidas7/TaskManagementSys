@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TaskManagement_Project.DTOs;
-using TaskManagementWebAPI.DTOs;
+﻿using TaskManagementWebAPI.DTOs;
 
 namespace TaskManagementWebAPI.Repositories
 {

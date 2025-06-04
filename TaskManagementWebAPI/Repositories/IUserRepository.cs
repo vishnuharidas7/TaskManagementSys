@@ -1,6 +1,5 @@
 ﻿using TaskManagement_Project.DTOs;
 using TaskManagementWebAPI.DTOs;
-using TaskManagementWebAPI.Models;
 
 namespace TaskManagementWebAPI.Repositories
 {

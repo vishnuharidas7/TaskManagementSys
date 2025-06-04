@@ -1,4 +1,4 @@
-﻿namespace AuthenticationAPI.DTOs
+﻿namespace AuthenticationAPI.ApplicationLayer.DTOs
 {
     public class TokenResponseDTO
     {
