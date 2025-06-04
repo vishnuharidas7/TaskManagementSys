@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TaskManagement_Project.DTOs;
-using TaskManagementWebAPI.Data;
-using TaskManagementWebAPI.DTOs;
-using TaskManagementWebAPI.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore; 
+using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Domain.Interfaces;
+using TaskManagementWebAPI.Domain.Models; 
+using TaskManagementWebAPI.Infrastructure.Persistence;
 
-namespace TaskManagementWebAPI.Repositories
+namespace TaskManagementWebAPI.Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {

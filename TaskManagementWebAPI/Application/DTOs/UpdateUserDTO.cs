@@ -1,4 +1,4 @@
-﻿namespace TaskManagement_Project.DTOs
+﻿namespace TaskManagementWebAPI.Application.DTOs
 {
     public class UpdateUserDTO
     {

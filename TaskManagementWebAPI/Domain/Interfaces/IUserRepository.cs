@@ -1,7 +1,7 @@
-﻿using TaskManagement_Project.DTOs;
-using TaskManagementWebAPI.DTOs;
+﻿using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Domain.Models;
 
-namespace TaskManagementWebAPI.Repositories
+namespace TaskManagementWebAPI.Domain.Interfaces
 {
     public interface IUserRepository
     {

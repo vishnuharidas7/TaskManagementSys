@@ -1,6 +1,10 @@
-﻿using TaskManagementWebAPI.DTOs;
+﻿using MathNet.Numerics.RootFinding;
+using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Tls;
+using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Domain.Interfaces;
 
-namespace TaskManagementWebAPI.Repositories
+namespace TaskManagementWebAPI.Infrastructure.Repositories
 {
     public class UserAuthRepository : IUserAuthRepository
     {
