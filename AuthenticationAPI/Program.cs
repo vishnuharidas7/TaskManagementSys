@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using Serilog;
 using LoggingLibrary;
+using AuthenticationAPI.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Register custom services
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+//Register JWT helper
+builder.Services.AddScoped<IJwtHelper,JwtHelper>();
 
 // Add JWT authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
