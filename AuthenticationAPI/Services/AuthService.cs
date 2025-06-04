@@ -14,13 +14,13 @@ namespace AuthenticationAPI.Services
     public class AuthService:IAuthService
     {
         private readonly ApplicationDbContext _db;
-        private readonly JwtHelper _jwtHelper;
+        private readonly IJwtHelper _jwtHelper;
         private readonly IConfiguration _config;
         private readonly ILogger<AuthService> _logger;
-        public AuthService(ApplicationDbContext db,IOptions<JwtSettings> jwtSettings, IConfiguration config,ILogger<AuthService> logger)
+        public AuthService(ApplicationDbContext db, IConfiguration config,IJwtHelper jwthelper  ,ILogger<AuthService> logger)
         {
             _db = db;
-            _jwtHelper=new JwtHelper(jwtSettings);
+            _jwtHelper= jwthelper;
             _config = config;
             _logger = logger?? throw new ArgumentNullException(nameof(logger));
 
@@ -37,7 +37,7 @@ namespace AuthenticationAPI.Services
             }
 
 
-
+            _logger.LogInformation("Started generating Token..");
             // Generate tokens
             string accessToken;
             string refreshToken;
@@ -86,6 +86,7 @@ namespace AuthenticationAPI.Services
                 };
 
                 var tokenHandler = new JwtSecurityTokenHandler();
+                _logger.LogInformation("Validating expired token...");
                 var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
                 if (securityToken is not JwtSecurityToken jwtSecurityToken ||
