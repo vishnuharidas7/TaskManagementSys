@@ -1,4 +1,4 @@
-﻿namespace TaskManagementWebAPI.DTOs
+﻿namespace TaskManagementWebAPI.Application.DTOs
 {
     public class AddTaskDTO
     {

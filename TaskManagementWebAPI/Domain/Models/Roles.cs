@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TaskManagementWebAPI.Models
+namespace TaskManagementWebAPI.Domain.Models
 {
     public class Roles
     {

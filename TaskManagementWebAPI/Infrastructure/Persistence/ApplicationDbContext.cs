@@ -1,7 +1,7 @@
-﻿using TaskManagementWebAPI.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManagementWebAPI.Domain.Models;
 
-namespace TaskManagementWebAPI.Data
+namespace TaskManagementWebAPI.Infrastructure.Persistence
 {
     public class ApplicationDbContext:DbContext
     {

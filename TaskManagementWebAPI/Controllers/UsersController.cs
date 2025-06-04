@@ -2,12 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using TaskManagement_Project.DTOs;
-using TaskManagementWebAPI.Data;
-using TaskManagementWebAPI.DTOs;
-using TaskManagementWebAPI.Models;
-using TaskManagementWebAPI.Repositories;
+using System.Collections.Generic; 
+using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Domain.Interfaces; 
+using TaskManagementWebAPI.Infrastructure.Persistence;
 
 namespace TaskManagementWebAPI.Controllers
 {

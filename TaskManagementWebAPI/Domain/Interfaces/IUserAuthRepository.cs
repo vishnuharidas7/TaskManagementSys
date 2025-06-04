@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TaskManagementWebAPI.DTOs;
+﻿using Microsoft.AspNetCore.Mvc; 
+using TaskManagementWebAPI.Application.DTOs;
 
-namespace TaskManagementWebAPI.Repositories
+namespace TaskManagementWebAPI.Domain.Interfaces
 {
     public interface IUserAuthRepository
     {
