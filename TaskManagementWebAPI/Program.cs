@@ -7,9 +7,11 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Security.Claims;
 using System.Text;
-using TaskManagementWebAPI.Data;
+using TaskManagementWebAPI.Domain.Interfaces;
+using TaskManagementWebAPI.Infrastructure.Persistence;
+using TaskManagementWebAPI.Infrastructure.Repositories;
 using TaskManagementWebAPI.Middlewares;
-using TaskManagementWebAPI.Repositories;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 var builder = WebApplication.CreateBuilder(args);
 

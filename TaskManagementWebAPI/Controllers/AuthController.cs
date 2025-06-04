@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using TaskManagementWebAPI.DTOs;
-using TaskManagementWebAPI.Repositories;
+using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Domain.Interfaces;
 
 namespace TaskManagementWebAPI.Controllers
 {

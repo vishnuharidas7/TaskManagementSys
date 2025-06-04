@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TaskManagementWebAPI.Models
+namespace TaskManagementWebAPI.Domain.Models
 {
     public class Tasks
     {
