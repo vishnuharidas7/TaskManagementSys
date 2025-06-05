@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic; 
 using TaskManagementWebAPI.Application.DTOs;
-using TaskManagementWebAPI.Domain.Interfaces; 
+using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Infrastructure.Persistence;
-using TaskManagementWebAPI.Models;
-using TaskManagementWebAPI.Repositories;
-using TaskManagementWebAPI.Models;
-using TaskManagementWebAPI.Repositories;
 
 namespace TaskManagementWebAPI.Controllers
 {
