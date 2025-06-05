@@ -10,9 +10,11 @@ namespace TaskManagementWebAPI.Controllers
     public class TasksController : ControllerBase
     {
         private ITaskManagementRepository _user;
-        public TasksController(ITaskManagementRepository user)
+        private readonly ILogger<TasksController> _logger;
+        public TasksController(ITaskManagementRepository user, ILogger<TasksController> logger)
         {
             _user = user;
+            _logger =logger;
         }
         [HttpGet("AssignUser")]
         public async Task<ActionResult> assignUserList()
@@ -22,8 +24,9 @@ namespace TaskManagementWebAPI.Controllers
                 var allUser = await _user.ViewUsers();
                 return Ok(allUser);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("AssignUser API faild");
                 throw;
             }
         }
@@ -36,8 +39,9 @@ namespace TaskManagementWebAPI.Controllers
                 var allTasks = await _user.viewAllTasks();
                 return Ok(allTasks);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("ViewAllTasks API faild");
                 throw;
             }
         }
@@ -50,8 +54,9 @@ namespace TaskManagementWebAPI.Controllers
                 await _user.AddTask(dto);
                 return Ok(dto);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("AddTask API faild");
                 throw;
             }
         }
@@ -64,8 +69,9 @@ namespace TaskManagementWebAPI.Controllers
                 await _user.UpdateTask(id, obj);
                 return Ok(obj);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("UpdateTask API faild");
                 throw;
             }
         }
@@ -78,12 +84,13 @@ namespace TaskManagementWebAPI.Controllers
                 if (file == null || file.Length == 0)
                     return BadRequest("No file uploaded.");
 
-            
+
                 await _user.ProcessExcelFileAsync(file);
                 return Ok("File processed and tasks saved.");
             }
             catch (Exception ex)
             {
+                _logger.LogWarning("upload API faild");
                 throw;
             }
         }
@@ -96,23 +103,25 @@ namespace TaskManagementWebAPI.Controllers
                 await _user.DeleteTask(id);
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("deleteTask API faild");
                 throw;
             }
 
         }
 
-        [HttpGet("task/{userId:int}")]   
-       public async Task<IEnumerable<AddTaskDTO>> GetTasksByUserId(int userId)
+        [HttpGet("task/{userId:int}")]
+        public async Task<IEnumerable<AddTaskDTO>> GetTasksByUserId(int userId)
         {
             try
             {
                 var userTask = await _user.GetTasksByUserId(userId);
                 return userTask;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("task API faild");
                 throw;
             }
         }

@@ -1,16 +1,16 @@
 ﻿using AuthenticationAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace AuthenticationAPI.Data
+namespace AuthenticationAPI.InfrastructureLayer.Data
 {
-    public class ApplicationDbContext:DbContext
+    public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext>options):base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
 
         }
-        public DbSet<Users> User{ get; set; }
-        public DbSet<Roles> Role{ get; set; }
+        public DbSet<Users> User { get; set; }
+        public DbSet<Roles> Role { get; set; }
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{
@@ -28,7 +28,7 @@ namespace AuthenticationAPI.Data
 
         //}
 
-      
+
 
     }
 }

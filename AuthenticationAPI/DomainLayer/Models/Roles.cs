@@ -7,7 +7,7 @@ namespace AuthenticationAPI.Models
         [Key]
         public int RoleId { get; set; }
 
-        [Required,MaxLength(100)]
+        [Required, MaxLength(100)]
         public string RoleName { get; set; }
 
         //Navigation property

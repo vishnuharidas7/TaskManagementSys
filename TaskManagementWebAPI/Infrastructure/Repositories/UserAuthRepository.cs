@@ -9,10 +9,12 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
     public class UserAuthRepository : IUserAuthRepository
     {
         private readonly HttpClient _httpClient;
-        
-        public UserAuthRepository(HttpClient httpClient)
+        private readonly ILogger<UserAuthRepository> _logger;
+
+        public UserAuthRepository(HttpClient httpClient, ILogger<UserAuthRepository> logger)
         {
             _httpClient = httpClient;
+            _logger = logger;
         }
 
         public async Task<string> LoginAsync(LoginDTO dto)
@@ -30,8 +32,9 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 var error = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Login failed: {error}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning("LoginAsync-Login faild");
                 throw;
             }
         }
@@ -51,8 +54,9 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 var error = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Token refresh failed: {error}");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+
                 throw;
             }
         }

@@ -10,10 +10,11 @@ namespace TaskManagementWebAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserAuthRepository _user;
-
-        public AuthController(IUserAuthRepository user)
+        private readonly ILogger<AuthController> _logger;
+        public AuthController(IUserAuthRepository user, ILogger<AuthController> logger)
         {
             _user = user;
+            _logger = logger;
         }
 
         [HttpPost("loginAuth")]
@@ -26,6 +27,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogWarning("loginAuth API faild");
                 throw;
             }
         }
@@ -40,6 +42,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogWarning("refresh API faild");
                 throw;
             }
         }

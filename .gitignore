@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /TaskManagementWebAPI/Migrations
 /TMSAPP
+/TaskManagementWebAPI/Infrastructure/Repositories/TaskManagementRepository.cs

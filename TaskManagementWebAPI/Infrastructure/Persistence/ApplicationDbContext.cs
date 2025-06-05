@@ -3,14 +3,14 @@ using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Infrastructure.Persistence
 {
-    public class ApplicationDbContext:DbContext
+    public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext>options):base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
 
         }
-        public DbSet<Users> User{ get; set; }
-        public DbSet<Roles> Role{ get; set; }
+        public DbSet<Users> User { get; set; }
+        public DbSet<Roles> Role { get; set; }
 
         public DbSet<Tasks> Task { get; set; }
 
@@ -20,8 +20,8 @@ namespace TaskManagementWebAPI.Infrastructure.Persistence
 
             //seed roles
             modelBuilder.Entity<Roles>().HasData(
-                new Roles {RoleId=1,RoleName="Admin" },
-                new Roles {RoleId=2,RoleName="User" }
+                new Roles { RoleId = 1, RoleName = "Admin" },
+                new Roles { RoleId = 2, RoleName = "User" }
                 );
 
             modelBuilder.Entity<Users>()

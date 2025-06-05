@@ -1,4 +1,4 @@
-﻿namespace AuthenticationAPI.Configurations
+﻿namespace AuthenticationAPI.ConfigurationLayer
 {
     public class JwtSettings
     {

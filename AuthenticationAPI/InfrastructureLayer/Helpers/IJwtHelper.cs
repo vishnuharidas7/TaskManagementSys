@@ -1,6 +1,6 @@
 ﻿using AuthenticationAPI.Models;
 
-namespace AuthenticationAPI.Helpers
+namespace AuthenticationAPI.InfrastructureLayer.Helpers
 {
     public interface IJwtHelper
     {
