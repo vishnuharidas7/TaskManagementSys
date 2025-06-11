@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using LoggingLibrary.Interfaces;
 
 namespace AuthenticationAPI.Services
 {
@@ -14,9 +15,9 @@ namespace AuthenticationAPI.Services
         private readonly ApplicationDbContext _db;
         private readonly IJwtHelper _jwtHelper;
         private readonly IConfiguration _config;
-        private readonly ILogger<AuthService> _logger;
+        private readonly IAppLogger<AuthService> _logger;
         private readonly IAuthRepository _authRepository;
-        public AuthService(ApplicationDbContext db, IConfiguration config, IJwtHelper jwthelper, ILogger<AuthService> logger, IAuthRepository authRepository)
+        public AuthService(ApplicationDbContext db, IConfiguration config, IJwtHelper jwthelper, IAppLogger<AuthService> logger, IAuthRepository authRepository)
         {
             _db = db;
             _jwtHelper = jwthelper;
@@ -33,7 +34,7 @@ namespace AuthenticationAPI.Services
 
                 if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
                 {
-                    _logger.LogWarning("Faild to login attempt for Username: {Username}", dto.UserName);
+                    _logger.LoggWarning("Faild to login attempt for Username: {Username}", dto.UserName);
                     throw new UnauthorizedAccessException("Invalid Username or Password.");
                 }
 
@@ -47,7 +48,7 @@ namespace AuthenticationAPI.Services
                 };
             }
             catch (Exception ex) {
-                _logger.LogWarning("LoginAsync faild");
+                _logger.LoggWarning("LoginAsync faild");
                 throw;
             }
             
@@ -73,7 +74,7 @@ namespace AuthenticationAPI.Services
                 if (securityToken is not JwtSecurityToken jwtSecurityToken ||
                     !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    _logger.LogWarning("Invalid token algorithm");
+                    _logger.LoggWarning("Invalid token algorithm");
                     throw new SecurityTokenException("Invalid token");
                 }
                 return principal;
@@ -82,7 +83,7 @@ namespace AuthenticationAPI.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error validating refresh token");
+                _logger.LoggError(ex, "Error validating refresh token");
                 throw;
             }
 

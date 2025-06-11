@@ -1,5 +1,6 @@
 ﻿using AuthenticationAPI.ConfigurationLayer;
 using AuthenticationAPI.Models;
+using LoggingLibrary.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,9 +13,9 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
     public class JwtHelper : IJwtHelper
     {
         private readonly JwtSettings _jwtSettings;
-        private readonly ILogger _logger;
+        private readonly IAppLogger<JwtHelper> _logger;
 
-        public JwtHelper(IOptions<JwtSettings> jwtSettings, ILogger<JwtHelper> logger)
+        public JwtHelper(IOptions<JwtSettings> jwtSettings, IAppLogger<JwtHelper> logger)
         {
             _jwtSettings = jwtSettings.Value;
             _logger = logger;
@@ -57,7 +58,7 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
                 return accessToken;
             }
             catch (Exception ex) {
-                _logger.LogWarning("GenerateAccessToken faild");
+                _logger.LoggWarning("GenerateAccessToken faild");
                 throw;
             }
            
@@ -86,12 +87,12 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
                 );
 
                 var refreshToken = new JwtSecurityTokenHandler().WriteToken(token);
-                _logger.LogInformation("Refresh Token successfully generated for UserId: {UserId}", user.UserId);
+                _logger.LoggInformation("Refresh Token successfully generated for UserId: {UserId}", user.UserId);
                 return refreshToken;
             }
            catch(Exception ex)
             {
-                _logger.LogWarning("GenerateRefreshToken faild");
+                _logger.LoggWarning("GenerateRefreshToken faild");
                 throw;
             }
         }

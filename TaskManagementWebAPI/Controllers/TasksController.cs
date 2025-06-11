@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using LoggingLibrary.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc; 
 using TaskManagementWebAPI.Application.DTOs;
@@ -11,13 +12,12 @@ namespace TaskManagementWebAPI.Controllers
     public class TasksController : ControllerBase
     {
         private ITaskManagementRepository _task;
-        private readonly ILogger<TasksController> _logger;
-        public TasksController(ITaskManagementRepository task, ILogger<TasksController> logger)
+        private readonly IAppLogger<TasksController> _logger;
+        public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger)
         {
             _task = task;
             _logger =logger;
         }
-
         [Authorize(Roles = "Admin,User")]
         [HttpGet("AssignUser")]
         public async Task<ActionResult> assignUserList()
@@ -29,7 +29,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("AssignUser API faild");
+                _logger.LoggWarning("AssignUser API faild");
                 throw;
             }
         }
@@ -45,7 +45,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("ViewAllTasks API faild");
+                _logger.LoggWarning("ViewAllTasks API faild");
                 throw;
             }
         }
@@ -61,7 +61,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("AddTask API faild");
+                _logger.LoggWarning("AddTask API faild");
                 throw;
             }
         }
@@ -77,7 +77,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("UpdateTask API faild");
+                _logger.LoggWarning("UpdateTask API faild");
                 throw;
             }
         }
@@ -92,16 +92,16 @@ namespace TaskManagementWebAPI.Controllers
                     return BadRequest("No file uploaded.");
 
 
-               // await _task.ProcessExcelFileAsync(file);
                 await _task.ProcessFileAsync(file);
                 return Ok("File processed and tasks saved.");
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("upload API faild");
+                _logger.LoggWarning("upload API faild");
                 throw;
             }
         }
+
 
         [Authorize(Roles = "Admin,User")]
         [HttpDelete("deleteTask/{id}")]
@@ -114,7 +114,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("deleteTask API faild");
+                _logger.LoggWarning("deleteTask API faild");
                 throw;
             }
 
@@ -131,7 +131,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("task API faild");
+                _logger.LoggWarning("task API faild");
                 throw;
             }
         }

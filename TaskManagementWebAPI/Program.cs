@@ -1,10 +1,16 @@
+using log4net;
+using log4net.Config;
 using LoggingLibrary;
+using LoggingLibrary.Config;
+using LoggingLibrary.Implementations;
+using LoggingLibrary.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Reflection;
 using System.Text;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Infrastructure.Persistence;
@@ -12,6 +18,8 @@ using TaskManagementWebAPI.Infrastructure.Repositories;
 using TaskManagementWebAPI.Infrastructure.Services;
 using TaskManagementWebAPI.Middlewares;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
+var congifuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +70,12 @@ builder.Services.AddSwaggerGen(options =>
 }
 );
 
+//Register Logg
+builder.Services.AddSingleton(typeof(SerilogLogger<>));
+builder.Services.AddSingleton(typeof(Log4NetLogger<>));
+
+// Factory that chooses which one to use
+builder.Services.AddSingleton(typeof(IAppLogger<>), typeof(AppLoggerFactory<>));
 
 
 builder.Services.AddCors(options =>
@@ -101,10 +115,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 
-// Centralized Serilog configuration
-LoggerConfigurator.ConfigureLogging(builder.Configuration);
-builder.Host.UseSerilog();
-
+var loggigProvider = builder.Configuration["Logging:LoggingProvider"];
+if (loggigProvider == "Serilog")
+{
+    // Configure Serilog BEFORE building the app
+    LoggerConfigurator.ConfigureLogging();
+    // Tell the host to use Serilog for all logging
+    builder.Host.UseSerilog();
+}
+if (loggigProvider == "Log4Net")
+{
+    // Load log4net config
+    var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+    var log4netConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "log4net.config");
+    XmlConfigurator.Configure(logRepository, new FileInfo(log4netConfigPath));
+    Console.WriteLine($"Log4Net config exists? {File.Exists(log4netConfigPath)}");
+}
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using LoggingLibrary.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManagementWebAPI.Application.DTOs;
@@ -13,9 +14,9 @@ namespace TaskManagementWebAPI.Controllers
     {
         private readonly IUserRepository _user;
         private readonly ApplicationDbContext _db;
-        private readonly ILogger<AuthController> _logger;
+        private readonly IAppLogger<AuthController> _logger;
 
-        public UsersController(IUserRepository user, ApplicationDbContext db, ILogger<AuthController> logger)
+        public UsersController(IUserRepository user, ApplicationDbContext db, IAppLogger<AuthController> logger)
         {
 
             _user = user ?? throw new ArgumentNullException(nameof(user));
@@ -34,7 +35,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("check-username API faild");
+                _logger.LoggWarning("check-username API faild");
                 throw;
             }
         }
@@ -45,17 +46,20 @@ namespace TaskManagementWebAPI.Controllers
         {
             try
             {
+                
                 var exists = await _db.User.AnyAsync(u => u.Email == dto.Email);
                 if (exists)
                     return BadRequest(new { error = "Email already exists." });
 
 
                 await _user.RegisterAsync(dto);
+                _logger.LoggInformation("Registered successfully");
                 return Ok(dto);
+
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("register API faild");
+                _logger.LoggWarning("register API faild");
                 throw;
             }
         }
@@ -72,7 +76,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("viewusers API faild");
+                _logger.LoggWarning("viewusers API faild");
                 throw;
             }
         }
@@ -90,7 +94,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("updateuser API faild");
+                _logger.LoggWarning("updateuser API faild");
                 throw;
             }
         }
@@ -106,7 +110,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("deleteUser API faild");
+                _logger.LoggWarning("deleteUser API faild");
                 throw;
             }
 

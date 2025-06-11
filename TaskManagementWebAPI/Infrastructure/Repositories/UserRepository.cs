@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LoggingLibrary.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; 
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Domain.Interfaces;
@@ -10,9 +11,9 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _db;
-        private readonly ILogger<UserRepository> _logger;
+        private readonly IAppLogger<UserRepository> _logger;
 
-        public UserRepository(ApplicationDbContext db, ILogger<UserRepository> logger)
+        public UserRepository(ApplicationDbContext db, IAppLogger<UserRepository> logger)
         {
             _db = db;
             _logger = logger;
@@ -44,7 +45,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("RegisterAsync-Save UserReg faild");
+                _logger.LoggWarning("RegisterAsync-Save UserReg faild");
                 throw;
             }
         }
@@ -73,7 +74,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("ViewUsers- View user faild");
+                _logger.LoggWarning("ViewUsers- View user faild");
                 throw;
             }
         }
@@ -85,7 +86,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 var user = await _db.User.FindAsync(id);
                 if (user == null)
                 {
-                    _logger.LogWarning("UpdateUser-User not found");
+                    _logger.LoggWarning("UpdateUser-User not found");
                     throw new Exception("User not found");
                 }
 
@@ -98,7 +99,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("UpdateUser-Update user faild");
+                _logger.LoggWarning("UpdateUser-Update user faild");
                 throw;
             }
         }
@@ -110,7 +111,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 var user = await _db.User.FindAsync(id);
                 if (user == null)
                 {
-                    _logger.LogWarning("DeleteUser-User not found");
+                    _logger.LoggWarning("DeleteUser-User not found");
                     throw new Exception("User not found");
                 }
                 _db.User.Remove(user);
@@ -118,7 +119,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("DeleteUser-Delete user faild");
+                _logger.LoggWarning("DeleteUser-Delete user faild");
                 throw;
             }
 

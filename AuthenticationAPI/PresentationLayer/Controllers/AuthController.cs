@@ -5,6 +5,7 @@ using AuthenticationAPI.Repositories;
 using AuthenticationAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using LoggingLibrary.Interfaces;
 
 namespace AuthenticationAPI.Controllers
 {
@@ -15,9 +16,9 @@ namespace AuthenticationAPI.Controllers
         private readonly IAuthService _authService;
         private readonly ApplicationDbContext _db;
         private readonly IJwtHelper _jwtHelper;
-        private readonly ILogger<AuthController> _logger;
+        private readonly IAppLogger<AuthController> _logger;
         private readonly IAuthRepository _authRepository;
-        public AuthController(IAuthService authService, ApplicationDbContext db, IJwtHelper jwthelper, ILogger<AuthController> logger, IAuthRepository authRepository)
+        public AuthController(IAuthService authService, ApplicationDbContext db, IJwtHelper jwthelper, IAppLogger<AuthController> logger, IAuthRepository authRepository)
         {
             _authService = authService;
             _db = db ?? throw new ArgumentNullException(nameof(db));
@@ -31,14 +32,14 @@ namespace AuthenticationAPI.Controllers
         {
             try
             {
-               // _logger.LogInformation("AuthController-Login end point called");
-                //_logger.LogInformation("Login attempt for username: {Username} at {Time}", dto.UserName, DateTime.UtcNow);
+               _logger.LoggInformation("AuthController-Login end point called");
+                _logger.LoggInformation("Login attempt for username: {Username} at {Time}", dto.UserName, DateTime.UtcNow);
 
                 var token = await _authService.LoginAsync(dto);
 
                 if (token == null)
                 {
-                    _logger.LogWarning("Login failed for username: {Username}", dto.UserName);
+                    _logger.LoggWarning("Login failed for username: {Username}", dto.UserName);
                     return Unauthorized("Invalid username or password");
                 }
 
@@ -46,7 +47,7 @@ namespace AuthenticationAPI.Controllers
                 return Ok(token);
             }
             catch (Exception ex) {
-                _logger.LogWarning("login API faild");
+                _logger.LoggWarning("login API faild");
                 throw;
             }
            
@@ -72,7 +73,7 @@ namespace AuthenticationAPI.Controllers
                 var user = await _authRepository.GetUserAsync(userid);
                 if (user == null)
                 {
-                    _logger.LogWarning("Checking DB-Invalid refresh token");
+                    _logger.LoggWarning("Checking DB-Invalid refresh token");
                     return BadRequest("Invalid refresh token");
                 }
                // _logger.LogInformation("Refresh token generated");
@@ -86,7 +87,7 @@ namespace AuthenticationAPI.Controllers
             }
             catch(Exception ex)
             {
-                _logger.LogWarning("Refresh API faild");
+                _logger.LoggWarning("Refresh API faild");
                 throw;
             }
            
