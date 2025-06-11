@@ -9,6 +9,7 @@ using System.Text;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Infrastructure.Persistence;
 using TaskManagementWebAPI.Infrastructure.Repositories;
+using TaskManagementWebAPI.Infrastructure.Services;
 using TaskManagementWebAPI.Middlewares;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -24,6 +25,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITaskManagementRepository, TaskManagementRepository>();
 builder.Services.AddHttpClient<IUserAuthRepository, UserAuthRepository>();
+
+builder.Services.AddScoped<ExcelTaskFileParser>();
+builder.Services.AddScoped<CsvTaskFileParser>();
+builder.Services.AddScoped<ITaskFileParserFactory, TaskFileParserFactory>();
+builder.Services.AddScoped<IMaptoTasks, MaptoTasks>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

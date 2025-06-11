@@ -23,6 +23,7 @@ namespace TaskManagementWebAPI.Controllers
             _logger = logger;
         }
 
+        [Authorize(Roles = "Admin,User")]
         [HttpGet("check-username")]
         public async Task<IActionResult> CheckUsernameExists([FromQuery] string username)
         {
@@ -38,6 +39,7 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin,User")]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(RegisterDTO dto)
         {
@@ -58,7 +60,8 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,User")]
         [HttpGet("viewusers")]
         public async Task<ActionResult> UserList()
         {
@@ -76,7 +79,7 @@ namespace TaskManagementWebAPI.Controllers
 
 
 
-
+        [Authorize(Roles = "Admin,User")]
         [HttpPut("updateuser/{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO obj)
         {
@@ -92,6 +95,7 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin,User")]
         [HttpDelete("deleteUser/{id}")]
         public async Task<ActionResult> DeleteUser(int id)
         {

@@ -9,7 +9,9 @@ namespace TaskManagementWebAPI.Domain.Interfaces
 
         Task AddTask(AddTaskDTO dto);
 
-        Task ProcessExcelFileAsync(IFormFile file);
+        //Task ProcessExcelFileAsync(IFormFile file);
+
+        Task ProcessFileAsync(IFormFile file);
 
         Task<List<ViewTasksDTO>> viewAllTasks();
 
