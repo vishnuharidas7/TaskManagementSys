@@ -14,11 +14,15 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 {
     public class TaskManagementRepository : ITaskManagementRepository
     {
+        private readonly ITaskFileParserFactory _parserFactory;
+        private readonly IMaptoTasks _taskMapper;
         private readonly ApplicationDbContext _db;
 
-        public TaskManagementRepository(ApplicationDbContext db)
+        public TaskManagementRepository(ITaskFileParserFactory parseFactory, ApplicationDbContext db, IMaptoTasks taskMapper)
         {
+            _parserFactory = parseFactory;
             _db = db;
+            _taskMapper = taskMapper;
         }
 
         public async Task<List<AssignUserDTO>> ViewUsers()
@@ -94,48 +98,69 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
         }
 
-        
-        public async Task ProcessExcelFileAsync(IFormFile file)
+
+        //public async Task ProcessExcelFileAsync(IFormFile file)
+        //{
+        //    try
+        //    {
+        //        if (!file.FileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+        //            throw new InvalidDataException("Only .xlsx files are supported.");
+
+        //        using var stream = new MemoryStream();
+        //        await file.CopyToAsync(stream);
+        //        stream.Position = 0;
+
+        //        IWorkbook workbook = new XSSFWorkbook(stream);
+        //        ISheet sheet = workbook.GetSheetAt(0); // First sheet
+
+        //        if (sheet == null || sheet.LastRowNum < 1)
+        //            return;
+
+        //        for (int row = 1; row <= sheet.LastRowNum; row++) // Row 0 = header
+        //        {
+        //            IRow currentRow = sheet.GetRow(row);
+        //            if (currentRow == null) continue;
+
+        //            var taskEntity = new Tasks
+        //            {
+        //                taskName = currentRow.GetCell(0)?.ToString(),
+        //                UserId = int.TryParse(currentRow.GetCell(1)?.ToString(), out var uid) ? uid : 0,
+        //                dueDate = DateTime.TryParse(currentRow.GetCell(2)?.ToString(), out var dt) ? dt : DateTime.MinValue,
+        //                taskDescription = currentRow.GetCell(3)?.ToString(),
+        //                priority = currentRow.GetCell(4)?.ToString()
+        //            };
+
+        //            _db.Task.Add(taskEntity); // Or _db.Tasks.Add(...) based on your DbSet name
+        //        }
+
+        //        await _db.SaveChangesAsync();
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
+
+        //public async Task ProcessFileAsync(IFormFile file)
+        //{
+        //    var parser = _parserFactory.GetParser(file.FileName);
+        //    var tasks = await parser.ParseAsync(file);
+
+        //    _db.Task.AddRange(tasks);
+        //    await _db.SaveChangesAsync();
+        //}
+
+        public async Task ProcessFileAsync(IFormFile file)
         {
-            try
-            {
-                if (!file.FileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
-                    throw new InvalidDataException("Only .xlsx files are supported.");
+            var parser = _parserFactory.GetParser(file.FileName);
+            var rawData = await parser.ParseAsync(file);
 
-                using var stream = new MemoryStream();
-                await file.CopyToAsync(stream);
-                stream.Position = 0;
+            var tasks = _taskMapper.MapToTasks(rawData);
 
-                IWorkbook workbook = new XSSFWorkbook(stream);
-                ISheet sheet = workbook.GetSheetAt(0); // First sheet
-
-                if (sheet == null || sheet.LastRowNum < 1)
-                    return;
-
-                for (int row = 1; row <= sheet.LastRowNum; row++) // Row 0 = header
-                {
-                    IRow currentRow = sheet.GetRow(row);
-                    if (currentRow == null) continue;
-
-                    var taskEntity = new Tasks
-                    {
-                        taskName = currentRow.GetCell(0)?.ToString(),
-                        UserId = int.TryParse(currentRow.GetCell(1)?.ToString(), out var uid) ? uid : 0,
-                        dueDate = DateTime.TryParse(currentRow.GetCell(2)?.ToString(), out var dt) ? dt : DateTime.MinValue,
-                        taskDescription = currentRow.GetCell(3)?.ToString(),
-                        priority = currentRow.GetCell(4)?.ToString()
-                    };
-
-                    _db.Task.Add(taskEntity); // Or _db.Tasks.Add(...) based on your DbSet name
-                }
-
-                await _db.SaveChangesAsync();
-            }
-            catch(Exception ex)
-            {
-                throw;
-            }
+            _db.Task.AddRange(tasks);
+            await _db.SaveChangesAsync();
         }
+
 
         public async Task DeleteTask(int id)
         {
