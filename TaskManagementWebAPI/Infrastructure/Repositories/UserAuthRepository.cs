@@ -1,4 +1,5 @@
-﻿using MathNet.Numerics.RootFinding;
+﻿using LoggingLibrary.Interfaces;
+using MathNet.Numerics.RootFinding;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Tls;
 using TaskManagementWebAPI.Application.DTOs;
@@ -9,9 +10,9 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
     public class UserAuthRepository : IUserAuthRepository
     {
         private readonly HttpClient _httpClient;
-        private readonly ILogger<UserAuthRepository> _logger;
+        private readonly IAppLogger<UserAuthRepository> _logger;
 
-        public UserAuthRepository(HttpClient httpClient, ILogger<UserAuthRepository> logger)
+        public UserAuthRepository(HttpClient httpClient, IAppLogger<UserAuthRepository> logger)
         {
             _httpClient = httpClient;
             _logger = logger;
@@ -34,7 +35,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("LoginAsync-Login faild");
+                _logger.LoggWarning("LoginAsync-Login faild");
                 throw;
             }
         }

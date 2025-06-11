@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LoggingLibrary.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Domain.Interfaces;
@@ -10,8 +11,8 @@ namespace TaskManagementWebAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserAuthRepository _user;
-        private readonly ILogger<AuthController> _logger;
-        public AuthController(IUserAuthRepository user, ILogger<AuthController> logger)
+        private readonly IAppLogger<AuthController> _logger;
+        public AuthController(IUserAuthRepository user, IAppLogger<AuthController> logger)
         {
             _user = user;
             _logger = logger;
@@ -27,7 +28,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("loginAuth API faild");
+                _logger.LoggWarning("loginAuth API faild");
                 throw;
             }
         }
@@ -42,7 +43,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("refresh API faild");
+                _logger.LoggWarning("refresh API faild");
                 throw;
             }
         }

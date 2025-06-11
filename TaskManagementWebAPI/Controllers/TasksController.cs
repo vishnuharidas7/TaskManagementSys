@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LoggingLibrary.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc; 
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Domain.Interfaces;
@@ -10,8 +11,8 @@ namespace TaskManagementWebAPI.Controllers
     public class TasksController : ControllerBase
     {
         private ITaskManagementRepository _user;
-        private readonly ILogger<TasksController> _logger;
-        public TasksController(ITaskManagementRepository user, ILogger<TasksController> logger)
+        private readonly IAppLogger<TasksController> _logger;
+        public TasksController(ITaskManagementRepository user, IAppLogger<TasksController> logger)
         {
             _user = user;
             _logger =logger;
@@ -26,7 +27,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("AssignUser API faild");
+                _logger.LoggWarning("AssignUser API faild");
                 throw;
             }
         }
@@ -41,7 +42,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("ViewAllTasks API faild");
+                _logger.LoggWarning("ViewAllTasks API faild");
                 throw;
             }
         }
@@ -56,7 +57,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("AddTask API faild");
+                _logger.LoggWarning("AddTask API faild");
                 throw;
             }
         }
@@ -71,7 +72,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("UpdateTask API faild");
+                _logger.LoggWarning("UpdateTask API faild");
                 throw;
             }
         }
@@ -90,7 +91,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("upload API faild");
+                _logger.LoggWarning("upload API faild");
                 throw;
             }
         }
@@ -105,7 +106,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("deleteTask API faild");
+                _logger.LoggWarning("deleteTask API faild");
                 throw;
             }
 
@@ -121,7 +122,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning("task API faild");
+                _logger.LoggWarning("task API faild");
                 throw;
             }
         }

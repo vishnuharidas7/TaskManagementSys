@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LoggingLibrary.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -15,10 +16,11 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
     public class TaskManagementRepository : ITaskManagementRepository
     {
         private readonly ApplicationDbContext _db;
-
-        public TaskManagementRepository(ApplicationDbContext db)
+        private readonly IAppLogger<UserAuthRepository> _logger;
+        public TaskManagementRepository(ApplicationDbContext db, IAppLogger<UserAuthRepository> logger)
         {
             _db = db;
+            _logger = logger;
         }
 
         public async Task<List<AssignUserDTO>> ViewUsers()
@@ -39,6 +41,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch(Exception ex)
             {
+                _logger.LoggWarning("ViewUsers-Viewuser faild");
                 throw;
             }
         }
@@ -66,6 +69,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch(Exception ex)
             {
+                _logger.LoggWarning("VieAllTask-ViewAllTask faild");
                 throw;
             }
         }
@@ -90,6 +94,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch(Exception ex)
             {
+                _logger.LoggWarning("AddTask-Save faild");
                 throw;
             }
         }
@@ -133,6 +138,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch(Exception ex)
             {
+                _logger.LoggWarning("ProcessExcelFileAsync-Process faild");
                 throw;
             }
         }
@@ -151,6 +157,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch(Exception ex)
             {
+                _logger.LoggWarning("DeleteTask-Deletion faild");
                 throw;
             }
 
@@ -176,6 +183,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch(Exception ex)
             {
+                _logger.LoggWarning("UpdateTask-Updation faild");
                 throw;
             }
         }
@@ -204,6 +212,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch(Exception ex)
             {
+                _logger.LoggWarning("GetTasksByUserId-Get data faild");
                 throw;
             }
         }

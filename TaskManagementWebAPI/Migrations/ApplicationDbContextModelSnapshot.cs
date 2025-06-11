@@ -3,12 +3,12 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion; 
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TaskManagementWebAPI.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace TaskManagement_Project.Migrations
+namespace TaskManagementWebAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace TaskManagement_Project.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("TaskManagementWebAPI.Models.Roles", b =>
+            modelBuilder.Entity("TaskManagementWebAPI.Domain.Models.Roles", b =>
                 {
                     b.Property<int>("RoleId")
                         .ValueGeneratedOnAdd()
@@ -52,7 +52,7 @@ namespace TaskManagement_Project.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TaskManagementWebAPI.Models.Tasks", b =>
+            modelBuilder.Entity("TaskManagementWebAPI.Domain.Models.Tasks", b =>
                 {
                     b.Property<int>("taskId")
                         .ValueGeneratedOnAdd()
@@ -92,7 +92,7 @@ namespace TaskManagement_Project.Migrations
                     b.ToTable("Task");
                 });
 
-            modelBuilder.Entity("TaskManagementWebAPI.Models.Users", b =>
+            modelBuilder.Entity("TaskManagementWebAPI.Domain.Models.Users", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
@@ -157,9 +157,9 @@ namespace TaskManagement_Project.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("TaskManagementWebAPI.Models.Tasks", b =>
+            modelBuilder.Entity("TaskManagementWebAPI.Domain.Models.Tasks", b =>
                 {
-                    b.HasOne("TaskManagementWebAPI.Models.Users", "User")
+                    b.HasOne("TaskManagementWebAPI.Domain.Models.Users", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -168,9 +168,9 @@ namespace TaskManagement_Project.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TaskManagementWebAPI.Models.Users", b =>
+            modelBuilder.Entity("TaskManagementWebAPI.Domain.Models.Users", b =>
                 {
-                    b.HasOne("TaskManagementWebAPI.Models.Roles", "Role")
+                    b.HasOne("TaskManagementWebAPI.Domain.Models.Roles", "Role")
                         .WithMany("User")
                         .HasForeignKey("RoleID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -179,7 +179,7 @@ namespace TaskManagement_Project.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("TaskManagementWebAPI.Models.Roles", b =>
+            modelBuilder.Entity("TaskManagementWebAPI.Domain.Models.Roles", b =>
                 {
                     b.Navigation("User");
                 });
