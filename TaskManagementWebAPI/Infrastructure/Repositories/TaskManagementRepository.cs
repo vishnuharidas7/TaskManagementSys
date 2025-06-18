@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml.Linq; 
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Domain.Interfaces;
@@ -50,7 +51,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch(Exception ex)
             {
-                _logger.LoggWarning("ViewUsers-Viewuser faild");
+                _logger.LoggWarning("ViewUsers-Viewuser failed");
                 throw;
             }
         }
@@ -78,7 +79,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch(Exception ex)
             {
-                _logger.LoggWarning("VieAllTask-ViewAllTask faild");
+                _logger.LoggWarning("VieAllTask-ViewAllTask failed");
                 throw;
             }
         }
@@ -198,7 +199,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch(Exception ex)
             {
-                _logger.LoggWarning("DeleteTask-Deletion faild");
+                _logger.LoggWarning("DeleteTask-Deletion failed");
                 throw;
             }
 
@@ -277,5 +278,67 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<NotificationDTO>> GetTasksNotificationByUserId(int userId)
+        {
+            try
+            {
+                var tommorowDate = DateTime.Now.AddDays(1);
+                string formatted = tommorowDate.ToString("yyyy-MM-dd HH:mm:ss.ffffff");
+                var parsedDate = DateTime.ParseExact(formatted, "yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
+
+                //string formatted = "2025-06-20 00:00:00.000000";
+                //var parsedDate = DateTime.ParseExact(formatted, "yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
+                var tasks = await _db.Task
+                    .Include(t => t.User)
+                    .Where(t => t.UserId == userId && t.dueDate == parsedDate && (t.taskStatus=="New" || t.taskStatus== "InProgress"))
+                    .Select(t => new NotificationDTO
+                    {
+                        TaskId = t.taskId,
+                        TaskName = t.taskName,
+                        TaskStatus = t.taskStatus,
+                        DueDate = t.dueDate,
+                    })
+                    .ToListAsync();
+
+                return tasks;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("GetTasksNotificationByUserId-Get data failed");
+                throw;
+            }
+        }
+
+        public async Task<List<NotificationDTO>> GetTasksNotificationbByAdmin()
+        {
+            try
+            {
+                var tommorowDate = DateTime.Now.AddDays(1);
+                string formatted = tommorowDate.ToString("yyyy-MM-dd HH:mm:ss.ffffff");
+                var parsedDate = DateTime.ParseExact(formatted, "yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
+
+                //string formatted = "2025-06-20 00:00:00.000000";
+                //var parsedDate = DateTime.ParseExact(formatted, "yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
+                var tasks = await _db.Task
+                    .Include(t => t.User)
+                    .Where(t =>t.dueDate == parsedDate && (t.taskStatus == "New" || t.taskStatus == "InProgress"))
+                    .Select(t => new NotificationDTO
+                    {
+                        TaskId = t.taskId,
+                        TaskName = t.taskName,
+                        TaskStatus = t.taskStatus,
+                        DueDate = t.dueDate,
+                        UserName=t.User.UserName,
+                    })
+                    .ToListAsync();
+
+                return tasks;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("GetTasksNotification-Get data failed");
+                throw;
+            }
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace AuthenticationAPI.Repositories
                 return await _context.User.Include(u => u.Role).FirstOrDefaultAsync(u => u.UserName == dto.UserName && u.IsActive && !u.IsDelete);
             }
             catch (Exception ex) {
-                _logger.LoggWarning("GetActiveUserAsync-get active user faild");
+                _logger.LoggWarning("GetActiveUserAsync-get active user failed");
                 throw;
             }
         }
@@ -36,7 +36,7 @@ namespace AuthenticationAPI.Repositories
                 return await _context.User.Include(u => u.Role).FirstOrDefaultAsync(u => u.UserId == userid);
             }
             catch (Exception ex) {
-                _logger.LoggWarning("GetUserAsync-get user faild");
+                _logger.LoggWarning("GetUserAsync-get user failed");
                 throw;
             }
            

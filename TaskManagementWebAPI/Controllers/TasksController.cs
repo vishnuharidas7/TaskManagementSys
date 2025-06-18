@@ -29,7 +29,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("AssignUser API faild");
+                _logger.LoggWarning("AssignUser API failed");
                 throw;
             }
         }
@@ -45,7 +45,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("ViewAllTasks API faild");
+                _logger.LoggWarning("ViewAllTasks API failed");
                 throw;
             }
         }
@@ -61,7 +61,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("AddTask API faild");
+                _logger.LoggWarning("AddTask API failed");
                 throw;
             }
         }
@@ -77,7 +77,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("UpdateTask API faild");
+                _logger.LoggWarning("UpdateTask API failed");
                 throw;
             }
         }
@@ -97,7 +97,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("upload API faild");
+                _logger.LoggWarning("upload API failed");
                 throw;
             }
         }
@@ -114,7 +114,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("deleteTask API faild");
+                _logger.LoggWarning("deleteTask API failed");
                 throw;
             }
 
@@ -131,7 +131,40 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("task API faild");
+                _logger.LoggWarning("task API failed");
+                throw;
+            }
+        }
+
+
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("taskNotification/{userId:int}")]
+        public async Task<IEnumerable<NotificationDTO>> GetTasksNotificationbByUserId(int userId)
+        {
+            try
+            {
+                var userTask = await _task.GetTasksNotificationByUserId(userId);
+                return userTask;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("task API failed");
+                throw;
+            }
+        }
+
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("taskNotificationAdmin")]
+        public async Task<IEnumerable<NotificationDTO>> GetTasksNotificationbByAdmin()
+        {
+            try
+            {
+                var userTask = await _task.GetTasksNotificationbByAdmin();
+                return userTask;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("task API failed");
                 throw;
             }
         }
