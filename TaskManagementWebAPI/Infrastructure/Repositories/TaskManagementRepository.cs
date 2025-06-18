@@ -20,13 +20,17 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         private readonly IMaptoTasks _taskMapper;
         private readonly ApplicationDbContext _db;
         private readonly IAppLogger<UserAuthRepository> _logger;
+        private readonly IEmailContentBuilder _contentBuilder;
+        private readonly IEmailService _emailService;
 
-        public TaskManagementRepository(ITaskFileParserFactory parseFactory, ApplicationDbContext db, IMaptoTasks taskMapper, IAppLogger<UserAuthRepository> logger)
+        public TaskManagementRepository(ITaskFileParserFactory parseFactory, ApplicationDbContext db, IMaptoTasks taskMapper, IAppLogger<UserAuthRepository> logger, IEmailContentBuilder contentBuilder, IEmailService emailService)
         {
             _parserFactory = parseFactory;
             _db = db;
             _taskMapper = taskMapper;
             _logger = logger;
+            _contentBuilder = contentBuilder;
+            _emailService = emailService;
         }
 
         public async Task<List<AssignUserDTO>> ViewUsers()
@@ -95,8 +99,24 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
                 _db.Task.Add(task);
                 await _db.SaveChangesAsync();
+                var newTaskId = task.taskId;
+                // return user;
 
-                    // return user;
+                var user = await _db.User.FindAsync(dto.UserId);
+                if (user == null)
+                {
+                    _logger.LoggWarning("User not found for ID {UserId}", dto.UserId);
+                    return;
+                }
+                 
+                var userTasks = await _db.Task
+                                         .Where(t => t.taskId == newTaskId)
+                                         .ToListAsync();
+                if (userTasks.Any())
+                {
+                    var content = _contentBuilder.BuildContent(user, userTasks);
+                    await _emailService.SendEmailAsync(user.Email, "New Task Added", content);
+                }
             }
             catch(Exception ex)
             {
@@ -106,66 +126,62 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         }
 
 
-        //public async Task ProcessExcelFileAsync(IFormFile file)
-        //{
-        //    try
-        //    {
-        //        if (!file.FileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
-        //            throw new InvalidDataException("Only .xlsx files are supported.");
-
-        //        using var stream = new MemoryStream();
-        //        await file.CopyToAsync(stream);
-        //        stream.Position = 0;
-
-        //        IWorkbook workbook = new XSSFWorkbook(stream);
-        //        ISheet sheet = workbook.GetSheetAt(0); // First sheet
-
-        //        if (sheet == null || sheet.LastRowNum < 1)
-        //            return;
-
-        //        for (int row = 1; row <= sheet.LastRowNum; row++) // Row 0 = header
-        //        {
-        //            IRow currentRow = sheet.GetRow(row);
-        //            if (currentRow == null) continue;
-
-        //            var taskEntity = new Tasks
-        //            {
-        //                taskName = currentRow.GetCell(0)?.ToString(),
-        //                UserId = int.TryParse(currentRow.GetCell(1)?.ToString(), out var uid) ? uid : 0,
-        //                dueDate = DateTime.TryParse(currentRow.GetCell(2)?.ToString(), out var dt) ? dt : DateTime.MinValue,
-        //                taskDescription = currentRow.GetCell(3)?.ToString(),
-        //                priority = currentRow.GetCell(4)?.ToString()
-        //            };
-
-        //            _db.Task.Add(taskEntity); // Or _db.Tasks.Add(...) based on your DbSet name
-        //        }
-
-        //        await _db.SaveChangesAsync();
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
-
-        //public async Task ProcessFileAsync(IFormFile file)
-        //{
-        //    var parser = _parserFactory.GetParser(file.FileName);
-        //    var tasks = await parser.ParseAsync(file);
-
-        //    _db.Task.AddRange(tasks);
-        //    await _db.SaveChangesAsync();
-        //}
+        
 
         public async Task ProcessFileAsync(IFormFile file)
         {
-            var parser = _parserFactory.GetParser(file.FileName);
-            var rawData = await parser.ParseAsync(file);
+            try
+            {
+                var parser = _parserFactory.GetParser(file.FileName);
+                var rawData = await parser.ParseAsync(file);
 
-            var tasks = _taskMapper.MapToTasks(rawData);
+                var tasks = _taskMapper.MapToTasks(rawData);
 
-            _db.Task.AddRange(tasks);
-            await _db.SaveChangesAsync();
+                var tomorrow = DateTime.Today.AddDays(1);
+
+                var validTasks = tasks
+                    .Where(t => t.dueDate.Date >= tomorrow)
+                    .ToList();
+
+                if (!validTasks.Any())
+                {
+                    // return;
+                    throw new ArgumentException("All task due dates are either today or in the past. Please upload valid tasks.");
+                }
+
+
+                _db.Task.AddRange(tasks);
+                await _db.SaveChangesAsync();
+                var tasksByUser = tasks
+                    .GroupBy(t => t.UserId)
+                    .ToDictionary(g => g.Key, g => g.ToList());
+
+                foreach (var entry in tasksByUser)
+                {
+                    var userId = entry.Key;
+                    var userTasks = entry.Value;
+
+                    var user = await _db.User.FindAsync(userId);
+                    if (user == null)
+                    {
+                        _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
+                        continue;
+                    }
+
+                    var content = _contentBuilder.BuildContent(user, userTasks);
+
+                    await _emailService.SendEmailAsync(
+                        user.Email,
+                        "New Tasks Assigned to You",
+                        content
+                    );
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("File upload failed");
+                throw;
+            }
         }
 
 
@@ -206,6 +222,25 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 task.taskStatus = obj.taskStatus;
 
                 await _db.SaveChangesAsync();
+
+                if(obj.taskStatus == "Completed")
+                {
+                    var user = await _db.User.FindAsync(obj.UserId);
+                    if (user == null)
+                    {
+                        _logger.LoggWarning("User not found for ID {UserId}", obj.UserId);
+                        return;
+                    }
+
+                    var userTasks = await _db.Task
+                                             .Where(t => t.taskId == id)
+                                             .ToListAsync();
+                    if (userTasks.Any())
+                    {
+                        var content = _contentBuilder.BuildContent(user, userTasks);
+                        await _emailService.SendEmailAsync(user.Email, "Task Completed", content);
+                    }
+                }
             }
             catch(Exception ex)
             {

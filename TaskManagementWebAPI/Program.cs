@@ -15,7 +15,10 @@ using System.Text;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Infrastructure.Persistence;
 using TaskManagementWebAPI.Infrastructure.Repositories;
-using TaskManagementWebAPI.Infrastructure.Services;
+using TaskManagementWebAPI.Infrastructure.Services.EmailService;
+using TaskManagementWebAPI.Infrastructure.Services.FileUpload;
+using TaskManagementWebAPI.Infrastructure.Services.TaskOndueUpdate;
+using TaskManagementWebAPI.Infrastructure.Services.TaskStatusUpdateService;
 using TaskManagementWebAPI.Middlewares;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -38,6 +41,36 @@ builder.Services.AddScoped<ExcelTaskFileParser>();
 builder.Services.AddScoped<CsvTaskFileParser>();
 builder.Services.AddScoped<ITaskFileParserFactory, TaskFileParserFactory>();
 builder.Services.AddScoped<IMaptoTasks, MaptoTasks>();
+
+
+//Task Status update to due
+builder.Services.AddScoped<ITaskStatusRepository, TaskStatusRepository>();
+builder.Services.AddScoped<TaskStatusService>();
+builder.Services.AddScoped<TaskApplicationService>();
+builder.Services.AddHostedService<TaskStatusUpdateService>();
+//Ends here.....
+
+//Email Service........
+builder.Services.AddScoped<ITaskEmailRepository, InMemoryTaskRepository>();
+builder.Services.AddScoped<IUserEmailRepository, InMemoryUserRepository>();
+
+builder.Services.AddScoped<ITaskStatusContentBuilder, NewTaskContentBuilder>();
+builder.Services.AddScoped<ITaskStatusContentBuilder, OnDueTaskContentBuilder>();
+builder.Services.AddScoped<ITaskStatusContentBuilder, CompletedTaskContentBuilder>();
+
+builder.Services.AddScoped<IEmailContentBuilder, TaskEmailContentBuilder>();
+
+builder.Services.AddScoped<INewUserEmailContentBuilder, NewUserEmailContentBuilder>();
+
+var config = builder.Configuration;
+builder.Services.AddSingleton(EmailServiceFactory.CreateEmailService(config));
+builder.Services.AddScoped<TaskEmailDispatcher>();
+
+builder.Services.AddHostedService<OverdueTaskEmailWorker>();
+
+builder.Services.AddScoped<GmailSmtpEmailService>();
+// ENDS here.....
+
 
 
 builder.Services.AddControllers();

@@ -12,11 +12,15 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
     {
         private readonly ApplicationDbContext _db;
         private readonly IAppLogger<UserRepository> _logger;
+        private readonly INewUserEmailContentBuilder _userEmailContentBuilder;
+        private readonly IEmailService _emailService;
 
-        public UserRepository(ApplicationDbContext db, IAppLogger<UserRepository> logger)
+        public UserRepository(ApplicationDbContext db, IAppLogger<UserRepository> logger, INewUserEmailContentBuilder userEmailContentBuilder, IEmailService emailService)
         {
             _db = db;
             _logger = logger;
+            _userEmailContentBuilder = userEmailContentBuilder;
+            _emailService = emailService;
         }
 
         public async Task RegisterAsync(RegisterDTO dto)
@@ -40,6 +44,12 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
                 _db.User.Add(user);
                 await _db.SaveChangesAsync();
+                var userId = user.UserId;
+                var password = dto.Password;
+
+                var content = _userEmailContentBuilder.BuildContent(user, userId, password);
+                await _emailService.SendEmailAsync(user.Email, "Welcome to Task Management System – Your Account Details", content);
+
 
                 // return user;
             }
@@ -54,6 +64,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         {
             try
             {
+               
                 var usersWithRoles = await _db.User
                 .Include(u => u.Role)
                 .Select(u => new ViewUserDTO
