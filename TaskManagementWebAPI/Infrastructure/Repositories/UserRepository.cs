@@ -45,7 +45,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("RegisterAsync-Save UserReg faild");
+                _logger.LoggWarning("RegisterAsync-Save UserReg failed");
                 throw;
             }
         }
@@ -74,7 +74,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("ViewUsers- View user faild");
+                _logger.LoggWarning("ViewUsers- View user failed");
                 throw;
             }
         }
@@ -99,7 +99,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("UpdateUser-Update user faild");
+                _logger.LoggWarning("UpdateUser-Update user failed");
                 throw;
             }
         }
@@ -119,7 +119,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("DeleteUser-Delete user faild");
+                _logger.LoggWarning("DeleteUser-Delete user failed");
                 throw;
             }
 

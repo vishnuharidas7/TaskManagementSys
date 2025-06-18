@@ -47,7 +47,7 @@ namespace AuthenticationAPI.Controllers
                 return Ok(token);
             }
             catch (Exception ex) {
-                _logger.LoggWarning("login API faild");
+                _logger.LoggWarning("login API failed");
                 throw;
             }
            
@@ -87,7 +87,7 @@ namespace AuthenticationAPI.Controllers
             }
             catch(Exception ex)
             {
-                _logger.LoggWarning("Refresh API faild");
+                _logger.LoggWarning("Refresh API failed");
                 throw;
             }
            

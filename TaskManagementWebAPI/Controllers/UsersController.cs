@@ -35,7 +35,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("check-username API faild");
+                _logger.LoggWarning("check-username API failed");
                 throw;
             }
         }
@@ -59,7 +59,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("register API faild");
+                _logger.LoggWarning("register API failed");
                 throw;
             }
         }
@@ -76,7 +76,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("viewusers API faild");
+                _logger.LoggWarning("viewusers API failed");
                 throw;
             }
         }
@@ -94,7 +94,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("updateuser API faild");
+                _logger.LoggWarning("updateuser API failed");
                 throw;
             }
         }
@@ -110,7 +110,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("deleteUser API faild");
+                _logger.LoggWarning("deleteUser API failed");
                 throw;
             }
 
