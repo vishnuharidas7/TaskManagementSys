@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Infrastructure.Persistence;
@@ -71,6 +72,15 @@ namespace TaskManagementWebAPI.Controllers
         {
             try
             {
+                string authHeader = Request.Headers["Authorization"];
+                if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+                {
+                    string token = authHeader.Substring("Bearer ".Length).Trim('"');
+                    Console.WriteLine("🔐 Raw Token: " + token);
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwtToken = handler.ReadJwtToken(token);
+                }
+
                 var allUser = await _user.ViewUsers();
                 return Ok(allUser);
             }

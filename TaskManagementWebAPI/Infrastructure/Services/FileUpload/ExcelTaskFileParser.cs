@@ -3,7 +3,7 @@ using NPOI.XSSF.UserModel;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models;
 
-namespace TaskManagementWebAPI.Infrastructure.Services
+namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
 {
 
         public class ExcelTaskFileParser : ITaskFileParser
