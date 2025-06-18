@@ -1,6 +1,6 @@
 ﻿using TaskManagementWebAPI.Domain.Interfaces;
 
-namespace TaskManagementWebAPI.Infrastructure.Services
+namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
 {
     public class TaskFileParserFactory : ITaskFileParserFactory
     {
