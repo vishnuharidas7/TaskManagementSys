@@ -10,9 +10,13 @@ namespace TaskManagementWebAPI.Infrastructure.Services.TaskStatusUpdateService
             foreach (var task in tasks)
             {
                 var daysUntilDue = (task.dueDate - today).Days;
-                if (daysUntilDue <= 2 && daysUntilDue >= 0)
+                if (daysUntilDue <= 2 && daysUntilDue >= 0 && task.taskStatus != "Completed")
                 {
-                    task.UpdateStatusToOnDue();
+                    task.UpdateStateToDue();
+                }
+                if (daysUntilDue < 0 && task.taskStatus != "Completed")
+                {
+                    task.UpdateStateToOverDue();
                 }
             }
         }

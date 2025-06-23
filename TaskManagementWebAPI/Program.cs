@@ -57,6 +57,8 @@ builder.Services.AddScoped<IUserEmailRepository, InMemoryUserRepository>();
 builder.Services.AddScoped<ITaskStatusContentBuilder, NewTaskContentBuilder>();
 builder.Services.AddScoped<ITaskStatusContentBuilder, OnDueTaskContentBuilder>();
 builder.Services.AddScoped<ITaskStatusContentBuilder, CompletedTaskContentBuilder>();
+builder.Services.AddScoped<ITaskStatusContentBuilder, OverDueTaskContentBuilder>();
+
 
 builder.Services.AddScoped<IEmailContentBuilder, TaskEmailContentBuilder>();
 

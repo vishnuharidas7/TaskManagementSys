@@ -18,11 +18,11 @@ namespace TaskManagementWebAPI.Infrastructure.Services.EmailService
             var sb = new StringBuilder();
             sb.AppendLine($"Hey {user.Name},\n");
 
-            var grouped = tasks.GroupBy(t => t.taskStatus);
+            var grouped = tasks.GroupBy(t => t.taskState);
 
             foreach (var group in grouped)
             {
-                var builder = _statusBuilders.FirstOrDefault(b => b.taskStatus == group.Key);
+                var builder = _statusBuilders.FirstOrDefault(b =>  b.taskState == group.Key);
                 if (builder != null)
                 {
                     sb.AppendLine(builder.BuildSection(group));

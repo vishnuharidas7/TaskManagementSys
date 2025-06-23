@@ -93,7 +93,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                    taskDescription = dto.taskDescription,
                    UserId = dto.UserId,
                    dueDate = dto.dueDate,
-                   priority = dto.priority
+                   priority = dto.priority,
+                   createdBy = dto.createdBy
                    //taskStatus = dto.taskStatus
                 };
 
@@ -220,21 +221,28 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 task.dueDate = obj.dueDate;
                 task.taskDescription = obj.taskDescription;
                 task.taskStatus = obj.taskStatus;
-
+                if (obj.taskStatus == "Completed")
+                {
+                    task.taskState = obj.taskStatus;
+                }
                 await _db.SaveChangesAsync();
 
                 if(obj.taskStatus == "Completed")
                 {
-                    var user = await _db.User.FindAsync(obj.UserId);
-                    if (user == null)
-                    {
-                        _logger.LoggWarning("User not found for ID {UserId}", obj.UserId);
-                        return;
-                    }
+                    //var user = await _db.User.FindAsync(obj.UserId);
+
+                    //if (user == null)
+                    //{
+                    //    _logger.LoggWarning("User not found for ID {UserId}", obj.UserId);
+                    //    return;
+                    //}
 
                     var userTasks = await _db.Task
                                              .Where(t => t.taskId == id)
                                              .ToListAsync();
+
+                    var user = await _db.User.FindAsync(task.createdBy);
+
                     if (userTasks.Any())
                     {
                         var content = _contentBuilder.BuildContent(user, userTasks);
