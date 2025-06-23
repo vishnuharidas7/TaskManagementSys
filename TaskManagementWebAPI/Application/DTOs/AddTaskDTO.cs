@@ -16,5 +16,7 @@
         public string taskStatus { get; set; }
 
         public string userName { get; set; }
+
+        public int createdBy { get; set; }
     }
 }

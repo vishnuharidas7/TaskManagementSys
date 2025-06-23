@@ -4,7 +4,7 @@ namespace TaskManagementWebAPI.Domain.Interfaces
 {
     public interface ITaskStatusContentBuilder
     {
-        string taskStatus { get; }
+        string taskState { get; }
         string BuildSection(IEnumerable<Tasks> tasks);
     }
 }

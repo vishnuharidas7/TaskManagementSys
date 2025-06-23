@@ -6,7 +6,7 @@ namespace TaskManagementWebAPI.Infrastructure.Services.EmailService
 {
     public class NewTaskContentBuilder : ITaskStatusContentBuilder
     {
-        public string taskStatus => "New";
+        public string taskState => "New";
 
         public string BuildSection(IEnumerable<Tasks> tasks)
         {
@@ -14,7 +14,7 @@ namespace TaskManagementWebAPI.Infrastructure.Services.EmailService
             sb.AppendLine("🆕 New Tasks Assigned:");
 
             foreach (var task in tasks)
-                sb.AppendLine($" - {task.taskName}" +
+                sb.AppendLine($" - Task ID: {task.taskId} +  {task.taskName}" +
                     $" (Due: {task.dueDate:MM/dd/yyyy}) " +
                     $"(Priotity: {task.priority})");
 
