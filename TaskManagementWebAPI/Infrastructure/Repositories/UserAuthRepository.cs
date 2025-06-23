@@ -35,7 +35,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("LoginAsync-Login faild");
+                _logger.LoggWarning("LoginAsync-Login failed");
                 throw;
             }
         }

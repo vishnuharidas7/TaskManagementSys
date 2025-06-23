@@ -58,7 +58,7 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
                 return accessToken;
             }
             catch (Exception ex) {
-                _logger.LoggWarning("GenerateAccessToken faild");
+                _logger.LoggWarning("GenerateAccessToken failed");
                 throw;
             }
            
@@ -92,7 +92,7 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
             }
            catch(Exception ex)
             {
-                _logger.LoggWarning("GenerateRefreshToken faild");
+                _logger.LoggWarning("GenerateRefreshToken failed");
                 throw;
             }
         }

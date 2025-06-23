@@ -48,7 +48,7 @@ namespace AuthenticationAPI.Services
                 };
             }
             catch (Exception ex) {
-                _logger.LoggWarning("LoginAsync faild");
+                _logger.LoggWarning("LoginAsync failed");
                 throw;
             }
             

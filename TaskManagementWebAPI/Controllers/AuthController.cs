@@ -28,7 +28,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("loginAuth API faild");
+                _logger.LoggWarning("loginAuth API failed");
                 throw;
             }
         }
@@ -43,7 +43,7 @@ namespace TaskManagementWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("refresh API faild");
+                _logger.LoggWarning("refresh API failed");
                 throw;
             }
         }
