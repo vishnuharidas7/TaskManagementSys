@@ -1,4 +1,5 @@
-﻿using TaskManagementWebAPI.Application.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Domain.Interfaces
@@ -12,5 +13,7 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         Task UpdateUser(int id, UpdateUserDTO obj);
 
         Task DeleteUser(int id);
+
+        Task<ViewUserDTO?> UserListById(int id);
     }
 }

@@ -125,5 +125,21 @@ namespace TaskManagementWebAPI.Controllers
             }
 
         }
+
+        [Authorize(Roles = "Admin,User")]
+        [HttpGet("viewusersByid/{id}")]
+        public async Task<ActionResult> UserListById(int id)
+        {
+            try
+            {
+                var userById = await _user.UserListById(id);
+                return Ok(userById);
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("viewusers API failed");
+                throw;
+            }
+        }
     }
 }

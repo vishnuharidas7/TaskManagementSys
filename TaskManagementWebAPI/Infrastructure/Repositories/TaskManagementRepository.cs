@@ -282,15 +282,11 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         {
             try
             {
-                var tommorowDate = DateTime.Now.AddDays(1);
-                string formatted = tommorowDate.ToString("yyyy-MM-dd HH:mm:ss.ffffff");
-                var parsedDate = DateTime.ParseExact(formatted, "yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
-
-                //string formatted = "2025-06-20 00:00:00.000000";
-                //var parsedDate = DateTime.ParseExact(formatted, "yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
+                var today = DateTime.Now;
                 var tasks = await _db.Task
                     .Include(t => t.User)
-                    .Where(t => t.UserId == userId && t.dueDate == parsedDate && (t.taskStatus=="New" || t.taskStatus== "InProgress"))
+                    .Where(t => t.UserId == userId && 
+                    t.dueDate<= today.AddDays(2) && t.taskStatus=="OnDue")
                     .Select(t => new NotificationDTO
                     {
                         TaskId = t.taskId,
@@ -313,24 +309,22 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         {
             try
             {
-                var tommorowDate = DateTime.Now.AddDays(1);
-                string formatted = tommorowDate.ToString("yyyy-MM-dd HH:mm:ss.ffffff");
-                var parsedDate = DateTime.ParseExact(formatted, "yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
-
-                //string formatted = "2025-06-20 00:00:00.000000";
-                //var parsedDate = DateTime.ParseExact(formatted, "yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture);
+                var today = DateTime.Now;
                 var tasks = await _db.Task
-                    .Include(t => t.User)
-                    .Where(t =>t.dueDate == parsedDate && (t.taskStatus == "New" || t.taskStatus == "InProgress"))
-                    .Select(t => new NotificationDTO
-                    {
-                        TaskId = t.taskId,
-                        TaskName = t.taskName,
-                        TaskStatus = t.taskStatus,
-                        DueDate = t.dueDate,
-                        UserName=t.User.UserName,
-                    })
-                    .ToListAsync();
+            .Include(t => t.User)
+            .Where(t =>
+                t.taskStatus == "OnDue" &&
+                t.dueDate <= today.AddDays(2))
+            .Select(t => new NotificationDTO
+            {
+                TaskId = t.taskId,
+                TaskName = t.taskName,
+                TaskStatus = t.taskStatus,
+                DueDate = t.dueDate,
+                UserName = t.User.UserName,
+            })
+            .ToListAsync();
+
 
                 return tasks;
             }
