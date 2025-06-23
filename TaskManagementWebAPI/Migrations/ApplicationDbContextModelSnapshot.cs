@@ -63,6 +63,9 @@ namespace TaskManagementWebAPI.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<int>("createdBy")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("createdDate")
                         .HasColumnType("datetime(6)");
 
@@ -78,6 +81,10 @@ namespace TaskManagementWebAPI.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("taskName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("taskState")
                         .IsRequired()
                         .HasColumnType("longtext");
 

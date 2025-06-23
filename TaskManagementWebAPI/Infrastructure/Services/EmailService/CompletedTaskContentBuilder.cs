@@ -6,7 +6,7 @@ namespace TaskManagementWebAPI.Infrastructure.Services.EmailService
 {
     public class CompletedTaskContentBuilder : ITaskStatusContentBuilder
     {
-        public string taskStatus => "Completed";
+        public string taskState => "Completed";
 
         public string BuildSection(IEnumerable<Tasks> tasks)
         {

@@ -19,13 +19,12 @@ namespace TaskManagementWebAPI.Infrastructure.Services.EmailService
             sb.AppendLine($"Hey {user.Name},\n");
 
             sb.AppendLine("Welcome to Task Management System! Your account has been created successfully\n");
-            sb.AppendLine("Your login credentials : \n");
-            sb.AppendLine($"Employee ID: {userId}\n");
+            sb.AppendLine("Your login credentials : \n"); 
+
             sb.AppendLine($"Username: {user.UserName}\n");
             sb.AppendLine($"Email: {user.Email}\n");
             sb.AppendLine($"password: {Password}\n");
-
-            sb.AppendLine("🔒 Note: Your User ID and Employee ID are the same in our system. If you're ever asked to provide your User ID, you can use your Employee ID.\n");
+             
 
             sb.AppendLine("For security reasons, please update your password once you've signed in.\n");
 

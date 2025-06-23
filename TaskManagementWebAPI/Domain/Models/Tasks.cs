@@ -27,9 +27,18 @@ namespace TaskManagementWebAPI.Domain.Models
 
         public string priority { get; set; }
 
-        public void UpdateStatusToOnDue()
+        public int createdBy { get; set; }
+
+        public string taskState { get; set; } = "New";
+
+        public void UpdateStateToDue()
         {
-            taskStatus = "OnDue";
+            taskState = "Due";
+        }
+
+        public void UpdateStateToOverDue()
+        {
+            taskState = "OverDue";
         }
 
     }
