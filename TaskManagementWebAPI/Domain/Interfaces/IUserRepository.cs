@@ -15,5 +15,7 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         Task DeleteUser(int id);
 
         Task<ViewUserDTO?> UserListById(int id);
+
+        Task UpdatePassword(int id, UpdatePasswordDTO obj);
     }
 }

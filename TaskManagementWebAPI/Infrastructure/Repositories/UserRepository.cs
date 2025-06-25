@@ -1,4 +1,5 @@
 ﻿using LoggingLibrary.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; 
 using TaskManagementWebAPI.Application.DTOs;
@@ -77,7 +78,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     Gender = u.gender,
                     RoleId = u.RoleID,
                     RoleName = u.Role.RoleName,
-                    Status = u.IsActive
+                    Status = u.IsActive,
+                    //Password=u.Password
                 })
                 .ToListAsync();
 
@@ -162,6 +164,39 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             catch (Exception ex)
             {
                 _logger.LoggWarning("ViewUserById - fetching user failed");
+                throw;
+            }
+        }
+
+        public async Task UpdatePassword(int id, UpdatePasswordDTO obj)
+        {
+            try
+            {
+                if (obj.newpswd != obj.confrmNewpswd)
+                {
+                    throw new Exception("New password and confirmation do not match.");
+                }
+                var user = await _db.User.FindAsync(id);
+                if (user == null)
+                {
+                    _logger.LoggWarning("UpdatePassword-User not found");
+                    throw new Exception("User not found");
+                }
+
+                if (!BCrypt.Net.BCrypt.Verify(obj.curpswd,user.Password))
+                {
+                    _logger.LoggWarning("Current password is incorrect");
+                    throw new Exception("Current password is incorrect");
+                }
+
+                user.Password = BCrypt.Net.BCrypt.HashPassword(obj.confrmNewpswd);
+                await _db.SaveChangesAsync();
+               
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("UpdatePassword-Update password failed");
                 throw;
             }
         }

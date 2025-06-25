@@ -141,5 +141,21 @@ namespace TaskManagementWebAPI.Controllers
                 throw;
             }
         }
+
+        [Authorize(Roles = "Admin,User")]
+        [HttpPut("updatePswd/{id}")]
+        public async Task<ActionResult>UpdatePassword(int id,UpdatePasswordDTO obj)
+        {
+            try
+            {
+                await _user.UpdatePassword(id, obj);
+                return Ok(obj);
+            }
+            catch
+            {
+                _logger.LoggWarning("updatPassword API failed");
+                throw;
+            }
+        }
     }
 }
