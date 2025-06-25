@@ -1,5 +1,6 @@
 ﻿using LoggingLibrary.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Domain.Interfaces;
@@ -12,10 +13,12 @@ namespace TaskManagementWebAPI.Controllers
     {
         private readonly IUserAuthRepository _user;
         private readonly IAppLogger<AuthController> _logger;
-        public AuthController(IUserAuthRepository user, IAppLogger<AuthController> logger)
+        private readonly IForgotPasswordHandler _forgotPasswordHandler;
+        public AuthController(IUserAuthRepository user, IAppLogger<AuthController> logger, IForgotPasswordHandler forgotPasswordHandler)
         {
             _user = user;
             _logger = logger;
+            _forgotPasswordHandler = forgotPasswordHandler;
         }
 
         [HttpPost("loginAuth")]
@@ -44,6 +47,27 @@ namespace TaskManagementWebAPI.Controllers
             catch (Exception ex)
             {
                 _logger.LoggWarning("refresh API failed");
+                throw;
+            }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            try
+            {
+                var user = await _forgotPasswordHandler.HandleAsync(request);
+
+                if (user == null)
+                {
+                    return NotFound(new { Error = "User with provided email does not exist." });
+                }
+
+                return Ok(new { Message = "New credentials has been sent to the provided Email." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("forgot password API failed");
                 throw;
             }
         }

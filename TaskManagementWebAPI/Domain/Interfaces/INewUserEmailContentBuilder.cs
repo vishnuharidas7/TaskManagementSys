@@ -4,6 +4,8 @@ namespace TaskManagementWebAPI.Domain.Interfaces
 {
     public interface INewUserEmailContentBuilder
     {
-        string BuildContent(Users user, int userId, string Password);
+        string BuildContentforNewUser(Users user, int userId, string Password);
+
+        string BuildContentforPasswordReset(Users user, int userId, string NewPassword);
     }
 }

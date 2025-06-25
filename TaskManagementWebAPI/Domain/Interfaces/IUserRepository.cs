@@ -10,6 +10,8 @@ namespace TaskManagementWebAPI.Domain.Interfaces
 
         Task<List<ViewUserDTO>> ViewUsers();
 
+        Task<Users?> ForgotPassword(string email);
+
         Task UpdateUser(int id, UpdateUserDTO obj);
 
         Task DeleteUser(int id);
