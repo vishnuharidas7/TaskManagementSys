@@ -47,7 +47,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 var userId = user.UserId;
                 var password = dto.Password;
 
-                var content = _userEmailContentBuilder.BuildContent(user, userId, password);
+                var content = _userEmailContentBuilder.BuildContentforNewUser(user, userId, password);
                 await _emailService.SendEmailAsync(user.Email, "Welcome to Task Management System – Your Account Details", content);
 
 
@@ -86,6 +86,56 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             catch (Exception ex)
             {
                 _logger.LoggWarning("ViewUsers- View user failed");
+                throw;
+            }
+        }
+
+        public async Task<Users?> ForgotPassword(string email)
+        {
+            try
+            {
+
+                var user = await _db.User.Where(u => u.Email == email).FirstOrDefaultAsync();
+
+                if (user != null)
+                {
+                    string newPassword = GenerateRandomPassword(8);
+                    string hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);//_passwordHasher.Hash(newPassword);
+
+                    user.UpdatePassword(hashedPassword); // use domain method to update
+                    await _db.SaveChangesAsync();
+                    var content = _userEmailContentBuilder.BuildContentforPasswordReset(user, user.UserId, newPassword);
+                    await _emailService.SendEmailAsync(user.Email, "Reset Password – Your Account Details", content);
+
+                    return user;
+                }
+                //else 
+                //{
+                //    //throw new Exception("User not found"); 
+                //    return BadRequest(new { Error = "User with provided details does not exist." });
+                //}
+                else return user;
+
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("ViewUser for password resert - View user failed");
+                throw;
+            }
+        }
+
+        private string GenerateRandomPassword(int length)
+        {
+            try { 
+                const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+                var random = new Random();
+                return new string(Enumerable.Repeat(chars, length)
+                    .Select(s => s[random.Next(s.Length)]).ToArray());
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("ViewUser for password resert - View user failed");
                 throw;
             }
         }

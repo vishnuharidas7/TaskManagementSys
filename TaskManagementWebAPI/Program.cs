@@ -71,6 +71,8 @@ builder.Services.AddScoped<TaskEmailDispatcher>();
 builder.Services.AddHostedService<OverdueTaskEmailWorker>();
 
 builder.Services.AddScoped<GmailSmtpEmailService>();
+
+builder.Services.AddScoped<IForgotPasswordHandler, ForgotPasswordHandler>();
 // ENDS here.....
 
 
