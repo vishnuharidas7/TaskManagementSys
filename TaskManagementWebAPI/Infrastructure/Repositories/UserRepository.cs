@@ -154,6 +154,10 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 user.UserName = obj.UserName;
                 user.Email = obj.Email;
                 user.RoleID = obj.RoleID;
+                user.Name = obj.Name;
+                user.PhoneNumber = obj.PhoneNumber;  
+                user.Password =BCrypt.Net.BCrypt.HashPassword(obj.Password);
+                user.gender = obj.Gender;
                 // user.IsActive = obj.IsActive;
 
                 await _db.SaveChangesAsync();
@@ -184,6 +188,32 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 throw;
             }
 
+        }
+
+        public async Task<ViewUserDTO?> UserListById(int id)
+        {
+            try
+            {
+                var userWithId=await _db.User
+                    .Include(u=>u.Role)
+                    .Where(u=>u.UserId == id)
+                    .Select(u=>new ViewUserDTO()
+                    {
+                        UserName=u.UserName,
+                        Email=u.Email,
+                        Name=u.Name,
+                        PhoneNumber=u.PhoneNumber,
+                        Password=u.Password,
+                        Gender=u.gender
+                    }).FirstOrDefaultAsync();
+                return userWithId;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("ViewUserById - fetching user failed");
+                throw;
+            }
         }
     }
 }
