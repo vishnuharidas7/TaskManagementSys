@@ -50,5 +50,13 @@ namespace TaskManagementWebAPI.Domain.Models
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
 
+        public void UpdatePassword(string newHashedPassword)
+        {
+            if (string.IsNullOrWhiteSpace(newHashedPassword))
+                throw new ArgumentException("Password cannot be empty.", nameof(newHashedPassword));
+
+            Password = newHashedPassword;
+        }
+
     }
 }
