@@ -14,7 +14,7 @@ namespace TaskManagementWebAPI.Infrastructure.Services.EmailService
             sb.AppendLine("🆕 New Tasks Assigned:");
 
             foreach (var task in tasks)
-                sb.AppendLine($" - Task ID: {task.taskId} +  {task.taskName}" +
+                sb.AppendLine($" - Task ID: {task.taskId} + {task.taskType} +  {task.taskName}" +
                     $" (Due: {task.dueDate:MM/dd/yyyy}) " +
                     $"(Priotity: {task.priority})");
 
