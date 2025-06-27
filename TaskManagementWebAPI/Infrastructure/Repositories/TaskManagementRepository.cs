@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
 using System.Globalization;
 using System.Xml.Linq; 
 using TaskManagementWebAPI.Application.DTOs;
@@ -22,8 +24,14 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         private readonly IAppLogger<UserAuthRepository> _logger;
         private readonly IEmailContentBuilder _contentBuilder;
         private readonly IEmailService _emailService;
+        private readonly ITaskUploadDapperRepository _dapper;
+        private readonly IDbConnection _connection;
+        private readonly IConfiguration _configuration;
 
-        public TaskManagementRepository(ITaskFileParserFactory parseFactory, ApplicationDbContext db, IMaptoTasks taskMapper, IAppLogger<UserAuthRepository> logger, IEmailContentBuilder contentBuilder, IEmailService emailService)
+        public TaskManagementRepository(ITaskFileParserFactory parseFactory, ApplicationDbContext db,
+            IMaptoTasks taskMapper, IAppLogger<UserAuthRepository> logger,
+            IEmailContentBuilder contentBuilder, IEmailService emailService,
+            ITaskUploadDapperRepository dapper, IDbConnection connection, IConfiguration configuration)
         {
             _parserFactory = parseFactory;
             _db = db;
@@ -31,6 +39,9 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             _logger = logger;
             _contentBuilder = contentBuilder;
             _emailService = emailService;
+            _dapper = dapper;
+            _connection = connection;
+            _configuration = configuration;
         }
 
         public async Task<List<AssignUserDTO>> ViewUsers()
@@ -71,7 +82,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     dueDate = u.dueDate,
                     taskDescription = u.taskDescription,
                     taskStatus = u.taskStatus,
-                    priority = u.priority
+                    priority = u.priority,
+                    taskType = u.taskType
                 })
                 .ToListAsync();
 
@@ -94,7 +106,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                    UserId = dto.UserId,
                    dueDate = dto.dueDate,
                    priority = dto.priority,
-                   createdBy = dto.createdBy
+                   createdBy = dto.createdBy,
+                   taskType = dto.taskType
                    //taskStatus = dto.taskStatus
                 };
 
@@ -127,8 +140,114 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         }
 
 
-        
 
+
+        //public async Task ProcessFileAsync(IFormFile file)
+        //{
+        //    try
+        //    {
+        //        var parser = _parserFactory.GetParser(file.FileName);
+        //        var rawData = await parser.ParseAsync(file);
+
+        //        var tasks = _taskMapper.MapToTasks(rawData);
+
+        //        var tomorrow = DateTime.Today.AddDays(1);
+
+        //        var validTasks = tasks
+        //            .Where(t => t.dueDate.Date >= tomorrow)
+        //            .ToList();
+
+        //        if (!validTasks.Any())
+        //        {
+        //            // return;
+        //            throw new ArgumentException("All task due dates are either today or in the past. Please upload valid tasks.");
+        //        }
+
+        //        var useDapper = _configuration.GetValue<bool>("UseDapper:UseDapper");
+        //        if(useDapper)
+        //        {
+        //            _connection.Open();
+        //            using var transaction = _connection.BeginTransaction();
+        //            try
+        //            {
+        //                await _dapper.InsertTasksAsync(validTasks, transaction);
+        //                transaction.Commit();
+
+
+        //            }
+        //            catch
+        //            {
+        //                transaction.Rollback();
+        //                throw;
+        //            }
+        //            finally
+        //            {
+        //                transaction.Dispose();
+        //                _connection.Close();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            _db.Task.AddRange(tasks);
+        //            await _db.SaveChangesAsync();
+        //        }
+
+        //        var tasksByUser = tasks
+        //            .GroupBy(t => t.UserId)
+        //            .ToDictionary(g => g.Key, g => g.ToList());
+
+        //        foreach (var entry in tasksByUser)
+        //        {
+        //            var userId = entry.Key;
+        //            var userTasks = entry.Value;
+
+        //            Users? user = null;
+
+        //            if (useDapper)
+        //            {
+        //                _connection.Open();
+        //              using var transaction = _connection.BeginTransaction();
+        //                try
+        //                {
+        //                    user = await _dapper.GetUserByIdAsync(userId, transaction);
+        //                }
+        //                catch
+        //                {
+        //                    _connection.Close();
+        //                    throw;
+        //                }
+        //                finally
+        //                {
+        //                    _connection.Close();
+        //                }
+
+        //            }
+        //            else
+        //            {
+        //                 user = await _db.User.FindAsync(userId);
+        //            }
+
+        //            if (user == null)
+        //            {
+        //                _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
+        //                continue;
+        //            }
+
+        //            var content = _contentBuilder.BuildContent(user, userTasks);
+
+        //            await _emailService.SendEmailAsync(
+        //                user.Email,
+        //                "New Tasks Assigned to You",
+        //                content
+        //            );
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LoggWarning("File upload failed");
+        //        throw;
+        //    }
+        //}
         public async Task ProcessFileAsync(IFormFile file)
         {
             try
@@ -146,36 +265,92 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
                 if (!validTasks.Any())
                 {
-                    // return;
                     throw new ArgumentException("All task due dates are either today or in the past. Please upload valid tasks.");
                 }
 
+                var useDapper = _configuration.GetValue<bool>("UseDapper:UseDapper");
 
-                _db.Task.AddRange(tasks);
-                await _db.SaveChangesAsync();
-                var tasksByUser = tasks
-                    .GroupBy(t => t.UserId)
-                    .ToDictionary(g => g.Key, g => g.ToList());
-
-                foreach (var entry in tasksByUser)
+                if (useDapper)
                 {
-                    var userId = entry.Key;
-                    var userTasks = entry.Value;
-
-                    var user = await _db.User.FindAsync(userId);
-                    if (user == null)
+                    // --- DAPPER BLOCK ---
+                    _connection.Open();
+                    using var transaction = _connection.BeginTransaction();
+                    try
                     {
-                        _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
-                        continue;
+                        await _dapper.InsertTasksAsync(validTasks, transaction);
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                    finally
+                    {
+                        _connection.Close();
                     }
 
-                    var content = _contentBuilder.BuildContent(user, userTasks);
+                    var tasksByUser = validTasks
+                        .GroupBy(t => t.UserId)
+                        .ToDictionary(g => g.Key, g => g.ToList());
 
-                    await _emailService.SendEmailAsync(
-                        user.Email,
-                        "New Tasks Assigned to You",
-                        content
-                    );
+                    _connection.Open(); 
+
+                    foreach (var entry in tasksByUser)
+                    {
+                        var userId = entry.Key;
+                        var userTasks = entry.Value;
+
+                        Users? user = null;
+
+                        try
+                        { 
+                            user = await _dapper.GetUserByIdAsync(userId, null);
+                           
+                        }
+                        catch
+                        {
+                            _connection.Close();
+                            throw;
+                        } 
+
+                        if (user == null)
+                        {
+                            _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
+                            continue;
+                        }
+
+                        var content = _contentBuilder.BuildContent(user, userTasks);
+                        await _emailService.SendEmailAsync(user.Email, "New Tasks Assigned to You", content);
+                    }
+                  
+                    _connection.Close();
+                }
+                else
+                {
+                    // --- EF CORE BLOCK ---
+                    _db.Task.AddRange(validTasks);
+                    await _db.SaveChangesAsync();
+
+                    var tasksByUser = validTasks
+                        .GroupBy(t => t.UserId)
+                        .ToDictionary(g => g.Key, g => g.ToList());
+
+                    foreach (var entry in tasksByUser)
+                    {
+                        var userId = entry.Key;
+                        var userTasks = entry.Value;
+
+                        var user = await _db.User.FindAsync(userId);
+                        if (user == null)
+                        {
+                            _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
+                            continue;
+                        }
+
+                        var content = _contentBuilder.BuildContent(user, userTasks);
+                        await _emailService.SendEmailAsync(user.Email, "New Tasks Assigned to You", content);
+                    }
                 }
             }
             catch (Exception ex)
@@ -221,6 +396,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 task.dueDate = obj.dueDate;
                 task.taskDescription = obj.taskDescription;
                 task.taskStatus = obj.taskStatus;
+                task.taskType = obj.taskType;
                 if (obj.taskStatus == "Completed")
                 {
                     task.taskState = obj.taskStatus;
