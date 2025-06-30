@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Data;
 using System.Reflection;
 using System.Text;
 using TaskManagementWebAPI.Domain.Interfaces;
@@ -38,17 +39,25 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITaskManagementRepository, TaskManagementRepository>();
 builder.Services.AddHttpClient<IUserAuthRepository, UserAuthRepository>();
 
+//File Upload
 builder.Services.AddScoped<ExcelTaskFileParser>();
 builder.Services.AddScoped<CsvTaskFileParser>();
 builder.Services.AddScoped<ITaskFileParserFactory, TaskFileParserFactory>();
 builder.Services.AddScoped<IMaptoTasks, MaptoTasks>();
-
+builder.Services.AddScoped<IDapperConnectionFactory, DapperConnectionFactory>();
+builder.Services.AddScoped<IDbConnection>(sp =>
+{
+    var factory = sp.GetRequiredService<IDapperConnectionFactory>();
+    return factory.CreateConnection();
+});
+//Ends here
 
 //Task Status update to due
 builder.Services.AddScoped<ITaskStatusRepository, TaskStatusRepository>();
 builder.Services.AddScoped<TaskStatusService>();
 builder.Services.AddScoped<TaskApplicationService>();
 builder.Services.AddHostedService<TaskStatusUpdateService>();
+builder.Services.AddScoped<ITaskUploadDapperRepository, TaskUploadDapperRepository>();
 //Ends here.....
 
 //Email Service........

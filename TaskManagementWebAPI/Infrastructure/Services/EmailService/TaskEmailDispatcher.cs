@@ -26,7 +26,7 @@ namespace TaskManagementWebAPI.Infrastructure.Services.EmailService
             foreach (var user in _userRepo.GetAllUsers())
             {
                 var tasks = _taskRepo.GetTasksByUserId(user.UserId)
-                    .Where(t => t.taskState == "Due" || t.taskState== "OverDue")
+                    .Where(t => (t.taskState == "Due" || t.taskState== "OverDue") && t.taskStatus != "Completed")
                     .ToList();
 
                 if (tasks.Any())

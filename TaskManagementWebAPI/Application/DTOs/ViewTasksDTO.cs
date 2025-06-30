@@ -13,6 +13,7 @@
         public string taskStatus { get; set; }
 
         public string priority { get; set; }
+        public string taskType { get; set; }
 
     }
 }

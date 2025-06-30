@@ -13,8 +13,9 @@ namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
             {
                 tasks.Add(new Tasks
                 {
+                    taskType = row.TryGetValue("TaskType", out var tt) ? tt?.ToString() : null,
                     taskName = row.TryGetValue("TaskName", out var tn) ? tn?.ToString() : null,
-                    UserId = row.TryGetValue("UserId", out var uid) && int.TryParse(uid?.ToString(), out var id) ? id : 0,
+                    UserId = row.TryGetValue("AssignedTo", out var uid) && int.TryParse(uid?.ToString(), out var id) ? id : 0,
                     dueDate = row.TryGetValue("DueDate", out var dd) && DateTime.TryParse(dd?.ToString(), out var dt) ? dt : DateTime.MinValue,
                     taskDescription = row.TryGetValue("Description", out var desc) ? desc?.ToString() : null,
                     priority = row.TryGetValue("Priority", out var prio) ? prio?.ToString() : null,

@@ -14,7 +14,7 @@ namespace TaskManagementWebAPI.Infrastructure.Services.EmailService
             sb.AppendLine("✅ Completed Tasks:");
 
             foreach (var task in tasks)
-                sb.AppendLine($" - {task.taskName} (Due: {task.dueDate:MM/dd/yyyy})");
+                sb.AppendLine($" - {task.taskType} {task.taskName} (Due: {task.dueDate:MM/dd/yyyy})");
 
             sb.AppendLine();
             return sb.ToString();
