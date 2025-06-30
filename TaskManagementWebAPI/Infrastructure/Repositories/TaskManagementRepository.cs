@@ -1,6 +1,7 @@
 ﻿using LoggingLibrary.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Data;
 using System.Globalization;
 using System.Xml.Linq; 
 using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.ConfigurationLayer;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models; 
 using TaskManagementWebAPI.Infrastructure.Persistence;
@@ -27,11 +29,13 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         private readonly ITaskUploadDapperRepository _dapper;
         private readonly IDbConnection _connection;
         private readonly IConfiguration _configuration;
+        private readonly TaskSettings _taskSettings;
 
         public TaskManagementRepository(ITaskFileParserFactory parseFactory, ApplicationDbContext db,
             IMaptoTasks taskMapper, IAppLogger<UserAuthRepository> logger,
             IEmailContentBuilder contentBuilder, IEmailService emailService,
-            ITaskUploadDapperRepository dapper, IDbConnection connection, IConfiguration configuration)
+            ITaskUploadDapperRepository dapper, IDbConnection connection, IConfiguration configuration,
+            IOptions<TaskSettings> taskSettings)
         {
             _parserFactory = parseFactory;
             _db = db;
@@ -42,6 +46,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             _dapper = dapper;
             _connection = connection;
             _configuration = configuration;
+            _taskSettings = taskSettings.Value;
         }
 
         public async Task<List<AssignUserDTO>> ViewUsers()
@@ -98,17 +103,19 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public async Task AddTask(AddTaskDTO dto)
         {
-            try { 
+            try {
                 var task = new Tasks
                 {
-                   taskName = dto.taskName,
-                   taskDescription = dto.taskDescription,
-                   UserId = dto.UserId,
-                   dueDate = dto.dueDate,
-                   priority = dto.priority,
-                   createdBy = dto.createdBy,
-                   taskType = dto.taskType
-                   //taskStatus = dto.taskStatus
+                    taskName = dto.taskName,
+                    taskDescription = dto.taskDescription,
+                    UserId = dto.UserId,
+                    dueDate = dto.dueDate,
+                    priority = dto.priority,
+                    createdBy = dto.createdBy,
+                    taskType = dto.taskType,
+                    referenceId = await GenerateUniqueNumericIDTaskAsync(_taskSettings.IDTaskPrefix)
+                    //taskStatus = dto.taskStatus
+
                 };
 
                 _db.Task.Add(task);
@@ -137,6 +144,19 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 _logger.LoggWarning("AddTask-Save failed");
                 throw;
             }
+        }
+
+        public async Task<string>GenerateUniqueNumericIDTaskAsync(string prefix)
+        {
+            string IDTask;
+            var random=new Random();
+            do
+            {
+                int number = random.Next(100, 999999);
+                IDTask = $"{prefix}-{number}";
+            }
+            while (await _db.Task.AnyAsync(t => t.referenceId == IDTask));
+            return IDTask;
         }
 
 
