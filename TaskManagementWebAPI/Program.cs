@@ -18,6 +18,7 @@ using TaskManagementWebAPI.Infrastructure.Persistence;
 using TaskManagementWebAPI.Infrastructure.Repositories;
 using TaskManagementWebAPI.Infrastructure.Services.EmailService;
 using TaskManagementWebAPI.Infrastructure.Services.FileUpload;
+using TaskManagementWebAPI.Infrastructure.Services.PasswordService;
 using TaskManagementWebAPI.Infrastructure.Services.TaskOndueUpdate;
 using TaskManagementWebAPI.Infrastructure.Services.TaskStatusUpdateService;
 using TaskManagementWebAPI.Middlewares;
@@ -84,7 +85,8 @@ builder.Services.AddScoped<GmailSmtpEmailService>();
 builder.Services.AddScoped<IForgotPasswordHandler, ForgotPasswordHandler>();
 // ENDS here.....
 
-
+//Random Password generator
+builder.Services.AddScoped<IRandomPasswordGenerator,RandomPasswordGenerator>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
