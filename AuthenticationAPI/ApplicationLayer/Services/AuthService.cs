@@ -35,7 +35,8 @@ namespace AuthenticationAPI.Services
                 if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
                 {
                     _logger.LoggWarning("Faild to login attempt for Username: {Username}", dto.UserName);
-                    throw new UnauthorizedAccessException("Invalid Username or Password.");
+                    //throw new UnauthorizedAccessException("Invalid Username or Password.");
+                    return null;
                 }
 
                 // Generate tokens
