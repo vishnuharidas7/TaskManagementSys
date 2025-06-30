@@ -33,6 +33,8 @@ namespace TaskManagementWebAPI.Domain.Models
 
         public string taskType { get; set; }
 
+        public string referenceId { get; set; }
+
         public void UpdateStateToDue()
         {
             taskState = "Due";
