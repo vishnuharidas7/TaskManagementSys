@@ -76,6 +76,10 @@ namespace TaskManagementWebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("referenceId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("taskDescription")
                         .IsRequired()
                         .HasColumnType("longtext");
