@@ -122,7 +122,7 @@ namespace TaskManagementWebAPI.Controllers
 
         [Authorize(Roles = "Admin,User")]
         [HttpGet("task/{userId:int}")]
-        public async Task<IEnumerable<AddTaskDTO>> GetTasksByUserId(int userId)
+        public async Task<IEnumerable<ViewTasksDTO>> GetTasksByUserId(int userId)
         {
             try
             {

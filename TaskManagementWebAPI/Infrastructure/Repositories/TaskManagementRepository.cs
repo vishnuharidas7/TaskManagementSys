@@ -88,7 +88,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     taskDescription = u.taskDescription,
                     taskStatus = u.taskStatus,
                     priority = u.priority,
-                    taskType = u.taskType
+                    taskType = u.taskType,
+                    referenceId=u.referenceId
                 })
                 .ToListAsync();
 
@@ -148,15 +149,38 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public async Task<string>GenerateUniqueNumericIDTaskAsync(string prefix)
         {
-            string IDTask;
-            var random=new Random();
-            do
+            //string IDTask;
+            //var random=new Random();
+            //do
+            //{
+            //    int number = random.Next(100, 999999);
+            //    IDTask = $"{prefix}-{number}";
+            //}
+            //while (await _db.Task.AnyAsync(t => t.referenceId == IDTask));
+            //return IDTask;
+
+            // Ensure prefix is followed by "-" like "TMS-"
+            string searchPrefix = prefix + "-";
+
+            var lastTask = await _db.Task
+                .Where(t => t.referenceId.StartsWith(searchPrefix))
+                .OrderByDescending(t => t.referenceId)
+                .FirstOrDefaultAsync();
+
+            int nextNumber = 1000; // start from 12000 if no task exists
+
+            if (lastTask != null)
             {
-                int number = random.Next(100, 999999);
-                IDTask = $"{prefix}-{number}";
+                string[] parts = lastTask.referenceId.Split('-');
+                if (parts.Length == 2 && int.TryParse(parts[1], out int lastNumber))
+                {
+                    nextNumber = lastNumber + 1;
+                }
             }
-            while (await _db.Task.AnyAsync(t => t.referenceId == IDTask));
-            return IDTask;
+
+            return $"{prefix}-{nextNumber}";
+
+
         }
 
 
@@ -453,14 +477,14 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
         }
  
-        public async Task<IEnumerable<AddTaskDTO>> GetTasksByUserId(int userId)
+        public async Task<IEnumerable<ViewTasksDTO>> GetTasksByUserId(int userId)
         {
             try
             {
                 var tasks = await _db.Task
                     .Include(t => t.User)
                     .Where(t => t.UserId == userId)
-                    .Select(t => new AddTaskDTO
+                    .Select(t => new ViewTasksDTO
                     {
                         taskId = t.taskId,
                         taskName = t.taskName,
@@ -468,8 +492,9 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                         taskStatus = t.taskStatus,
                         dueDate = t.dueDate,
                         priority = t.priority,
-                        UserId = t.UserId,
-                        userName = t.User.UserName
+                        userId = t.UserId,
+                        userName = t.User.UserName,
+                        referenceId=t.referenceId
                     })
                     .ToListAsync();
 
@@ -490,13 +515,14 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 var tasks = await _db.Task
                     .Include(t => t.User)
                     .Where(t => t.UserId == userId && 
-                    t.dueDate<= today.AddDays(2) && t.taskStatus=="OnDue")
+                    t.dueDate<= today.AddDays(2) && (t.taskStatus=="In-Progress" || t.taskStatus=="New" || t.taskStatus == "Blocked"))
                     .Select(t => new NotificationDTO
                     {
                         TaskId = t.taskId,
                         TaskName = t.taskName,
                         TaskStatus = t.taskStatus,
                         DueDate = t.dueDate,
+                        referenceId=t.referenceId
                     })
                     .ToListAsync();
 
@@ -517,7 +543,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 var tasks = await _db.Task
             .Include(t => t.User)
             .Where(t =>
-                t.taskStatus == "OnDue" &&
+                (t.taskStatus == "In-Progress" || t.taskStatus == "New" || t.taskStatus == "Blocked") &&
                 t.dueDate <= today.AddDays(2))
             .Select(t => new NotificationDTO
             {
@@ -526,6 +552,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 TaskStatus = t.taskStatus,
                 DueDate = t.dueDate,
                 UserName = t.User.UserName,
+                referenceId=t.referenceId
             })
             .ToListAsync();
 
