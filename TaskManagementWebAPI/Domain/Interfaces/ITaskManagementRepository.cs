@@ -21,7 +21,7 @@ namespace TaskManagementWebAPI.Domain.Interfaces
 
         // Task<ActionResult<AddTaskDTO>> GetTaskById(int id);
         //Task<ActionResult<IEnumerable<AddTaskDTO>>> GetTasksByUserId(int userId);
-        Task<IEnumerable<AddTaskDTO>> GetTasksByUserId(int userId);
+        Task<IEnumerable<ViewTasksDTO>> GetTasksByUserId(int userId);
         Task<IEnumerable<NotificationDTO>> GetTasksNotificationByUserId(int userId);
 
         Task<List<NotificationDTO>> GetTasksNotificationbByAdmin();

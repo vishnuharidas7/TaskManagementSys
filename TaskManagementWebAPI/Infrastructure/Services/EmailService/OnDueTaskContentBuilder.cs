@@ -17,7 +17,7 @@ namespace TaskManagementWebAPI.Infrastructure.Services.EmailService
             sb.AppendLine("\nTask details : \n");
 
             foreach (var task in tasks)
-                sb.AppendLine($" - Task ID: {task.taskId} {task.taskType} {task.taskName} (Due: {task.dueDate:MM/dd/yyyy})");
+                sb.AppendLine($" - Task ID: {task.referenceId} {task.taskType} {task.taskName} (Due: {task.dueDate:MM/dd/yyyy})");
            
             sb.AppendLine("\nPlease take action on these as soon as possible.");
 

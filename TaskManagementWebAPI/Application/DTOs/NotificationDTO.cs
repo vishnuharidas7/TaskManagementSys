@@ -8,5 +8,7 @@
         public string TaskStatus { get; set; }
 
         public string UserName { get; set; }
+
+        public string referenceId { get; set; }
     }
 }
