@@ -13,6 +13,7 @@ using Serilog;
 using System.Data;
 using System.Reflection;
 using System.Text;
+using TaskManagementWebAPI.ConfigurationLayer;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Infrastructure.Persistence;
 using TaskManagementWebAPI.Infrastructure.Repositories;
@@ -87,6 +88,9 @@ builder.Services.AddScoped<IForgotPasswordHandler, ForgotPasswordHandler>();
 
 //Random Password generator
 builder.Services.AddScoped<IRandomPasswordGenerator,RandomPasswordGenerator>();
+
+//Appsettings:TaskId
+builder.Services.Configure<TaskSettings>(builder.Configuration.GetSection("TaskSettings"));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
