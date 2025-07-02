@@ -494,6 +494,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                         priority = t.priority,
                         userId = t.UserId,
                         userName = t.User.UserName,
+                        taskType = t.taskType,
                         referenceId=t.referenceId
                     })
                     .ToListAsync();
