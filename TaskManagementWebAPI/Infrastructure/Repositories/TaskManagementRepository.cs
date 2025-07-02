@@ -449,7 +449,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                         dueDate = t.dueDate,
                         priority = t.priority,
                         UserId = t.UserId,
-                        userName = t.User.UserName
+                        userName = t.User.UserName,
+                        taskType = t.taskType
                     })
                     .ToListAsync();
 
