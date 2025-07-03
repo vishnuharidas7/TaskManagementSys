@@ -57,6 +57,7 @@ namespace TaskManagementWebAPI.Controllers
             try
             {
                 await _task.AddTask(dto);
+                _logger.LoggWarning("AddTask success");
                 return Ok(dto);
             }
             catch (Exception ex)
