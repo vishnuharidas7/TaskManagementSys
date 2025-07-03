@@ -167,7 +167,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 .OrderByDescending(t => t.referenceId)
                 .FirstOrDefaultAsync();
 
-            int nextNumber = 1000; // start from 12000 if no task exists
+            int nextNumber = _taskSettings.InitialReferenceId; // start from 12000 if no task exists
 
             if (lastTask != null)
             {
@@ -179,7 +179,6 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
 
             return $"{prefix}-{nextNumber}";
-
 
         }
 
@@ -373,6 +372,15 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 else
                 {
                     // --- EF CORE BLOCK ---
+                    string lastRefId = await GetLastReferenceIdEFAsyncUploadEF(_taskSettings.IDTaskPrefix);
+                    int nextNumber = ExtractNumberFromReferenceIdUploadEF(lastRefId) + 1;
+                    foreach (var task in validTasks)
+                    {
+                        task.referenceId = $"{_taskSettings.IDTaskPrefix}-{nextNumber}";
+                        nextNumber++;
+
+                    }
+
                     _db.Task.AddRange(validTasks);
                     await _db.SaveChangesAsync();
 
@@ -403,6 +411,25 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 throw;
             }
         }
+
+        public async Task<string> GetLastReferenceIdEFAsyncUploadEF(string prefix)
+        {
+            string searchPrefix = prefix + "-";
+
+            var lastTask = await _db.Task
+                .Where(t => t.referenceId.StartsWith(searchPrefix))
+                .OrderByDescending(t => t.referenceId)
+                .FirstOrDefaultAsync();
+
+            return lastTask?.referenceId ?? $"{prefix}-1000"; // fallback if none found
+        }
+        public int ExtractNumberFromReferenceIdUploadEF(string referenceId)
+        {
+            var parts = referenceId.Split('-');
+            return (parts.Length == 2 && int.TryParse(parts[1], out int number)) ? number : 1000;
+        }
+
+
 
 
         public async Task DeleteTask(int id)
