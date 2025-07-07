@@ -1,9 +1,7 @@
-﻿using LoggingLibrary.Interfaces;
+﻿using Microsoft.AspNetCore.Http;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using TaskManagementWebAPI.Domain.Interfaces;
-using TaskManagementWebAPI.Domain.Models;
-using TaskManagementWebAPI.Infrastructure.Repositories;
+using TaskManagementWebAPI.Domain.Interfaces; 
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
@@ -65,11 +63,7 @@ namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
             {
               
                 throw;
-            }
-            //catch (OfficeOpenXml.Packaging.InvalidDataException ex)
-            //{
-            //    throw new InvalidOperationException("The Excel file is corrupted or unreadable.", ex);
-            //}
+            } 
             catch (Exception ex)
             {
                
