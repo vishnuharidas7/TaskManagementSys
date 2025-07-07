@@ -7,7 +7,7 @@
 
         public ExceptionHandlingMiddleware(RequestDelegate next)
         {
-            _next = next;
+            _next = next ?? throw new ArgumentNullException(nameof(next), "RequestDelegate cannot be null.");
         }
         public async Task Invoke(HttpContext context)
         {

@@ -1,4 +1,5 @@
-﻿using TaskManagementWebAPI.Domain.Interfaces;
+﻿using System.Net.Http;
+using TaskManagementWebAPI.Domain.Interfaces;
 
 namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
 {
@@ -8,17 +9,25 @@ namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
 
         public TaskFileParserFactory(IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider), "serviceProvider cannot be null.");
         }
 
         public ITaskFileParser GetParser(string fileName)
         {
-            if (fileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
-                return _serviceProvider.GetRequiredService<ExcelTaskFileParser>();
-            else if (fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
-                return _serviceProvider.GetRequiredService<CsvTaskFileParser>();
+            try
+            {
+                if (fileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
+                    return _serviceProvider.GetRequiredService<ExcelTaskFileParser>();
+                else if (fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+                    return _serviceProvider.GetRequiredService<CsvTaskFileParser>();
 
-            throw new NotSupportedException("Unsupported file format.");
+                throw new NotSupportedException("Unsupported file format.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                
+                throw;
+            }
         }
     }
 }

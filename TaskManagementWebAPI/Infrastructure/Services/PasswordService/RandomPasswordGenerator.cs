@@ -1,4 +1,5 @@
 ﻿using LoggingLibrary.Interfaces;
+using System.Net.Http;
 using TaskManagementWebAPI.Domain.Interfaces;
 
 namespace TaskManagementWebAPI.Infrastructure.Services.PasswordService
@@ -8,7 +9,7 @@ namespace TaskManagementWebAPI.Infrastructure.Services.PasswordService
         private IAppLogger<RandomPasswordGenerator> _logger;
         public RandomPasswordGenerator(IAppLogger<RandomPasswordGenerator> logger)
         {
-            _logger=logger;
+            _logger=logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
         }
         private const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
         public string GenerateRandomPassword(int length)
@@ -19,9 +20,14 @@ namespace TaskManagementWebAPI.Infrastructure.Services.PasswordService
                 return new string(Enumerable.Repeat(chars, length)
                     .Select(s => s[random.Next(s.Length)]).ToArray());
             }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                _logger.LoggError(ex, "Invalid password length requested: {Length}", length);
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LoggWarning("ViewUser for password resert - View user failed");
+                _logger.LoggError(ex, "An error occurred while generating a random password.");
                 throw;
             }
         }

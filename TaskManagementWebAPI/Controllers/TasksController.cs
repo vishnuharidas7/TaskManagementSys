@@ -15,8 +15,8 @@ namespace TaskManagementWebAPI.Controllers
         private readonly IAppLogger<TasksController> _logger;
         public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger)
         {
-            _task = task;
-            _logger =logger;
+            _task = task ?? throw new ArgumentNullException(nameof(task), "Task cannot be null.");
+            _logger =logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
         }
         [Authorize(Roles = "Admin,User")]
         [HttpGet("AssignUser")]

@@ -13,8 +13,8 @@ namespace AuthenticationAPI.Repositories
 
         public AuthRepository(ApplicationDbContext context, IAppLogger<AuthRepository> logger)
         {
-            _context = context;
-            _logger = logger;
+            _context = context??throw new ArgumentNullException(nameof(context), "Context cannot be null.");
+            _logger = logger??throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
         }
 
         public async Task<Users?> GetActiveUserAsync(LoginDTO dto)

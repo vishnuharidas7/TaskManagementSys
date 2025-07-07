@@ -19,11 +19,11 @@ namespace AuthenticationAPI.Services
         private readonly IAuthRepository _authRepository;
         public AuthService(ApplicationDbContext db, IConfiguration config, IJwtHelper jwthelper, IAppLogger<AuthService> logger, IAuthRepository authRepository)
         {
-            _db = db;
-            _jwtHelper = jwthelper;
-            _config = config;
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _authRepository = authRepository;
+            _db = db??throw new ArgumentNullException(nameof(db), "ApplicationDbContext cannot be null.");
+            _jwtHelper = jwthelper ?? throw new ArgumentNullException(nameof(jwthelper), "JwtHelper cannot be null.");
+            _config = config??throw new ArgumentNullException(nameof(config), "Configuration cannot be null.");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+            _authRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository), "AuthRepository cannot be null.");
 
         }
         public async Task<Object> LoginAsync(LoginDTO dto)

@@ -14,8 +14,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public UserAuthRepository(HttpClient httpClient, IAppLogger<UserAuthRepository> logger)
         {
-            _httpClient = httpClient;
-            _logger = logger;
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient), "httpClient cannot be null.");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
         }
 
         public async Task<string> LoginAsync(LoginDTO dto)
@@ -33,9 +33,24 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 var error = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Login failed: {error}");
             }
+            catch (HttpRequestException httpEx)
+            {
+                _logger.LoggError(httpEx, "LoginAsync - HTTP request failed");
+                throw;
+            }
+            catch (TaskCanceledException tcEx) when (!tcEx.CancellationToken.IsCancellationRequested)
+            {
+                _logger.LoggError(tcEx, "LoginAsync - Request timed out");
+                throw;
+            }
+            catch (InvalidOperationException invOpEx)
+            {
+                _logger.LoggError(invOpEx, "LoginAsync - Login operation failed");
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LoggWarning("LoginAsync-Login failed");
+                _logger.LoggError(ex, "LoginAsync - Unexpected error");
                 throw;
             }
         }
@@ -55,9 +70,24 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 var error = await response.Content.ReadAsStringAsync();
                 throw new Exception($"Token refresh failed: {error}");
             }
+            catch (HttpRequestException httpEx)
+            {
+                _logger.LoggError(httpEx, "Refresh - HTTP request failed");
+                throw;
+            }
+            catch (TaskCanceledException tcEx) when (!tcEx.CancellationToken.IsCancellationRequested)
+            {
+                _logger.LoggError(tcEx, "Refresh - Request timed out");
+                throw;
+            }
+            catch (InvalidOperationException invOpEx)
+            {
+                _logger.LoggError(invOpEx, "Refresh - Token refresh operation failed");
+                throw;
+            }
             catch (Exception ex)
             {
-
+                _logger.LoggError(ex, "Refresh - Unexpected error");
                 throw;
             }
         }

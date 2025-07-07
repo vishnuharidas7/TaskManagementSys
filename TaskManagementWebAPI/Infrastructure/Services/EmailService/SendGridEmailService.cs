@@ -1,6 +1,9 @@
-﻿using SendGrid.Helpers.Mail;
+﻿using LoggingLibrary.Interfaces;
+using SendGrid.Helpers.Mail;
 using System.Net;
+using System.Net.Http;
 using TaskManagementWebAPI.Domain.Interfaces;
+using TaskManagementWebAPI.Infrastructure.Repositories;
 
 namespace TaskManagementWebAPI.Infrastructure.Services.EmailService
 {
@@ -10,29 +13,46 @@ namespace TaskManagementWebAPI.Infrastructure.Services.EmailService
 
         public SendGridEmailService(string apiKey)
         {
-            _apiKey = apiKey;
+            _apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey), "apiKey cannot be null.");
+            
         }
 
         public async Task SendEmailAsync(string to, string subject, string body)
         {
-            var client = new SendGrid.SendGridClient(_apiKey);
-            var from = new EmailAddress("noreplytotaskmanagement@gmail.com", "Task Manager");
-            var toEmail = new EmailAddress(to);
-            var msg = MailHelper.CreateSingleEmail(from, toEmail, subject, body, body);
-            // await client.SendEmailAsync(msg);
-
-            var response = await client.SendEmailAsync(msg);
-
-            // Log or check response status
-            if (response.StatusCode == HttpStatusCode.Accepted || response.StatusCode == HttpStatusCode.OK)
+            try
             {
-                Console.WriteLine("✅ Email sent successfully.");
+                var client = new SendGrid.SendGridClient(_apiKey);
+                var from = new EmailAddress("noreplytotaskmanagement@gmail.com", "Task Manager");
+                var toEmail = new EmailAddress(to);
+                var msg = MailHelper.CreateSingleEmail(from, toEmail, subject, body, body);
+
+                var response = await client.SendEmailAsync(msg);
+
+                if (response.StatusCode == HttpStatusCode.Accepted || response.StatusCode == HttpStatusCode.OK)
+                {
+                    Console.WriteLine("✅ Email sent successfully.");
+                }
+                else
+                {
+                    Console.WriteLine($"❌ Failed to send email. Status: {response.StatusCode}");
+                    var responseBody = await response.Body.ReadAsStringAsync();
+                    Console.WriteLine("Response Body: " + responseBody);
+                }
             }
-            else
+            catch (HttpRequestException httpEx)
             {
-                Console.WriteLine($"❌ Failed to send email. Status: {response.StatusCode}");
-                var responseBody = await response.Body.ReadAsStringAsync();
-                Console.WriteLine("Response Body: " + responseBody);
+               
+                throw;
+            }
+            catch (TaskCanceledException timeoutEx)
+            {
+                
+                throw;
+            }
+            catch (Exception ex)
+            {
+              
+                throw;
             }
         }
     }
