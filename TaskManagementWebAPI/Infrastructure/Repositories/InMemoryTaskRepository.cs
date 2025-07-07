@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models;
 using TaskManagementWebAPI.Infrastructure.Persistence;
@@ -11,14 +12,33 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public InMemoryTaskRepository(ApplicationDbContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context), "Context cannot be null.");
         }
 
         public IEnumerable<Tasks> GetTasksByUserId(int userId)
         {
-            return _context.Task
+            try
+            {
+                return _context.Task
                 .Where(t => t.UserId == userId)
                 .ToList();
+            }
+            catch (ArgumentNullException argEx)
+            {
+                throw;
+            }
+            catch (InvalidOperationException invOpEx)
+            {
+                throw;
+            }
+            catch (DbUpdateException dbEx)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

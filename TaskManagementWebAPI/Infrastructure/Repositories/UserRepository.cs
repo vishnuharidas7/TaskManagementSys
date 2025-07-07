@@ -22,11 +22,11 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public UserRepository(ApplicationDbContext db, IAppLogger<UserRepository> logger, INewUserEmailContentBuilder userEmailContentBuilder, IEmailService emailService,IRandomPasswordGenerator randomPasswordGenerator)
         {
-            _db = db;
-            _logger = logger;
-            _userEmailContentBuilder = userEmailContentBuilder;
-            _emailService = emailService;
-            _randomPasswordGenerator = randomPasswordGenerator;
+            _db = db ?? throw new ArgumentNullException(nameof(db), "db cannot be null.");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
+            _userEmailContentBuilder = userEmailContentBuilder ?? throw new ArgumentNullException(nameof(userEmailContentBuilder), "userEmailContentBuilder cannot be null.");
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService), "emailService cannot be null.");
+            _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator), "randomPasswordGenerator cannot be null.");
         }
 
         public async Task RegisterAsync(RegisterDTO dto)

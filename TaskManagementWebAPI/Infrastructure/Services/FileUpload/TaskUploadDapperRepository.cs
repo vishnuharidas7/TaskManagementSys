@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Connections;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Data;
+using System.Data.Common;
+using System.Net.Http;
 using TaskManagementWebAPI.ConfigurationLayer;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models;
@@ -18,45 +20,67 @@ namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
         private readonly TaskSettings _taskSettings;
         public TaskUploadDapperRepository(IDapperConnectionFactory db,IOptions<TaskSettings>taskSettings) 
         {
-            _connectionFactory = db;
-            _taskSettings=taskSettings.Value;
+            _connectionFactory = db ?? throw new ArgumentNullException(nameof(db), "db cannot be null.");
+            _taskSettings =taskSettings.Value ?? throw new ArgumentNullException(nameof(taskSettings), "taskSettings cannot be null.");
         }
 
         
         public async Task InsertTasksAsync(IEnumerable<TaskEntity> tasks, IDbTransaction transaction)
         {
-            var connection = transaction.Connection;  
-            if (connection.State != ConnectionState.Open)
-                connection.Open();
+            try
+            {
+                var connection = transaction.Connection;
+                if (connection.State != ConnectionState.Open)
+                    connection.Open();
 
-            string sql = @"
+                string sql = @"
                 INSERT INTO Task (taskName, taskDescription, taskStatus, createdDate,createdBy, dueDate, UserId, priority, taskState, taskType ,referenceId)
                 VALUES (@taskName, @taskDescription, @taskStatus, @createdDate,@createdBy, @dueDate, @UserId, @priority, @taskState, @taskType, @referenceId);";
 
-            string lastUsedReferenceNo= await GenerateUniqueNumericIDTaskAsync(_taskSettings.IDTaskPrefix,transaction,connection);
-            int nextNumber = ExtractNumberFromReferenceId(lastUsedReferenceNo)+1;
+                string lastUsedReferenceNo = await GenerateUniqueNumericIDTaskAsync(_taskSettings.IDTaskPrefix, transaction, connection);
+                int nextNumber = ExtractNumberFromReferenceId(lastUsedReferenceNo) + 1;
 
-            foreach (var task in tasks)
-            {
-               task.referenceId= $"{_taskSettings.IDTaskPrefix}-{nextNumber}";
-                nextNumber++;
+                foreach (var task in tasks)
+                {
+                    task.referenceId = $"{_taskSettings.IDTaskPrefix}-{nextNumber}";
+                    nextNumber++;
 
-                await connection.ExecuteAsync(sql, task, transaction);
+                    await connection.ExecuteAsync(sql, task, transaction);
+                }
             }
+            catch (DbException dbEx)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
 
         public async Task<string> GenerateUniqueNumericIDTaskAsync(string prefix,IDbTransaction transaction,IDbConnection connection)
         {
-            string searchPrefix = prefix + "-%";
+            try
+            {
+                string searchPrefix = prefix + "-%";
 
-            string sql = @"SELECT referenceId 
+                string sql = @"SELECT referenceId 
                          FROM Task
                          WHERE referenceId LIKE @Prefix
                          ORDER BY referenceId DESC
                          LIMIT 1;";
 
-            return await connection.QueryFirstOrDefaultAsync<string>(sql, new { Prefix = searchPrefix }, transaction) ?? $"{prefix}-{_taskSettings.InitialReferenceId}";
-
+                return await connection.QueryFirstOrDefaultAsync<string>(sql, new { Prefix = searchPrefix }, transaction) ?? $"{prefix}-{_taskSettings.InitialReferenceId}";
+            }
+            catch (DbException dbEx)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         private int ExtractNumberFromReferenceId(string referenceId)
@@ -68,10 +92,21 @@ namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
 
         public async Task<Users> GetUserByIdAsync(int userId, IDbTransaction? transaction=null)
         {
-            using var connection = _connectionFactory.CreateConnection();  
+            try
+            {
+                using var connection = _connectionFactory.CreateConnection();
 
-            string sql = "SELECT * FROM `User` WHERE UserId = @UserId";
-            return await connection.QueryFirstOrDefaultAsync<Users>(sql, new { UserId = userId }, transaction);
+                string sql = "SELECT * FROM `User` WHERE UserId = @UserId";
+                return await connection.QueryFirstOrDefaultAsync<Users>(sql, new { UserId = userId }, transaction);
+            }
+            catch (DbException dbEx)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
     }

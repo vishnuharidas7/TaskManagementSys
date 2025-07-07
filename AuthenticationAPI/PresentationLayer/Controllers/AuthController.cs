@@ -20,11 +20,11 @@ namespace AuthenticationAPI.Controllers
         private readonly IAuthRepository _authRepository;
         public AuthController(IAuthService authService, ApplicationDbContext db, IJwtHelper jwthelper, IAppLogger<AuthController> logger, IAuthRepository authRepository)
         {
-            _authService = authService;
-            _db = db ?? throw new ArgumentNullException(nameof(db));
-            _jwtHelper = jwthelper;
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); // Assign it
-            _authRepository = authRepository;
+            _authService = authService?? throw new ArgumentNullException(nameof(authService), "AuthService cannot be null.");
+            _db = db ?? throw new ArgumentNullException(nameof(db)) ?? throw new ArgumentNullException(nameof(db), "ApplicationDbContext cannot be null.");
+            _jwtHelper = jwthelper ?? throw new ArgumentNullException(nameof(jwthelper), "Jwthelper cannot be null.");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger),"Jwthelper cannot be null."); // Assign it
+            _authRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository), "AuthRepository cannot be null.");
         }
 
         [HttpPost("login")]

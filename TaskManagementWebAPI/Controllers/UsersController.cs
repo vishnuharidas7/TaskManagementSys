@@ -20,9 +20,9 @@ namespace TaskManagementWebAPI.Controllers
         public UsersController(IUserRepository user, ApplicationDbContext db, IAppLogger<AuthController> logger)
         {
 
-            _user = user ?? throw new ArgumentNullException(nameof(user));
-            _db = db;
-            _logger = logger;
+            _user = user ?? throw new ArgumentNullException(nameof(user), "User cannot be null.");
+            _db = db ?? throw new ArgumentNullException(nameof(db), "Db cannot be null.");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
         }
 
         [Authorize(Roles = "Admin,User")]

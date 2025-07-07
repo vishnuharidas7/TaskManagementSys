@@ -17,8 +17,8 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
 
         public JwtHelper(IOptions<JwtSettings> jwtSettings, IAppLogger<JwtHelper> logger)
         {
-            _jwtSettings = jwtSettings.Value;
-            _logger = logger;
+            _jwtSettings = jwtSettings.Value??throw new ArgumentNullException(nameof(jwtSettings.Value),"JwtHelper cannot be null.");
+            _logger = logger??throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
         }
 
         public string GenerateAccessToken(Users User)

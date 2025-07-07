@@ -16,9 +16,9 @@ namespace TaskManagementWebAPI.Controllers
         private readonly IForgotPasswordHandler _forgotPasswordHandler;
         public AuthController(IUserAuthRepository user, IAppLogger<AuthController> logger, IForgotPasswordHandler forgotPasswordHandler)
         {
-            _user = user;
-            _logger = logger;
-            _forgotPasswordHandler = forgotPasswordHandler;
+            _user = user ?? throw new ArgumentNullException(nameof(user), "User cannot be null.");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Context cannot be null.");
+            _forgotPasswordHandler = forgotPasswordHandler ?? throw new ArgumentNullException(nameof(forgotPasswordHandler), "ForgotPasswordHandler cannot be null.");
         }
 
         [HttpPost("loginAuth")]

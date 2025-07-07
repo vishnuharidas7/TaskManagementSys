@@ -7,6 +7,8 @@ using NPOI.XSSF.UserModel;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Xml.Linq; 
 using TaskManagementWebAPI.Application.DTOs;
@@ -30,6 +32,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         private readonly IDbConnection _connection;
         private readonly IConfiguration _configuration;
         private readonly TaskSettings _taskSettings;
+        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
         public TaskManagementRepository(ITaskFileParserFactory parseFactory, ApplicationDbContext db,
             IMaptoTasks taskMapper, IAppLogger<UserAuthRepository> logger,
@@ -65,9 +68,19 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
                 return usersWithRoles;
             }
-            catch(Exception ex)
+            catch (InvalidOperationException ex)
             {
-                _logger.LoggWarning("ViewUsers-Viewuser failed");
+                _logger.LoggError(ex, "ViewUsers - Invalid operation while querying users.");
+                throw ex.InnerException;
+            }
+            catch (DbException ex)
+            {
+                _logger.LoggError(ex, "ViewUsers - Database access error.");
+                throw ex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "ViewUsers - An unexpected error occurred.");
                 throw;
             }
         }
@@ -95,15 +108,26 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
                 return viewAlltasks;
             }
-            catch(Exception ex)
+            catch (InvalidOperationException ex)
             {
-                _logger.LoggWarning("VieAllTask-ViewAllTask failed");
+                _logger.LoggError(ex, "ViewAllTasks - Invalid operation while querying tasks.");
+                throw ex.InnerException;
+            }
+            catch (DbException ex)
+            {
+                _logger.LoggError(ex, "ViewAllTasks - Database error while fetching tasks.");
+                throw ex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "ViewAllTasks - Unexpected error.");
                 throw;
             }
         }
 
         public async Task AddTask(AddTaskDTO dto)
         {
+            await _semaphore.WaitAsync();
             try {
                 var task = new Tasks
                 {
@@ -140,37 +164,68 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     await _emailService.SendEmailAsync(user.Email, "New Task Added", content);
                 }
             }
-            catch(Exception ex)
+            catch (InvalidOperationException ex)
             {
-                _logger.LoggWarning("AddTask-Save failed");
+                _logger.LoggError(ex, "AddTask - Invalid operation for user ID {UserId}", dto.UserId);
+                throw ex.InnerException;
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LoggError(ex, "AddTask - Database update failed while saving task for user ID {UserId}", dto.UserId);
+                throw ex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "AddTask - Unexpected error occurred while adding task for user ID {UserId}", dto.UserId);
                 throw;
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
         public async Task<string>GenerateUniqueNumericIDTaskAsync(string prefix)
-        { 
-            string searchPrefix = prefix + "-";
-
-            var lastTask = await _db.Task
-                .Where(t => t.referenceId.StartsWith(searchPrefix))
-                .OrderByDescending(t => t.referenceId)
-                .FirstOrDefaultAsync();
-
-            int nextNumber = _taskSettings.InitialReferenceId; // start from 12000 if no task exists
-
-            if (lastTask != null)
+        {
+            try
             {
-                string[] parts = lastTask.referenceId.Split('-');
-                if (parts.Length == 2 && int.TryParse(parts[1], out int lastNumber))
+
+                string searchPrefix = prefix + "-";
+
+                var lastTask = await _db.Task
+                    .Where(t => t.referenceId.StartsWith(searchPrefix))
+                    .OrderByDescending(t => t.referenceId)
+                    .FirstOrDefaultAsync();
+
+                int nextNumber = _taskSettings.InitialReferenceId; // start from 12000 if no task exists
+
+                if (lastTask != null)
                 {
-                    nextNumber = lastNumber + 1;
+                    string[] parts = lastTask.referenceId.Split('-');
+                    if (parts.Length == 2 && int.TryParse(parts[1], out int lastNumber))
+                    {
+                        nextNumber = lastNumber + 1;
+                    }
                 }
+
+                return $"{prefix}-{nextNumber}";
+
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex, "GenerateUniqueNumericIDTaskAsync - Invalid operation while generating ID with prefix {Prefix}", prefix);
+                throw ex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "GenerateUniqueNumericIDTaskAsync - Unexpected error while generating ID with prefix {Prefix}", prefix);
+                throw;
             }
 
-            return $"{prefix}-{nextNumber}";
 
         }
 
+        [Obsolete]
         public async Task ProcessFileAsync(IFormFile file)
         {
             try
@@ -285,14 +340,29 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     }
                 }
             }
-            catch (FileNotFoundException ex)
+            catch (ArgumentException ex)
             {
-                _logger.LoggWarning("File not found during task upload");
+                _logger.LoggWarning("Validation failed during file processing: {Message}", ex.Message);
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex, "Invalid operation while processing file.");
+                throw;
+            }
+            catch (SqlException ex)
+            {
+                _logger.LoggError(ex, "SQL error occurred during file processing.");
+                throw;
+            }
+            catch (IOException ex)
+            {
+                _logger.LoggError(ex, "File I/O error occurred during file processing.");
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("File upload failed");
+                _logger.LoggError(ex, "Unexpected error occurred during task file upload.");
                 throw;
             }
         }
@@ -310,17 +380,50 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
                 return lastTask?.referenceId ?? $"{prefix}-1000"; // fallback if none found
             }
-
-            catch (Exception ex)
+            catch (SqlException ex)
             {
-                _logger.LoggWarning("Generating Reference ID failed");
+                _logger.LoggError(ex, "Database error occurred while getting last reference ID with prefix {Prefix}", prefix);
                 throw;
             }
+            catch (IOException ex)
+            {
+                _logger.LoggError(ex, "I/O error occurred while getting last reference ID with prefix {Prefix}", prefix);
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex, "Invalid operation while getting last reference ID with prefix {Prefix}", prefix);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "Unexpected error occurred while getting last reference ID with prefix {Prefix}", prefix);
+                throw;
+            }
+
         }
         public int ExtractNumberFromReferenceIdUploadEF(string referenceId)
         {
-            var parts = referenceId.Split('-');
-            return (parts.Length == 2 && int.TryParse(parts[1], out int number)) ? number : 1000;
+            try
+            {
+                var parts = referenceId.Split('-');
+                return (parts.Length == 2 && int.TryParse(parts[1], out int number)) ? number : 1000;
+            }
+            catch (ArgumentNullException ex)
+            {
+                _logger.LoggError(ex, "ReferenceId was null in ExtractNumberFromReferenceIdUploadEF");
+                throw;
+            }
+            catch (FormatException ex)
+            {
+                _logger.LoggError(ex, "ReferenceId format invalid in ExtractNumberFromReferenceIdUploadEF");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "Unexpected error in ExtractNumberFromReferenceIdUploadEF");
+                throw;
+            }
         }
 
 
@@ -338,9 +441,18 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 _db.Task.Remove(task);
                 await _db.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (KeyNotFoundException)
             {
-                _logger.LoggWarning("DeleteTask-Deletion failed");
+                throw;
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LoggError(dbEx, "Database update error while deleting task with ID {TaskId}.", id);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "Unexpected error occurred while deleting task with ID {TaskId}.", id);
                 throw;
             }
 
@@ -366,18 +478,21 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 {
                     task.taskState = obj.taskStatus;
                 }
-                await _db.SaveChangesAsync();
 
-                if(obj.taskStatus == "Completed")
+                try
                 {
-                    //var user = await _db.User.FindAsync(obj.UserId);
+                    await _db.SaveChangesAsync();
+                }
+                catch (DbUpdateException dbEx)
+                {
+                    _logger.LoggWarning("Database error while retrieving user/tasks: {Message}", dbEx.Message);
+                    throw dbEx.InnerException;
+                }
 
-                    //if (user == null)
-                    //{
-                    //    _logger.LoggWarning("User not found for ID {UserId}", obj.UserId);
-                    //    return;
-                    //}
 
+                if (obj.taskStatus == "Completed")
+                {
+                 
                     var userTasks = await _db.Task
                                              .Where(t => t.taskId == id)
                                              .ToListAsync();
@@ -391,9 +506,19 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     }
                 }
             }
-            catch(Exception ex)
+            catch (KeyNotFoundException)
             {
-                _logger.LoggWarning("UpdateTask-Updation failed");
+                
+                throw;
+            }
+            catch (ApplicationException)
+            {
+                
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "Unexpected error occurred while updating task with ID {TaskId}.", id);
                 throw;
             }
         }
@@ -422,9 +547,19 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
                 return tasks;
             }
-            catch(Exception ex)
+            catch (ArgumentNullException argEx)
             {
-                _logger.LoggWarning("GetTasksByUserId-Get data failed");
+                _logger.LoggError(argEx, "GetTasksByUserId failed due to null argument.");
+                throw;
+            }
+            catch (InvalidOperationException invOpEx)
+            {
+                _logger.LoggError(invOpEx, "GetTasksByUserId failed due to invalid operation.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "Unexpected error occurred in GetTasksByUserId.");
                 throw;
             }
         }
@@ -450,9 +585,19 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
                 return tasks;
             }
+            catch (ArgumentNullException argEx)
+            {
+                _logger.LoggError(argEx, "GetTasksNotificationByUserId failed due to null argument.");
+                throw;
+            }
+            catch (InvalidOperationException invOpEx)
+            {
+                _logger.LoggError(invOpEx, "GetTasksNotificationByUserId failed due to invalid operation.");
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LoggWarning("GetTasksNotificationByUserId-Get data failed");
+                _logger.LoggError(ex, "Unexpected error occurred in GetTasksNotificationByUserId.");
                 throw;
             }
         }
@@ -481,9 +626,19 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
                 return tasks;
             }
+            catch (ArgumentNullException argEx)
+            {
+                _logger.LoggError(argEx, "GetTasksNotificationByAdmin failed due to null argument.");
+                throw;
+            }
+            catch (InvalidOperationException invOpEx)
+            {
+                _logger.LoggError(invOpEx, "GetTasksNotificationByAdmin failed due to invalid operation.");
+                throw;
+            }
             catch (Exception ex)
             {
-                _logger.LoggWarning("GetTasksNotification-Get data failed");
+                _logger.LoggError(ex, "Unexpected error occurred in GetTasksNotificationByAdmin.");
                 throw;
             }
         }
