@@ -1,5 +1,5 @@
-﻿using TaskManagementWebAPI.Domain.Interfaces;
-using TaskManagementWebAPI.Domain.Models;
+﻿using Microsoft.AspNetCore.Http;
+using TaskManagementWebAPI.Domain.Interfaces;
 
 namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
 {
