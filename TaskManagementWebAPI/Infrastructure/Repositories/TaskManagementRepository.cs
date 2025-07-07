@@ -148,18 +148,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         }
 
         public async Task<string>GenerateUniqueNumericIDTaskAsync(string prefix)
-        {
-            //string IDTask;
-            //var random=new Random();
-            //do
-            //{
-            //    int number = random.Next(100, 999999);
-            //    IDTask = $"{prefix}-{number}";
-            //}
-            //while (await _db.Task.AnyAsync(t => t.referenceId == IDTask));
-            //return IDTask;
-
-            // Ensure prefix is followed by "-" like "TMS-"
+        { 
             string searchPrefix = prefix + "-";
 
             var lastTask = await _db.Task
@@ -182,115 +171,6 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         }
 
-
-
-
-        //public async Task ProcessFileAsync(IFormFile file)
-        //{
-        //    try
-        //    {
-        //        var parser = _parserFactory.GetParser(file.FileName);
-        //        var rawData = await parser.ParseAsync(file);
-
-        //        var tasks = _taskMapper.MapToTasks(rawData);
-
-        //        var tomorrow = DateTime.Today.AddDays(1);
-
-        //        var validTasks = tasks
-        //            .Where(t => t.dueDate.Date >= tomorrow)
-        //            .ToList();
-
-        //        if (!validTasks.Any())
-        //        {
-        //            // return;
-        //            throw new ArgumentException("All task due dates are either today or in the past. Please upload valid tasks.");
-        //        }
-
-        //        var useDapper = _configuration.GetValue<bool>("UseDapper:UseDapper");
-        //        if(useDapper)
-        //        {
-        //            _connection.Open();
-        //            using var transaction = _connection.BeginTransaction();
-        //            try
-        //            {
-        //                await _dapper.InsertTasksAsync(validTasks, transaction);
-        //                transaction.Commit();
-
-
-        //            }
-        //            catch
-        //            {
-        //                transaction.Rollback();
-        //                throw;
-        //            }
-        //            finally
-        //            {
-        //                transaction.Dispose();
-        //                _connection.Close();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            _db.Task.AddRange(tasks);
-        //            await _db.SaveChangesAsync();
-        //        }
-
-        //        var tasksByUser = tasks
-        //            .GroupBy(t => t.UserId)
-        //            .ToDictionary(g => g.Key, g => g.ToList());
-
-        //        foreach (var entry in tasksByUser)
-        //        {
-        //            var userId = entry.Key;
-        //            var userTasks = entry.Value;
-
-        //            Users? user = null;
-
-        //            if (useDapper)
-        //            {
-        //                _connection.Open();
-        //              using var transaction = _connection.BeginTransaction();
-        //                try
-        //                {
-        //                    user = await _dapper.GetUserByIdAsync(userId, transaction);
-        //                }
-        //                catch
-        //                {
-        //                    _connection.Close();
-        //                    throw;
-        //                }
-        //                finally
-        //                {
-        //                    _connection.Close();
-        //                }
-
-        //            }
-        //            else
-        //            {
-        //                 user = await _db.User.FindAsync(userId);
-        //            }
-
-        //            if (user == null)
-        //            {
-        //                _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
-        //                continue;
-        //            }
-
-        //            var content = _contentBuilder.BuildContent(user, userTasks);
-
-        //            await _emailService.SendEmailAsync(
-        //                user.Email,
-        //                "New Tasks Assigned to You",
-        //                content
-        //            );
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LoggWarning("File upload failed");
-        //        throw;
-        //    }
-        //}
         public async Task ProcessFileAsync(IFormFile file)
         {
             try
@@ -405,6 +285,11 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     }
                 }
             }
+            catch (FileNotFoundException ex)
+            {
+                _logger.LoggWarning("File not found during task upload");
+                throw;
+            }
             catch (Exception ex)
             {
                 _logger.LoggWarning("File upload failed");
@@ -414,14 +299,23 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public async Task<string> GetLastReferenceIdEFAsyncUploadEF(string prefix)
         {
-            string searchPrefix = prefix + "-";
+            try
+            {
+                string searchPrefix = prefix + "-";
 
-            var lastTask = await _db.Task
-                .Where(t => t.referenceId.StartsWith(searchPrefix))
-                .OrderByDescending(t => t.referenceId)
-                .FirstOrDefaultAsync();
+                var lastTask = await _db.Task
+                    .Where(t => t.referenceId.StartsWith(searchPrefix))
+                    .OrderByDescending(t => t.referenceId)
+                    .FirstOrDefaultAsync();
 
-            return lastTask?.referenceId ?? $"{prefix}-1000"; // fallback if none found
+                return lastTask?.referenceId ?? $"{prefix}-1000"; // fallback if none found
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("Generating Reference ID failed");
+                throw;
+            }
         }
         public int ExtractNumberFromReferenceIdUploadEF(string referenceId)
         {
