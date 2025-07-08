@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc; 
 using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Domain.Interfaces;
 
 namespace TaskManagementWebAPI.Controllers
@@ -13,10 +14,12 @@ namespace TaskManagementWebAPI.Controllers
     {
         private ITaskManagementRepository _task;
         private readonly IAppLogger<TasksController> _logger;
-        public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger)
+        private readonly ITaskApplicationService _taskControllerService;
+        public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger, ITaskApplicationService taskControllerService)
         {
             _task = task ?? throw new ArgumentNullException(nameof(task), "Task cannot be null.");
             _logger =logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+            _taskControllerService = taskControllerService ?? throw new ArgumentNullException(nameof(_taskControllerService),"TaskControlService cannot be null.");
         }
         [Authorize(Roles = "Admin,User")]
         [HttpGet("AssignUser")]
@@ -56,7 +59,8 @@ namespace TaskManagementWebAPI.Controllers
         {
             try
             {
-                await _task.AddTask(dto);
+                //await _task.AddTask(dto);
+                await _taskControllerService.AddTaskAsync(dto);
                 _logger.LoggWarning("AddTask success");
                 return Ok(dto);
             }
@@ -73,7 +77,8 @@ namespace TaskManagementWebAPI.Controllers
         {
             try
             {
-                await _task.UpdateTask(id, obj);
+                //await _task.UpdateTask(id, obj);
+                await _taskControllerService.UpdateTask(id, obj);
                 return Ok(obj);
             }
             catch (Exception ex)
@@ -93,7 +98,7 @@ namespace TaskManagementWebAPI.Controllers
                     return BadRequest("No file uploaded.");
 
 
-                await _task.ProcessFileAsync(file);
+                await _taskControllerService.ProcessFileAsync(file);
                 return Ok("File processed and tasks saved.");
             }
             catch (Exception ex)

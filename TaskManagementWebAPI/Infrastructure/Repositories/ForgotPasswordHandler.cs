@@ -1,5 +1,7 @@
 ﻿using LoggingLibrary.Interfaces;
 using Microsoft.AspNetCore.Identity.Data;
+using NPOI.SS.Formula.Eval;
+using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models;
 
@@ -10,18 +12,22 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         private readonly IUserRepository _userRepo;
         private readonly IEmailService _emailService;
         private readonly IAppLogger<UserRepository> _logger;
-        public ForgotPasswordHandler(IUserRepository userRepo, IEmailService emailService, IAppLogger<UserRepository> logger)
+        private readonly IUserApplicationService _userApplicationService;
+        public ForgotPasswordHandler(IUserRepository userRepo, IEmailService emailService, 
+            IAppLogger<UserRepository> logger, IUserApplicationService userApplicationService)
         {
             _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo), "UserRepo cannot be null.");
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService), "EmailService cannot be null.");
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Context cannot be null.");
+            _userApplicationService = userApplicationService ?? throw new ArgumentNullException(nameof(userApplicationService), "User Application Service cannot be null");
         }
 
         public async Task<Users?> HandleAsync(ForgotPasswordRequest request)
         {
             try
             {
-                var user = await _userRepo.ForgotPassword(request.Email);
+               // var user = await _userRepo.ForgotPassword(request.Email);
+                var user = await _userApplicationService.ForgotPassword(request.Email);
                 // if (user is null) 
                 return user; // No email leaks
                 // await _emailService.SendAsync(user.Email, "Password Reset", );

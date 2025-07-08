@@ -5,6 +5,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models; 
@@ -29,45 +30,22 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator), "randomPasswordGenerator cannot be null.");
         }
 
-        public async Task RegisterAsync(RegisterDTO dto)
+        public async Task<int> RegisterAsync(Users user)
         {
             try
             {
-                string randomPswd = _randomPasswordGenerator.GenerateRandomPassword(8);
-                string hashedPassword = BCrypt.Net.BCrypt.HashPassword(randomPswd);
-                var user = new Users
-                {
-                    Name = dto.Name,
-                    UserName = dto.UserName,
-                    Email = dto.Email,
-                    PhoneNumber = dto.PhoneNumber,
-                    RoleID = dto.RoleId,
-                    gender = dto.Gender,
-                    Password = hashedPassword,
-                    CreatedDate = DateTime.UtcNow,
-                    IsActive = true,
-                    RefreshToken = "",
-                    RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7)
-                };
-
                 try
                 {
                     _db.User.Add(user);
                     await _db.SaveChangesAsync();
+                    return user.UserId;
                 }
                 catch (DbException ex)
                 {
                     _logger.LoggError(ex, "Register User - Database access error.");
                     throw ex.InnerException;
                 }
-                var userId = user.UserId;
-                var password = randomPswd;
-
-                var content = _userEmailContentBuilder.BuildContentforNewUser(user, userId, password);
-                await _emailService.SendEmailAsync(user.Email, "Welcome to Task Management System – Your Account Details", content);
-
-
-                // return user;
+                 
             }
             catch (Exception ex)
             {
@@ -103,22 +81,22 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             catch (InvalidOperationException ex)
             {
                 _logger.LoggWarning("ViewUsers - Invalid operation: {Message}", ex.Message);
-                throw ex.InnerException;
+                throw ex;
             }
             catch (DbUpdateException dbEx)
             {
                 _logger.LoggWarning("ViewUsers - Database update error: {Message}", dbEx.Message);
-                throw dbEx.InnerException;
+                throw dbEx;
             }
             catch (TaskCanceledException tcEx)
             {
                 _logger.LoggWarning("ViewUsers - Task was cancelled or timed out: {Message}", tcEx.Message);
-                throw tcEx.InnerException;
+                throw tcEx;
             }
             catch (SqlException sqlEx)
             {
                 _logger.LoggWarning("ViewUsers - SQL error: {Message}", sqlEx.Message);
-                throw sqlEx.InnerException;
+                throw sqlEx;
             }
             catch (Exception ex)
             {
@@ -127,74 +105,85 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
         }
 
-        public async Task<Users?> ForgotPassword(string email)
-        {
-            try
-            {
-                Users? user;
+        //public async Task<Users?> ForgotPassword(string email)
+        //{
+        //    try
+        //    {
+        //        Users? user;
 
-                try
-                {
-                    user = await _db.User.Where(u => u.Email == email).FirstOrDefaultAsync();
-                }
-                catch (InvalidOperationException invEx)
-                {
-                    _logger.LoggWarning("ForgotPassword - Invalid operation while retrieving user: {Message}", invEx.Message);
-                    throw invEx;
-                }
-                catch (DbUpdateException dbEx)
-                {
-                    _logger.LoggWarning("ForgotPassword - Database access error: {Message}", dbEx.Message);
-                    throw dbEx;
-                }
+        //        try
+        //        {
+        //            user = await _db.User.Where(u => u.Email == email).FirstOrDefaultAsync();
+        //        }
+        //        catch (InvalidOperationException invEx)
+        //        {
+        //            _logger.LoggWarning("ForgotPassword - Invalid operation while retrieving user: {Message}", invEx.Message);
+        //            throw invEx;
+        //        }
+        //        catch (DbUpdateException dbEx)
+        //        {
+        //            _logger.LoggWarning("ForgotPassword - Database access error: {Message}", dbEx.Message);
+        //            throw dbEx;
+        //        }
 
-                if (user != null)
-                {
-                    string newPassword;
-                    string hashedPassword;
-                    try
-                    {
-                        newPassword = _randomPasswordGenerator.GenerateRandomPassword(8);
-                        hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);//_passwordHasher.Hash(newPassword);
-                    }
-                    catch (ArgumentException argEx)
-                    {
-                        _logger.LoggWarning("ForgotPassword - Error generating or hashing password: {Message}", argEx.Message);
-                        throw;
-                    }
-                    catch (CryptographicException cryptoEx)
-                    {
-                        _logger.LoggWarning("ForgotPassword - Cryptographic error while hashing password: {Message}", cryptoEx.Message);
-                        throw;
-                    }
+        //        if (user != null)
+        //        {
+        //            string newPassword;
+        //            string hashedPassword;
+        //            try
+        //            {
+        //                newPassword = _randomPasswordGenerator.GenerateRandomPassword(8);
+        //                hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);//_passwordHasher.Hash(newPassword);
+        //            }
+        //            catch (ArgumentException argEx)
+        //            {
+        //                _logger.LoggWarning("ForgotPassword - Error generating or hashing password: {Message}", argEx.Message);
+        //                throw;
+        //            }
+        //            catch (CryptographicException cryptoEx)
+        //            {
+        //                _logger.LoggWarning("ForgotPassword - Cryptographic error while hashing password: {Message}", cryptoEx.Message);
+        //                throw;
+        //            }
 
-                    try
-                    {
-                        user.UpdatePassword(hashedPassword); // use domain method to update
-                        await _db.SaveChangesAsync();
-                    }
-                    catch (DbUpdateException dbEx)
-                    {
-                        _logger.LoggWarning("ForgotPassword - Error saving new password to database: {Message}", dbEx.Message);
-                        throw;
-                    }
+        //            try
+        //            {
+        //                user.UpdatePassword(hashedPassword); // use domain method to update
+        //                await _db.SaveChangesAsync();
+        //            }
+        //            catch (DbUpdateException dbEx)
+        //            {
+        //                _logger.LoggWarning("ForgotPassword - Error saving new password to database: {Message}", dbEx.Message);
+        //                throw;
+        //            }
 
 
-                    var content = _userEmailContentBuilder.BuildContentforPasswordReset(user, user.UserId, newPassword);
-                    await _emailService.SendEmailAsync(user.Email, "Reset Password – Your Account Details", content);
+        //            var content = _userEmailContentBuilder.BuildContentforPasswordReset(user, user.UserId, newPassword);
+        //            await _emailService.SendEmailAsync(user.Email, "Reset Password – Your Account Details", content);
 
-                    return user;
-                }
+        //            return user;
+        //        }
 
-                else return user;
+        //        else return user;
 
                 
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("ViewUser for password resert - View user failed");
-                throw;
-            }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LoggWarning("ViewUser for password resert - View user failed");
+        //        throw;
+        //    }
+        //}
+
+        public async Task<Users?> GetUserByEmailAsync(string email)
+        {
+            return await _db.User.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task UpdatePasswordAsync(Users user)
+        {
+            _db.User.Update(user);
+            await _db.SaveChangesAsync();
         }
 
         public async Task UpdateUser(int id, UpdateUserDTO obj)
