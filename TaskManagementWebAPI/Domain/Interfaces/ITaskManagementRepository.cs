@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc; 
 using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Domain.Interfaces
 {
@@ -16,14 +17,22 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        Task AddTask(AddTaskDTO dto);
+        Task<int> AddTask(Tasks task);
 
         /// <summary>
-        /// For extracting and saving the uploaded file
+        /// For saving extracted data from uploaded file using dapper
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="tasks"></param>
         /// <returns></returns>
-        Task ProcessFileAsync(IFormFile file);
+        Task SaveTasksWithDapperAsync(List<Tasks> tasks);
+
+        /// <summary>
+        /// For saving extracted data from uploaded file using EF
+        /// </summary>
+        /// <param name="tasks"></param>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        Task SaveTasksWithEFAsync(List<Tasks> tasks, string prefix);
 
         /// <summary>
         /// For viewing all the tasks details
@@ -44,7 +53,7 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         /// <param name="id"></param>
         /// <param name="obj"></param>
         /// <returns></returns>
-        Task UpdateTask(int id, AddTaskDTO obj);
+        Task UpdateTask(Tasks task);
 
         
         /// <summary>

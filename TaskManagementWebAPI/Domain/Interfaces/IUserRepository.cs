@@ -11,7 +11,7 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        Task RegisterAsync(RegisterDTO dto);
+        Task<int> RegisterAsync(Users user);
 
         /// <summary>
         /// For viewing user details
@@ -24,8 +24,22 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        Task<Users?> ForgotPassword(string email);
-        
+       // Task<Users?> ForgotPassword(string email);
+
+        /// <summary>
+        /// For email validation for forgot password functionality. 
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        Task<Users?> GetUserByEmailAsync(string email);
+
+        /// <summary>
+        /// to update paswword for forgot password functionality.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        Task UpdatePasswordAsync(Users user);
+
         /// <summary>
         /// For updating user details
         /// </summary>

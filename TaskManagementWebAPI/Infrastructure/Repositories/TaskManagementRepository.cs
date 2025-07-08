@@ -1,4 +1,5 @@
-﻿using LoggingLibrary.Interfaces;
+﻿using Dapper;
+using LoggingLibrary.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -21,35 +22,19 @@ using TaskManagementWebAPI.Infrastructure.Persistence;
 namespace TaskManagementWebAPI.Infrastructure.Repositories
 {
     public class TaskManagementRepository : ITaskManagementRepository
-    {
-        private readonly ITaskFileParserFactory _parserFactory;
-        private readonly IMaptoTasks _taskMapper;
+    { 
         private readonly ApplicationDbContext _db;
         private readonly IAppLogger<UserAuthRepository> _logger;
-        private readonly IEmailContentBuilder _contentBuilder;
-        private readonly IEmailService _emailService;
         private readonly ITaskUploadDapperRepository _dapper;
-        private readonly IDbConnection _connection;
-        private readonly IConfiguration _configuration;
-        private readonly TaskSettings _taskSettings;
-        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private readonly IDbConnection _connection; 
 
-        public TaskManagementRepository(ITaskFileParserFactory parseFactory, ApplicationDbContext db,
-            IMaptoTasks taskMapper, IAppLogger<UserAuthRepository> logger,
-            IEmailContentBuilder contentBuilder, IEmailService emailService,
-            ITaskUploadDapperRepository dapper, IDbConnection connection, IConfiguration configuration,
-            IOptions<TaskSettings> taskSettings)
-        {
-            _parserFactory = parseFactory;
-            _db = db;
-            _taskMapper = taskMapper;
-            _logger = logger;
-            _contentBuilder = contentBuilder;
-            _emailService = emailService;
+        public TaskManagementRepository(ApplicationDbContext db, IAppLogger<UserAuthRepository> logger, 
+            ITaskUploadDapperRepository dapper, IDbConnection connection)
+        { 
+            _db = db; 
+            _logger = logger; 
             _dapper = dapper;
-            _connection = connection;
-            _configuration = configuration;
-            _taskSettings = taskSettings.Value;
+            _connection = connection; 
         }
 
         public async Task<List<AssignUserDTO>> ViewUsers()
@@ -125,246 +110,205 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
         }
 
-        public async Task AddTask(AddTaskDTO dto)
-        {
-            await _semaphore.WaitAsync();
-            try {
-                var task = new Tasks
-                {
-                    taskName = dto.taskName,
-                    taskDescription = dto.taskDescription,
-                    UserId = dto.UserId,
-                    dueDate = dto.dueDate,
-                    priority = dto.priority,
-                    createdBy = dto.createdBy,
-                    taskType = dto.taskType,
-                    referenceId = await GenerateUniqueNumericIDTaskAsync(_taskSettings.IDTaskPrefix)
-                    //taskStatus = dto.taskStatus
-
-                };
+        public async Task<int> AddTask(Tasks task)
+        { 
+            try { 
 
                 _db.Task.Add(task);
                 await _db.SaveChangesAsync();
-                var newTaskId = task.taskId;
-                // return user;
-
-                var user = await _db.User.FindAsync(dto.UserId);
-                if (user == null)
-                {
-                    _logger.LoggWarning("User not found for ID {UserId}", dto.UserId);
-                    return;
-                }
+                return task.taskId;
                  
-                var userTasks = await _db.Task
-                                         .Where(t => t.taskId == newTaskId)
-                                         .ToListAsync();
-                if (userTasks.Any())
-                {
-                    var content = _contentBuilder.BuildContent(user, userTasks);
-                    await _emailService.SendEmailAsync(user.Email, "New Task Added", content);
-                }
-            }
-            catch (InvalidOperationException ex)
-            {
-                _logger.LoggError(ex, "AddTask - Invalid operation for user ID {UserId}", dto.UserId);
-                throw ex.InnerException;
-            }
+            } 
             catch (DbUpdateException ex)
             {
-                _logger.LoggError(ex, "AddTask - Database update failed while saving task for user ID {UserId}", dto.UserId);
+                _logger.LoggError(ex, "AddTask - Database update failed while saving task");
                 throw ex.InnerException;
             }
             catch (Exception ex)
             {
-                _logger.LoggError(ex, "AddTask - Unexpected error occurred while adding task for user ID {UserId}", dto.UserId);
+                _logger.LoggError(ex, "AddTask - Database update failed while saving task");
+                throw;
+            } 
+        }
+
+
+        //[Obsolete]
+        //public async Task ProcessFileAsync(IFormFile file)
+        //{
+        //    try
+        //    {
+        //        var parser = _parserFactory.GetParser(file.FileName);
+        //        var rawData = await parser.ParseAsync(file);
+
+        //        var tasks = _taskMapper.MapToTasks(rawData);
+
+        //        var tomorrow = DateTime.Today.AddDays(1);
+
+        //        var validTasks = tasks
+        //            .Where(t => t.dueDate.Date >= tomorrow)
+        //            .ToList();
+
+        //        if (!validTasks.Any())
+        //        {
+        //            throw new ArgumentException("All task due dates are either today or in the past. Please upload valid tasks.");
+        //        }
+
+        //        var useDapper = _configuration.GetValue<bool>("UseDapper:UseDapper");
+
+        //        if (useDapper)
+        //        {
+        //            // --- DAPPER BLOCK ---
+        //            _connection.Open();
+        //            using var transaction = _connection.BeginTransaction();
+        //            try
+        //            {
+        //                await _dapper.InsertTasksAsync(validTasks, transaction);
+        //                transaction.Commit();
+        //            }
+        //            catch
+        //            {
+        //                transaction.Rollback();
+        //                throw;
+        //            }
+        //            finally
+        //            {
+        //                _connection.Close();
+        //            }
+
+        //            var tasksByUser = validTasks
+        //                .GroupBy(t => t.UserId)
+        //                .ToDictionary(g => g.Key, g => g.ToList());
+
+        //            _connection.Open(); 
+
+        //            foreach (var entry in tasksByUser)
+        //            {
+        //                var userId = entry.Key;
+        //                var userTasks = entry.Value;
+
+        //                Users? user = null;
+
+        //                try
+        //                { 
+        //                    user = await _dapper.GetUserByIdAsync(userId, null);
+
+        //                }
+        //                catch
+        //                {
+        //                    _connection.Close();
+        //                    throw;
+        //                } 
+
+        //                if (user == null)
+        //                {
+        //                    _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
+        //                    continue;
+        //                }
+
+        //                var content = _contentBuilder.BuildContent(user, userTasks);
+        //                await _emailService.SendEmailAsync(user.Email, "New Tasks Assigned to You", content);
+        //            }
+
+        //            _connection.Close();
+        //        }
+        //        else
+        //        {
+        //            // --- EF CORE BLOCK ---
+        //            string lastRefId = await GetLastReferenceIdEFAsyncUploadEF(_taskSettings.IDTaskPrefix);
+        //            int nextNumber = ExtractNumberFromReferenceIdUploadEF(lastRefId) + 1;
+        //            foreach (var task in validTasks)
+        //            {
+        //                task.referenceId = $"{_taskSettings.IDTaskPrefix}-{nextNumber}";
+        //                nextNumber++;
+
+        //            }
+
+        //            _db.Task.AddRange(validTasks);
+        //            await _db.SaveChangesAsync();
+
+        //            var tasksByUser = validTasks
+        //                .GroupBy(t => t.UserId)
+        //                .ToDictionary(g => g.Key, g => g.ToList());
+
+        //            foreach (var entry in tasksByUser)
+        //            {
+        //                var userId = entry.Key;
+        //                var userTasks = entry.Value;
+
+        //                var user = await _db.User.FindAsync(userId);
+        //                if (user == null)
+        //                {
+        //                    _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
+        //                    continue;
+        //                }
+
+        //                var content = _contentBuilder.BuildContent(user, userTasks);
+        //                await _emailService.SendEmailAsync(user.Email, "New Tasks Assigned to You", content);
+        //            }
+        //        }
+        //    }
+        //    catch (ArgumentException ex)
+        //    {
+        //        _logger.LoggWarning("Validation failed during file processing: {Message}", ex.Message);
+        //        throw;
+        //    }
+        //    catch (InvalidOperationException ex)
+        //    {
+        //        _logger.LoggError(ex, "Invalid operation while processing file.");
+        //        throw;
+        //    }
+        //    catch (SqlException ex)
+        //    {
+        //        _logger.LoggError(ex, "SQL error occurred during file processing.");
+        //        throw;
+        //    }
+        //    catch (IOException ex)
+        //    {
+        //        _logger.LoggError(ex, "File I/O error occurred during file processing.");
+        //        throw;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LoggError(ex, "Unexpected error occurred during task file upload.");
+        //        throw;
+        //    }
+        //}
+
+
+        public async Task SaveTasksWithDapperAsync(List<Tasks> tasks)
+        {
+            _connection.Open();
+            using var transaction = _connection.BeginTransaction();
+
+            try
+            {
+                await _dapper.InsertTasksAsync(tasks, transaction);
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
                 throw;
             }
             finally
             {
-                _semaphore.Release();
+                _connection.Close();
             }
         }
 
-        public async Task<string>GenerateUniqueNumericIDTaskAsync(string prefix)
+        public async Task SaveTasksWithEFAsync(List<Tasks> tasks, string prefix)
         {
-            try
+            string lastRefId = await GetLastReferenceIdEFAsyncUploadEF(prefix);
+            int nextNumber = ExtractNumberFromReferenceIdUploadEF(lastRefId) + 1;
+
+            foreach (var task in tasks)
             {
-
-                string searchPrefix = prefix + "-";
-
-                var lastTask = await _db.Task
-                    .Where(t => t.referenceId.StartsWith(searchPrefix))
-                    .OrderByDescending(t => t.referenceId)
-                    .FirstOrDefaultAsync();
-
-                int nextNumber = _taskSettings.InitialReferenceId; // start from 12000 if no task exists
-
-                if (lastTask != null)
-                {
-                    string[] parts = lastTask.referenceId.Split('-');
-                    if (parts.Length == 2 && int.TryParse(parts[1], out int lastNumber))
-                    {
-                        nextNumber = lastNumber + 1;
-                    }
-                }
-
-                return $"{prefix}-{nextNumber}";
-
-            }
-            catch (InvalidOperationException ex)
-            {
-                _logger.LoggError(ex, "GenerateUniqueNumericIDTaskAsync - Invalid operation while generating ID with prefix {Prefix}", prefix);
-                throw ex.InnerException;
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggError(ex, "GenerateUniqueNumericIDTaskAsync - Unexpected error while generating ID with prefix {Prefix}", prefix);
-                throw;
+                task.referenceId = $"{prefix}-{nextNumber}";
+                nextNumber++;
             }
 
-
-        }
-
-        [Obsolete]
-        public async Task ProcessFileAsync(IFormFile file)
-        {
-            try
-            {
-                var parser = _parserFactory.GetParser(file.FileName);
-                var rawData = await parser.ParseAsync(file);
-
-                var tasks = _taskMapper.MapToTasks(rawData);
-
-                var tomorrow = DateTime.Today.AddDays(1);
-
-                var validTasks = tasks
-                    .Where(t => t.dueDate.Date >= tomorrow)
-                    .ToList();
-
-                if (!validTasks.Any())
-                {
-                    throw new ArgumentException("All task due dates are either today or in the past. Please upload valid tasks.");
-                }
-
-                var useDapper = _configuration.GetValue<bool>("UseDapper:UseDapper");
-
-                if (useDapper)
-                {
-                    // --- DAPPER BLOCK ---
-                    _connection.Open();
-                    using var transaction = _connection.BeginTransaction();
-                    try
-                    {
-                        await _dapper.InsertTasksAsync(validTasks, transaction);
-                        transaction.Commit();
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                        throw;
-                    }
-                    finally
-                    {
-                        _connection.Close();
-                    }
-
-                    var tasksByUser = validTasks
-                        .GroupBy(t => t.UserId)
-                        .ToDictionary(g => g.Key, g => g.ToList());
-
-                    _connection.Open(); 
-
-                    foreach (var entry in tasksByUser)
-                    {
-                        var userId = entry.Key;
-                        var userTasks = entry.Value;
-
-                        Users? user = null;
-
-                        try
-                        { 
-                            user = await _dapper.GetUserByIdAsync(userId, null);
-                           
-                        }
-                        catch
-                        {
-                            _connection.Close();
-                            throw;
-                        } 
-
-                        if (user == null)
-                        {
-                            _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
-                            continue;
-                        }
-
-                        var content = _contentBuilder.BuildContent(user, userTasks);
-                        await _emailService.SendEmailAsync(user.Email, "New Tasks Assigned to You", content);
-                    }
-                  
-                    _connection.Close();
-                }
-                else
-                {
-                    // --- EF CORE BLOCK ---
-                    string lastRefId = await GetLastReferenceIdEFAsyncUploadEF(_taskSettings.IDTaskPrefix);
-                    int nextNumber = ExtractNumberFromReferenceIdUploadEF(lastRefId) + 1;
-                    foreach (var task in validTasks)
-                    {
-                        task.referenceId = $"{_taskSettings.IDTaskPrefix}-{nextNumber}";
-                        nextNumber++;
-
-                    }
-
-                    _db.Task.AddRange(validTasks);
-                    await _db.SaveChangesAsync();
-
-                    var tasksByUser = validTasks
-                        .GroupBy(t => t.UserId)
-                        .ToDictionary(g => g.Key, g => g.ToList());
-
-                    foreach (var entry in tasksByUser)
-                    {
-                        var userId = entry.Key;
-                        var userTasks = entry.Value;
-
-                        var user = await _db.User.FindAsync(userId);
-                        if (user == null)
-                        {
-                            _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
-                            continue;
-                        }
-
-                        var content = _contentBuilder.BuildContent(user, userTasks);
-                        await _emailService.SendEmailAsync(user.Email, "New Tasks Assigned to You", content);
-                    }
-                }
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.LoggWarning("Validation failed during file processing: {Message}", ex.Message);
-                throw;
-            }
-            catch (InvalidOperationException ex)
-            {
-                _logger.LoggError(ex, "Invalid operation while processing file.");
-                throw;
-            }
-            catch (SqlException ex)
-            {
-                _logger.LoggError(ex, "SQL error occurred during file processing.");
-                throw;
-            }
-            catch (IOException ex)
-            {
-                _logger.LoggError(ex, "File I/O error occurred during file processing.");
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggError(ex, "Unexpected error occurred during task file upload.");
-                throw;
-            }
+            _db.Task.AddRange(tasks);
+            await _db.SaveChangesAsync();
         }
 
         public async Task<string> GetLastReferenceIdEFAsyncUploadEF(string prefix)
@@ -458,29 +402,13 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         }
 
-        public async Task UpdateTask(int id, AddTaskDTO obj)
+        public async Task UpdateTask(Tasks task)
         {
             try
             {
-                var task = await _db.Task.FindAsync(id);
-                if (task == null)
-                {
-                    throw new Exception("Task not found");
-                }
-
-                task.taskName = obj.taskName;
-                task.UserId = obj.UserId;
-                task.dueDate = obj.dueDate;
-                task.taskDescription = obj.taskDescription;
-                task.taskStatus = obj.taskStatus;
-                task.taskType = obj.taskType;
-                if (obj.taskStatus == "Completed")
-                {
-                    task.taskState = obj.taskStatus;
-                }
-
                 try
                 {
+                    _db.Task.Update(task);
                     await _db.SaveChangesAsync();
                 }
                 catch (DbUpdateException dbEx)
@@ -488,23 +416,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     _logger.LoggWarning("Database error while retrieving user/tasks: {Message}", dbEx.Message);
                     throw dbEx.InnerException;
                 }
-
-
-                if (obj.taskStatus == "Completed")
-                {
-                 
-                    var userTasks = await _db.Task
-                                             .Where(t => t.taskId == id)
-                                             .ToListAsync();
-
-                    var user = await _db.User.FindAsync(task.createdBy);
-
-                    if (userTasks.Any())
-                    {
-                        var content = _contentBuilder.BuildContent(user, userTasks);
-                        await _emailService.SendEmailAsync(user.Email, "Task Completed", content);
-                    }
-                }
+                               
             }
             catch (KeyNotFoundException)
             {
@@ -518,7 +430,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LoggError(ex, "Unexpected error occurred while updating task with ID {TaskId}.", id);
+                _logger.LoggError(ex, "Unexpected error occurred while updating task with ID {TaskId}.", task.taskId);
                 throw;
             }
         }

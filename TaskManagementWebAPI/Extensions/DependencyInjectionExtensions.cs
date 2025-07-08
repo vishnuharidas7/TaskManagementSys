@@ -13,6 +13,8 @@ using LoggingLibrary.Implementations;
 using LoggingLibrary;
 using System.Data;
 using FileParser.Factory;
+using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Application.Services;
 
 namespace TaskManagementWebAPI.Extensions
 {
@@ -28,6 +30,8 @@ namespace TaskManagementWebAPI.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITaskManagementRepository, TaskManagementRepository>();
             services.AddHttpClient<IUserAuthRepository, UserAuthRepository>();
+            services.AddScoped<ITaskApplicationService, TaskApplicartionService>();
+            services.AddScoped<IUserApplicationService, UserApplicationService>();
 
             // File Upload
             services.AddScoped<ExcelTaskFileParser>();
