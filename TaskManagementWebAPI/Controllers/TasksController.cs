@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Domain.Interfaces;
+using TaskManagementWebAPI.Infrastructure.Services.EmailService;
+using TaskManagementWebAPI.Infrastructure.Services.TaskStatusUpdateService;
 
 namespace TaskManagementWebAPI.Controllers
 {
@@ -15,10 +17,23 @@ namespace TaskManagementWebAPI.Controllers
         private ITaskManagementRepository _task;
         private readonly IAppLogger<TasksController> _logger;
         private readonly ITaskApplicationService _taskControllerService;
-        public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger, ITaskApplicationService taskControllerService)
+       
+
+        //Scheduler
+
+        private readonly TaskApplicationService _taskAppService;
+        private readonly TaskEmailDispatcher _taskEmailDispatcher;
+
+
+
+
+
+        public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger, TaskApplicationService taskAppService,TaskEmailDispatcher taskEmailDispatcher, ITaskApplicationService taskControllerService)
         {
             _task = task ?? throw new ArgumentNullException(nameof(task), "Task cannot be null.");
             _logger =logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+            _taskAppService = taskAppService;
+            _taskEmailDispatcher=taskEmailDispatcher;
             _taskControllerService = taskControllerService ?? throw new ArgumentNullException(nameof(_taskControllerService),"TaskControlService cannot be null.");
         }
 
@@ -216,5 +231,42 @@ namespace TaskManagementWebAPI.Controllers
                 throw;
             }
         }
+
+        //scheduler
+        //[Authorize(Roles = "Admin,User")]
+        [HttpPost("update-statuses-scheduler")]
+        public IActionResult UpdateTaskStatusesScheduler()
+        {
+            try
+            {
+                _taskAppService.UpdateTaskStatuses();
+                _logger.LoggInformation("Task statuses updated via API");
+                return Ok("Task statuses updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "Error updating task statuses");
+                return StatusCode(500, "Error updating tasks.");
+            }
+        }
+
+        //scheduler
+        //[Authorize(Roles = "Admin,User")]
+        [HttpPost("update-overduetaskmail-scheduler")]
+        public IActionResult OverdueTaskEmailScheduler()
+        {
+            try
+            {
+                _taskEmailDispatcher.DispatchEmailsAsync();
+                _logger.LoggInformation("Task over due mail generated via API");
+                return Ok("Task statuses updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "ErrorTask over due mail generating");
+                return StatusCode(500, "Error ver due mail generating.");
+            }
+        }
+
     }
 }

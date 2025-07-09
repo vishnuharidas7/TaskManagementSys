@@ -37,15 +37,36 @@ namespace TaskManagementWebAPI.Application.Services.FileUpload
                 INSERT INTO Task (taskName, taskDescription, taskStatus, createdDate,createdBy, dueDate, UserId, priority, taskState, taskType ,referenceId)
                 VALUES (@taskName, @taskDescription, @taskStatus, @createdDate,@createdBy, @dueDate, @UserId, @priority, @taskState, @taskType, @referenceId);";
 
-                string lastUsedReferenceNo = await GenerateUniqueNumericIDTaskAsync(_taskSettings.IDTaskPrefix, transaction, connection);
-                int nextNumber = ExtractNumberFromReferenceId(lastUsedReferenceNo) + 1;
+                int maxAttempts = 5;
+                int attempt = 0;
+                bool success = false;
 
-                foreach (var task in tasks)
+                while (!success && attempt < maxAttempts)
                 {
-                    task.referenceId = $"{_taskSettings.IDTaskPrefix}-{nextNumber}";
-                    nextNumber++;
+                    try
+                    {
+                        string lastUsedReferenceNo = await GenerateUniqueNumericIDTaskAsync(_taskSettings.IDTaskPrefix, transaction, connection);
+                        int nextNumber = ExtractNumberFromReferenceId(lastUsedReferenceNo) + 1;
 
-                    await connection.ExecuteAsync(sql, task, transaction);
+                        foreach (var task in tasks)
+                        {
+                            task.referenceId = $"{_taskSettings.IDTaskPrefix}-{nextNumber++}";
+                            await connection.ExecuteAsync(sql, task, transaction);
+                        }
+
+                        success = true;
+                    }
+                    catch (DbException dbEx) when (IsDuplicateReferenceIdException(dbEx))
+                    {
+                        attempt++;
+                        // Optional delay between retries
+                        await Task.Delay(50);
+                    }
+                }
+
+                if (!success)
+                {
+                    throw new Exception("Failed to insert tasks after multiple retries due to referenceId conflicts.");
                 }
             }
             catch (DbException dbEx)
@@ -57,6 +78,10 @@ namespace TaskManagementWebAPI.Application.Services.FileUpload
                 throw;
             }
 
+        }
+        private bool IsDuplicateReferenceIdException(DbException ex)
+        {
+            return ex.Message.Contains("Duplicate entry") && ex.Message.Contains("referenceId");
         }
 
         public async Task<string> GenerateUniqueNumericIDTaskAsync(string prefix,IDbTransaction transaction,IDbConnection connection)

@@ -49,7 +49,7 @@ namespace TaskManagementWebAPI.Extensions
             services.AddScoped<ITaskStatusRepository, TaskStatusRepository>();
             services.AddScoped<TaskStatusService>();
             services.AddScoped<TaskApplicationService>();
-            services.AddHostedService<TaskStatusUpdateService>();
+          //  services.AddHostedService<TaskStatusUpdateService>();
             services.AddScoped<ITaskUploadDapperRepository, TaskUploadDapperRepository>();
 
             // Email Service
