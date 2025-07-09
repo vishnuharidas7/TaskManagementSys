@@ -6,7 +6,7 @@ using TaskManagementWebAPI.Infrastructure.Repositories;
 using TaskManagementWebAPI.Infrastructure.Services.EmailService;
 using TaskManagementWebAPI.Infrastructure.Services.FileUpload;
 using TaskManagementWebAPI.Infrastructure.Services.PasswordService;
-using TaskManagementWebAPI.Infrastructure.Services.TaskOndueUpdate;
+//using TaskManagementWebAPI.Infrastructure.Services.TaskOndueUpdate;
 using TaskManagementWebAPI.Infrastructure.Services.TaskStatusUpdateService;
 using LoggingLibrary.Interfaces;
 using LoggingLibrary.Implementations;
@@ -49,7 +49,7 @@ namespace TaskManagementWebAPI.Extensions
             services.AddScoped<ITaskStatusRepository, TaskStatusRepository>();
             services.AddScoped<TaskStatusService>();
             services.AddScoped<TaskApplicationService>();
-            services.AddHostedService<TaskStatusUpdateService>();
+          //  services.AddHostedService<TaskStatusUpdateService>();
             services.AddScoped<ITaskUploadDapperRepository, TaskUploadDapperRepository>();
 
             // Email Service
@@ -63,7 +63,7 @@ namespace TaskManagementWebAPI.Extensions
             services.AddScoped<INewUserEmailContentBuilder, NewUserEmailContentBuilder>();
             services.AddSingleton(EmailServiceFactory.CreateEmailService(configuration));
             services.AddScoped<TaskEmailDispatcher>();
-            services.AddHostedService<OverdueTaskEmailWorker>();
+          //  services.AddHostedService<OverdueTaskEmailWorker>();
             services.AddScoped<GmailSmtpEmailService>();
             services.AddScoped<IForgotPasswordHandler, ForgotPasswordHandler>();
 
