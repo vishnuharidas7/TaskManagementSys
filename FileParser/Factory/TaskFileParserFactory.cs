@@ -1,7 +1,9 @@
 ﻿using System.Net.Http;
 using TaskManagementWebAPI.Domain.Interfaces;
+using TaskManagementWebAPI.Infrastructure.Services.FileUpload;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
+namespace FileParser.Factory
 {
     public class TaskFileParserFactory : ITaskFileParserFactory
     {
@@ -25,7 +27,6 @@ namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
             }
             catch (InvalidOperationException ex)
             {
-                
                 throw;
             }
         }

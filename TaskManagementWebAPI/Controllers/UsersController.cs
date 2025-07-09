@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Infrastructure.Persistence;
 
@@ -14,15 +15,19 @@ namespace TaskManagementWebAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _user;
+        private readonly IUserApplicationService _userApplicationService;
         private readonly ApplicationDbContext _db;
         private readonly IAppLogger<AuthController> _logger;
 
-        public UsersController(IUserRepository user, ApplicationDbContext db, IAppLogger<AuthController> logger)
+        public UsersController(IUserRepository user, ApplicationDbContext db, 
+           IUserApplicationService userApplicationService ,IAppLogger<AuthController> logger)
         {
 
             _user = user ?? throw new ArgumentNullException(nameof(user), "User cannot be null.");
             _db = db ?? throw new ArgumentNullException(nameof(db), "Db cannot be null.");
+            _userApplicationService = userApplicationService ?? throw new ArgumentNullException(nameof(userApplicationService),"User Application service cannot be null");
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+
         }
 
         [Authorize(Roles = "Admin,User")]
@@ -53,7 +58,7 @@ namespace TaskManagementWebAPI.Controllers
                     return BadRequest(new { error = "Email already exists." });
 
 
-                await _user.RegisterAsync(dto);
+                await _userApplicationService.RegisterAsync(dto);
                 _logger.LoggInformation("Registered successfully");
                 return Ok(dto);
 

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskManagementWebAPI.Domain.Models
 {
-    [Index(nameof(referenceId),IsUnique =true)]
+    [Index(nameof(referenceId), IsUnique = true)]
     public class Tasks
     {
         [Key]
