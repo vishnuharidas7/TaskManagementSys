@@ -30,6 +30,11 @@ namespace TaskManagementWebAPI.Controllers
 
         }
 
+        /// <summary>
+        /// Validation for username at the time for user registration
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpGet("check-username")]
         public async Task<IActionResult> CheckUsernameExists([FromQuery] string username)
@@ -46,6 +51,11 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// For register a new user to the system
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(RegisterDTO dto)
@@ -70,7 +80,10 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
-        //[Authorize(Roles = "Admin")]
+        /// <summary>
+        /// To list the user details
+        /// </summary>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpGet("viewusers")]
         public async Task<ActionResult> UserList()
@@ -97,7 +110,12 @@ namespace TaskManagementWebAPI.Controllers
         }
 
 
-
+        /// <summary>
+        /// To update user details for the corresponding user id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpPut("updateuser/{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO obj)
@@ -114,6 +132,11 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// For deleting the user details corresponding to the user id from the system
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpDelete("deleteUser/{id}")]
         public async Task<ActionResult> DeleteUser(int id)
@@ -131,6 +154,11 @@ namespace TaskManagementWebAPI.Controllers
 
         }
 
+        /// <summary>
+        /// TO view user details correspondig to the user id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpGet("viewusersByid/{id}")]
         public async Task<ActionResult> UserListById(int id)
@@ -147,6 +175,12 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// To update user password
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpPut("updatePswd/{id}")]
         public async Task<ActionResult>UpdatePassword(int id,UpdatePasswordDTO obj)

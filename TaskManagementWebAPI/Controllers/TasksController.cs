@@ -28,6 +28,11 @@ namespace TaskManagementWebAPI.Controllers
             _taskEmailDispatcher=taskEmailDispatcher;
             _taskControllerService = taskControllerService ?? throw new ArgumentNullException(nameof(_taskControllerService),"TaskControlService cannot be null.");
         }
+
+        /// <summary>
+        /// For fetching user name in the dropdown for assigning task
+        /// </summary>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpGet("AssignUser")]
         public async Task<ActionResult> assignUserList()
@@ -44,6 +49,10 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// For viewing all the tasks details
+        /// </summary>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpGet("ViewAllTasks")]
         public async Task<ActionResult> viewAllTask()
@@ -60,6 +69,11 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// For adding a new task into the system
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpPost("AddTask")]
         public async Task<IActionResult> AddTask(AddTaskDTO dto)
@@ -78,6 +92,12 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// To update task details
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpPut("UpdateTask/{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] AddTaskDTO obj)
@@ -95,6 +115,11 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// To upload bulk task details into the system
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin")]
         [HttpPost("upload")]
         public async Task<IActionResult> FileUpload(IFormFile file)
@@ -115,7 +140,11 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
-
+        /// <summary>
+        /// To delete a specific task detail from the system
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpDelete("deleteTask/{id}")]
         public async Task<ActionResult> DeleteTask(int id)
@@ -133,6 +162,11 @@ namespace TaskManagementWebAPI.Controllers
 
         }
 
+        /// <summary>
+        /// To fetch user details corresponding to the user id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpGet("task/{userId:int}")]
         public async Task<IEnumerable<ViewTasksDTO>> GetTasksByUserId(int userId)
@@ -149,7 +183,11 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
-
+        /// <summary>
+        /// To fetch notifications data regarding tasks for user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpGet("taskNotification/{userId:int}")]
         public async Task<IEnumerable<NotificationDTO>> GetTasksNotificationbByUserId(int userId)
@@ -166,6 +204,10 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// To fetch notification data regarding tasks for admin
+        /// </summary>
+        /// <returns></returns>
         [Authorize(Roles = "Admin,User")]
         [HttpGet("taskNotificationAdmin")]
         public async Task<IEnumerable<NotificationDTO>> GetTasksNotificationbByAdmin()

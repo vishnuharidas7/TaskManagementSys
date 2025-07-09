@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Domain.Interfaces;
 
 namespace TaskManagementWebAPI.Controllers
@@ -21,6 +22,11 @@ namespace TaskManagementWebAPI.Controllers
             _forgotPasswordHandler = forgotPasswordHandler ?? throw new ArgumentNullException(nameof(forgotPasswordHandler), "ForgotPasswordHandler cannot be null.");
         }
 
+        /// <summary>
+        /// API Controller for user Authentication
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost("loginAuth")]
         public async Task<IActionResult> ExternalLogin([FromBody] LoginDTO dto)
         {
@@ -36,6 +42,11 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// For bearer token refresh to keep the user login
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenResponseDTO tokens)
         {
@@ -51,6 +62,11 @@ namespace TaskManagementWebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// For forgot password request to reset password
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {

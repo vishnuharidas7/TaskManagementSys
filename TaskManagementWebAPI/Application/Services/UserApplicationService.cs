@@ -16,12 +16,12 @@ namespace TaskManagementWebAPI.Application.Services
         private readonly IRandomPasswordGenerator _randomPasswordGenerator;
         private readonly IUserRepository _userRepository;
         private readonly IAppLogger<UserRepository> _logger;
-        private readonly INewUserEmailContentBuilder _userEmailContentBuilder;
+        private readonly IUserCreatedEmailContentBuilder _userEmailContentBuilder;
         private readonly IEmailService _emailService;
         private readonly ApplicationDbContext _db;
 
         public UserApplicationService(ApplicationDbContext db,IRandomPasswordGenerator randomPasswordGenerator, IUserRepository userRepository, IAppLogger<UserRepository> logger,
-            INewUserEmailContentBuilder userEmailContentBuilder, IEmailService emailService)
+            IUserCreatedEmailContentBuilder userEmailContentBuilder, IEmailService emailService)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db), "db cannot be null.");
             _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator), "randomPasswordGenerator cannot be null.");

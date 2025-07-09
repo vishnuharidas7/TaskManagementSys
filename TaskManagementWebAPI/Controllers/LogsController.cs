@@ -15,6 +15,11 @@ namespace TaskManagementWebAPI.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
         }
 
+        /// <summary>
+        /// Logs the message based on the specified log level (INFO, WARNING, or ERROR).
+        /// </summary>
+        /// <param name="logDto"></param>
+        /// <returns></returns>
         [HttpPost("PostLog")]
         public IActionResult postLog([FromBody] ClientLogDto logDto)
         {
