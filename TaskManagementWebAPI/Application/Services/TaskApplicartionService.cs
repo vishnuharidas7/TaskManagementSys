@@ -1,6 +1,7 @@
 ﻿using LoggingLibrary.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using NPOI.XWPF.UserModel;
 using System.Threading;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
@@ -12,7 +13,7 @@ using TaskManagementWebAPI.Infrastructure.Repositories;
 
 namespace TaskManagementWebAPI.Application.Services
 {
-    public class TaskApplicartionService : ITaskApplicationService
+    public class TaskApplicartionService : ITaskApplicartionService
     {
         private readonly ApplicationDbContext _db;
         private readonly ITaskManagementRepository _taskManagementRepository;
@@ -41,41 +42,61 @@ namespace TaskManagementWebAPI.Application.Services
 
         public async Task AddTaskAsync(AddTaskDTO dto)
         {
-            await _semaphore.WaitAsync();      
+            int attempts = 0;
+            const int maxAttempts = 5;
+            await _semaphore.WaitAsync();
             try
-            {
-                var task = new Tasks
+            { 
+                while(attempts<maxAttempts)
                 {
-                    taskName = dto.taskName,
-                    taskDescription = dto.taskDescription,
-                    UserId = dto.UserId,
-                    dueDate = dto.dueDate,
-                    priority = dto.priority,
-                    createdBy = dto.createdBy,
-                    taskType = dto.taskType,
-                    referenceId = await GenerateUniqueNumericIDTaskAsync(_taskSettings.IDTaskPrefix)
-                    
-                };
-
-                var newTaskId = await _taskManagementRepository.AddTask(task);
-                if (newTaskId != null)
-                {
-                    var user = await _db.User.FindAsync(dto.UserId);
-                    if (user == null)
+                    try
                     {
-                        _logger.LoggWarning("User not found for ID {UserId}", dto.UserId);
-                        return;
+                        var referenceId = await GenerateUniqueNumericIDTaskAsync(_taskSettings.IDTaskPrefix);
+                        var task = new Tasks
+                        {
+                            taskName = dto.taskName,
+                            taskDescription = dto.taskDescription,
+                            UserId = dto.UserId,
+                            dueDate = dto.dueDate,
+                            priority = dto.priority,
+                            createdBy = dto.createdBy,
+                            taskType = dto.taskType,
+                            referenceId = referenceId
+                        };
+                        var newTaskId = await _taskManagementRepository.AddTask(task);
+                        if (newTaskId != null)
+                        {
+                            var user = await _db.User.FindAsync(dto.UserId);
+                            if (user == null)
+                            {
+                                _logger.LoggWarning("User not found for ID {UserId}", dto.UserId);
+                                return;
+                            }
+
+                            var userTasks = await _db.Task
+                                                     .Where(t => t.taskId == newTaskId)
+                                                     .ToListAsync();
+                            if (userTasks.Any())
+                            {
+                                var content = _contentBuilder.BuildContent(user, userTasks);
+                                await _emailService.SendEmailAsync(user.Email, "New Task Added", content);
+                            }
+                        }
+                        break;
+                    }
+                    catch (DbUpdateException ex) when (IsDuplicateReferenceIdException(ex))
+                    {
+                        attempts++;
+                        _logger.LoggWarning("Duplicate reference ID generated — retrying... Attempt {Attempt}", attempts);
+                        await Task.Delay(50);
                     }
 
-                    var userTasks = await _db.Task
-                                             .Where(t => t.taskId == newTaskId)
-                                             .ToListAsync();
-                    if (userTasks.Any())
+                    if (attempts == maxAttempts)
                     {
-                        var content = _contentBuilder.BuildContent(user, userTasks);
-                        await _emailService.SendEmailAsync(user.Email, "New Task Added", content);
+                        throw new Exception("Failed to add task after multiple attempts due to reference ID conflicts.");
                     }
                 }
+                
             }
             catch (InvalidOperationException ex)
             {
@@ -96,6 +117,11 @@ namespace TaskManagementWebAPI.Application.Services
             {
                 _semaphore.Release();
             }
+        }
+        private bool IsDuplicateReferenceIdException(DbUpdateException ex)
+        {
+            return ex.InnerException?.Message.Contains("Duplicate entry") == true
+                && ex.InnerException?.Message.Contains("referenceId") == true;
         }
 
         public async Task<string> GenerateUniqueNumericIDTaskAsync(string prefix)

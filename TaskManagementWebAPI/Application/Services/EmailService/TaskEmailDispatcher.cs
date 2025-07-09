@@ -4,7 +4,7 @@ using TaskManagementWebAPI.Domain.Interfaces;
 
 namespace TaskManagementWebAPI.Application.Services.EmailService
 {
-    public class TaskEmailDispatcher
+    public class TaskEmailDispatcher: ITaskEmailDispatcher
     {
         private readonly IUserEmailRepository _userRepo;
         private readonly ITaskEmailRepository _taskRepo;

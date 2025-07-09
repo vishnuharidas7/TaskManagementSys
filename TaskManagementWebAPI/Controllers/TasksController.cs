@@ -1,12 +1,9 @@
 ﻿using LoggingLibrary.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc; 
+using Microsoft.AspNetCore.Mvc;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Domain.Interfaces;
-using TaskManagementWebAPI.Infrastructure.Services.EmailService;
-using TaskManagementWebAPI.Infrastructure.Services.TaskStatusUpdateService;
 
 namespace TaskManagementWebAPI.Controllers
 {
@@ -16,23 +13,15 @@ namespace TaskManagementWebAPI.Controllers
     {
         private ITaskManagementRepository _task;
         private readonly IAppLogger<TasksController> _logger;
-        private readonly ITaskApplicationService _taskControllerService;
-       
+        private readonly ITaskApplicartionService _taskControllerService;
+        private readonly ITaskEmailDispatcher _taskEmailDispatcher;
+        private readonly TTaskApplicationServices _taskApplicationService;
 
-        //Scheduler
-
-        private readonly TaskApplicationService _taskAppService;
-        private readonly TaskEmailDispatcher _taskEmailDispatcher;
-
-
-
-
-
-        public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger, TaskApplicationService taskAppService,TaskEmailDispatcher taskEmailDispatcher, ITaskApplicationService taskControllerService)
+        public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger, TTaskApplicationServices taskAppService,ITaskEmailDispatcher taskEmailDispatcher, ITaskApplicartionService taskControllerService)
         {
             _task = task ?? throw new ArgumentNullException(nameof(task), "Task cannot be null.");
             _logger =logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
-            _taskAppService = taskAppService;
+            _taskApplicationService = taskAppService;
             _taskEmailDispatcher=taskEmailDispatcher;
             _taskControllerService = taskControllerService ?? throw new ArgumentNullException(nameof(_taskControllerService),"TaskControlService cannot be null.");
         }
@@ -234,12 +223,12 @@ namespace TaskManagementWebAPI.Controllers
 
         //scheduler
         //[Authorize(Roles = "Admin,User")]
-        [HttpPost("update-statuses-scheduler")]
-        public IActionResult UpdateTaskStatusesScheduler()
+        [HttpPost("update-Taskstatuses")]
+        public IActionResult UpdateTaskStatuses()
         {
             try
             {
-                _taskAppService.UpdateTaskStatuses();
+                _taskApplicationService.UpdateTaskStatuses();
                 _logger.LoggInformation("Task statuses updated via API");
                 return Ok("Task statuses updated successfully.");
             }
@@ -252,8 +241,8 @@ namespace TaskManagementWebAPI.Controllers
 
         //scheduler
         //[Authorize(Roles = "Admin,User")]
-        [HttpPost("update-overduetaskmail-scheduler")]
-        public IActionResult OverdueTaskEmailScheduler()
+        [HttpPost("send-overduetaskmail")]
+        public IActionResult OverdueTaskEmail()
         {
             try
             {

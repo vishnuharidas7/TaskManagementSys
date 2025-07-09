@@ -30,7 +30,7 @@ namespace TaskManagementWebAPI.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITaskManagementRepository, TaskManagementRepository>();
             services.AddHttpClient<IUserAuthRepository, UserAuthRepository>();
-            services.AddScoped<ITaskApplicationService, TaskApplicartionService>();
+            services.AddScoped<ITaskApplicartionService, TaskApplicartionService>();
             services.AddScoped<IUserApplicationService, UserApplicationService>();
 
             // File Upload
@@ -48,7 +48,7 @@ namespace TaskManagementWebAPI.Extensions
             // Task status
             services.AddScoped<ITaskStatusRepository, TaskStatusRepository>();
             services.AddScoped<TaskStatusService>();
-            services.AddScoped<TaskApplicationService>();
+            services.AddScoped<TTaskApplicationServices, TaskApplicationService>();
           //  services.AddHostedService<TaskStatusUpdateService>();
             services.AddScoped<ITaskUploadDapperRepository, TaskUploadDapperRepository>();
 
@@ -62,8 +62,8 @@ namespace TaskManagementWebAPI.Extensions
             services.AddScoped<IEmailContentBuilder, TaskEmailContentBuilder>();
             services.AddScoped<IUserCreatedEmailContentBuilder, UserCreatedEmailContentBuilder>();
             services.AddSingleton(EmailServiceFactory.CreateEmailService(configuration));
-            services.AddScoped<TaskEmailDispatcher>();
-            services.AddHostedService<TaskReminderEmailWorker>(); 
+            services.AddScoped<ITaskEmailDispatcher,TaskEmailDispatcher>();
+          //  services.AddHostedService<OverdueTaskEmailWorker>();
             services.AddScoped<GmailSmtpEmailService>();
             services.AddScoped<IForgotPasswordHandler, ForgotPasswordHandler>();
 
