@@ -132,148 +132,6 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         }
 
 
-        //[Obsolete]
-        //public async Task ProcessFileAsync(IFormFile file)
-        //{
-        //    try
-        //    {
-        //        var parser = _parserFactory.GetParser(file.FileName);
-        //        var rawData = await parser.ParseAsync(file);
-
-        //        var tasks = _taskMapper.MapToTasks(rawData);
-
-        //        var tomorrow = DateTime.Today.AddDays(1);
-
-        //        var validTasks = tasks
-        //            .Where(t => t.dueDate.Date >= tomorrow)
-        //            .ToList();
-
-        //        if (!validTasks.Any())
-        //        {
-        //            throw new ArgumentException("All task due dates are either today or in the past. Please upload valid tasks.");
-        //        }
-
-        //        var useDapper = _configuration.GetValue<bool>("UseDapper:UseDapper");
-
-        //        if (useDapper)
-        //        {
-        //            // --- DAPPER BLOCK ---
-        //            _connection.Open();
-        //            using var transaction = _connection.BeginTransaction();
-        //            try
-        //            {
-        //                await _dapper.InsertTasksAsync(validTasks, transaction);
-        //                transaction.Commit();
-        //            }
-        //            catch
-        //            {
-        //                transaction.Rollback();
-        //                throw;
-        //            }
-        //            finally
-        //            {
-        //                _connection.Close();
-        //            }
-
-        //            var tasksByUser = validTasks
-        //                .GroupBy(t => t.UserId)
-        //                .ToDictionary(g => g.Key, g => g.ToList());
-
-        //            _connection.Open(); 
-
-        //            foreach (var entry in tasksByUser)
-        //            {
-        //                var userId = entry.Key;
-        //                var userTasks = entry.Value;
-
-        //                Users? user = null;
-
-        //                try
-        //                { 
-        //                    user = await _dapper.GetUserByIdAsync(userId, null);
-
-        //                }
-        //                catch
-        //                {
-        //                    _connection.Close();
-        //                    throw;
-        //                } 
-
-        //                if (user == null)
-        //                {
-        //                    _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
-        //                    continue;
-        //                }
-
-        //                var content = _contentBuilder.BuildContent(user, userTasks);
-        //                await _emailService.SendEmailAsync(user.Email, "New Tasks Assigned to You", content);
-        //            }
-
-        //            _connection.Close();
-        //        }
-        //        else
-        //        {
-        //            // --- EF CORE BLOCK ---
-        //            string lastRefId = await GetLastReferenceIdEFAsyncUploadEF(_taskSettings.IDTaskPrefix);
-        //            int nextNumber = ExtractNumberFromReferenceIdUploadEF(lastRefId) + 1;
-        //            foreach (var task in validTasks)
-        //            {
-        //                task.referenceId = $"{_taskSettings.IDTaskPrefix}-{nextNumber}";
-        //                nextNumber++;
-
-        //            }
-
-        //            _db.Task.AddRange(validTasks);
-        //            await _db.SaveChangesAsync();
-
-        //            var tasksByUser = validTasks
-        //                .GroupBy(t => t.UserId)
-        //                .ToDictionary(g => g.Key, g => g.ToList());
-
-        //            foreach (var entry in tasksByUser)
-        //            {
-        //                var userId = entry.Key;
-        //                var userTasks = entry.Value;
-
-        //                var user = await _db.User.FindAsync(userId);
-        //                if (user == null)
-        //                {
-        //                    _logger.LoggWarning("User not found for ID {UserId} during task upload", userId);
-        //                    continue;
-        //                }
-
-        //                var content = _contentBuilder.BuildContent(user, userTasks);
-        //                await _emailService.SendEmailAsync(user.Email, "New Tasks Assigned to You", content);
-        //            }
-        //        }
-        //    }
-        //    catch (ArgumentException ex)
-        //    {
-        //        _logger.LoggWarning("Validation failed during file processing: {Message}", ex.Message);
-        //        throw;
-        //    }
-        //    catch (InvalidOperationException ex)
-        //    {
-        //        _logger.LoggError(ex, "Invalid operation while processing file.");
-        //        throw;
-        //    }
-        //    catch (SqlException ex)
-        //    {
-        //        _logger.LoggError(ex, "SQL error occurred during file processing.");
-        //        throw;
-        //    }
-        //    catch (IOException ex)
-        //    {
-        //        _logger.LoggError(ex, "File I/O error occurred during file processing.");
-        //        throw;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LoggError(ex, "Unexpected error occurred during task file upload.");
-        //        throw;
-        //    }
-        //}
-
 
         public async Task SaveTasksWithDapperAsync(List<Tasks> tasks)
         {
@@ -298,19 +156,46 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public async Task SaveTasksWithEFAsync(List<Tasks> tasks, string prefix)
         {
-            string lastRefId = await GetLastReferenceIdEFAsyncUploadEF(prefix);
-            int nextNumber = ExtractNumberFromReferenceIdUploadEF(lastRefId) + 1;
-
-            foreach (var task in tasks)
+            const int maxAttempts = 5;
+            int attempt = 0;
+            bool saved = false;
+            while (attempt < maxAttempts && !saved)
             {
-                task.referenceId = $"{prefix}-{nextNumber}";
-                nextNumber++;
+
+                attempt++;
+                try
+                {
+                    string lastRefId = await GetLastReferenceIdEFAsyncUploadEF(prefix);
+                    int nextNumber = ExtractNumberFromReferenceIdUploadEF(lastRefId) + 1;
+                    foreach (var task in tasks)
+                    {
+                        task.referenceId = $"{prefix}-{nextNumber}";
+                        nextNumber++;
+
+                    }
+
+                    _db.Task.AddRange(tasks);
+                    await _db.SaveChangesAsync();
+                    saved = true;
+
+                }
+                catch (DbUpdateException ex) when (IsDuplicateReferenceIdException(ex))
+                {
+                    _logger.LoggWarning("Attempt {Attempt}: Duplicate referenceId. Retrying...", attempt);
+                    await Task.Delay(100);
+                }
+
             }
-
-            _db.Task.AddRange(tasks);
-            await _db.SaveChangesAsync();
+            if (!saved)
+            {
+                throw new Exception("Failed to upload tasks due to repeated referenceId conflicts.");
+            }
         }
-
+        private bool IsDuplicateReferenceIdException(DbUpdateException ex)
+        {
+            return ex.InnerException?.Message.Contains("Duplicate entry") == true
+                && ex.InnerException?.Message.Contains("referenceId") == true;
+        }
         public async Task<string> GetLastReferenceIdEFAsyncUploadEF(string prefix)
         {
             try

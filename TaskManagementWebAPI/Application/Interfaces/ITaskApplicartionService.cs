@@ -2,7 +2,7 @@
 
 namespace TaskManagementWebAPI.Application.Interfaces
 {
-    public interface ITaskApplicationService
+    public interface ITaskApplicartionService
     {
         /// <summary>
         /// For Adding a new task

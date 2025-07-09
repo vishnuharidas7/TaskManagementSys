@@ -1,5 +1,7 @@
 ﻿
 using LoggingLibrary.Interfaces;
+using Microsoft.Extensions.Options;
+using Scheduler.Configurations;
 using System.Net.Http;
 namespace Scheduler.Services.TaskStatusUpdateService
 {
@@ -8,12 +10,14 @@ namespace Scheduler.Services.TaskStatusUpdateService
     
         private readonly IAppLogger<TaskStatusUpdateServiceWorker> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly TaskStatusUpdateServiceWorkerSettings _settings;
 
-
-        public TaskStatusUpdateServiceWorker(IHttpClientFactory httpClientFactory,IServiceScopeFactory scopeFactory, IAppLogger<TaskStatusUpdateServiceWorker> logger)
+        public TaskStatusUpdateServiceWorker(IHttpClientFactory httpClientFactory,IAppLogger<TaskStatusUpdateServiceWorker> logger,
+            IOptions<TaskStatusUpdateServiceWorkerSettings> settings)
         {
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
+            _settings = settings?.Value ?? throw new ArgumentNullException(nameof(settings));
 
         }
 
@@ -24,7 +28,7 @@ namespace Scheduler.Services.TaskStatusUpdateService
                 try
                 {
                     var client = _httpClientFactory.CreateClient();
-                    var response = await client.PostAsync("https://localhost:7192/api/Tasks/update-statuses-scheduler", null,stoppingToken);
+                    var response = await client.PostAsync(_settings.ApiUrlStatusUpdate, null,stoppingToken);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -43,7 +47,7 @@ namespace Scheduler.Services.TaskStatusUpdateService
 
 
                 // Delay for 24 hours (or adjust for testing)
-                await Task.Delay(TimeSpan.FromMinutes(10), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(_settings.TimeStatusUpdate), stoppingToken);
             }
         }
 

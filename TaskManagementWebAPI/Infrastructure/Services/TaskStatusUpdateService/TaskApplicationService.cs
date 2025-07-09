@@ -1,10 +1,11 @@
 ﻿using LoggingLibrary.Interfaces;
 using System.Net.Http;
+using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Domain.Interfaces;
 
 namespace TaskManagementWebAPI.Infrastructure.Services.TaskStatusUpdateService
 {
-    public class TaskApplicationService
+    public class TaskApplicationService: TTaskApplicationServices
     {
         private readonly TaskStatusService _taskStatusService;
         private readonly ITaskStatusRepository _taskRepository;
