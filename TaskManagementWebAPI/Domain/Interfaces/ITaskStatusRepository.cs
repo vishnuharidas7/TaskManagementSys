@@ -1,5 +1,5 @@
 ﻿using TaskManagementWebAPI.Domain.Models;
-using TaskManagementWebAPI.Infrastructure.Services.TaskStatusUpdateService;
+using TaskManagementWebAPI.Application.Services.TaskStatusUpdateService;
 
 namespace TaskManagementWebAPI.Domain.Interfaces
 {
