@@ -78,7 +78,7 @@ namespace TaskManagementWebAPI.Migrations
 
                     b.Property<string>("referenceId")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("taskDescription")
                         .IsRequired()
@@ -103,6 +103,9 @@ namespace TaskManagementWebAPI.Migrations
                     b.HasKey("taskId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("referenceId")
+                        .IsUnique();
 
                     b.ToTable("Task");
                 });

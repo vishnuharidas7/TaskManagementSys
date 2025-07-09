@@ -125,58 +125,73 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
         }
 
+
         public async Task AddTask(AddTaskDTO dto)
         {
-            await _semaphore.WaitAsync();
-            try {
-                var task = new Tasks
-                {
-                    taskName = dto.taskName,
-                    taskDescription = dto.taskDescription,
-                    UserId = dto.UserId,
-                    dueDate = dto.dueDate,
-                    priority = dto.priority,
-                    createdBy = dto.createdBy,
-                    taskType = dto.taskType,
-                    referenceId = await GenerateUniqueNumericIDTaskAsync(_taskSettings.IDTaskPrefix)
-                    //taskStatus = dto.taskStatus
+           
+            int attempts = 0;
+            const int maxAttempts = 5;
 
-                };
-
-                _db.Task.Add(task);
-                await _db.SaveChangesAsync();
-                var newTaskId = task.taskId;
-                // return user;
-
-                var user = await _db.User.FindAsync(dto.UserId);
-                if (user == null)
-                {
-                    _logger.LoggWarning("User not found for ID {UserId}", dto.UserId);
-                    return;
-                }
-                 
-                var userTasks = await _db.Task
-                                         .Where(t => t.taskId == newTaskId)
-                                         .ToListAsync();
-                if (userTasks.Any())
-                {
-                    var content = _contentBuilder.BuildContent(user, userTasks);
-                    await _emailService.SendEmailAsync(user.Email, "New Task Added", content);
-                }
-            }
-            catch (InvalidOperationException ex)
+            try
             {
-                _logger.LoggError(ex, "AddTask - Invalid operation for user ID {UserId}", dto.UserId);
-                throw ex.InnerException;
-            }
-            catch (DbUpdateException ex)
-            {
-                _logger.LoggError(ex, "AddTask - Database update failed while saving task for user ID {UserId}", dto.UserId);
-                throw ex.InnerException;
+                while (attempts < maxAttempts)
+                {
+                    await _semaphore.WaitAsync();
+                    try
+                    {
+                        var referenceId = await GenerateUniqueNumericIDTaskAsync(_taskSettings.IDTaskPrefix);
+                        var task = new Tasks
+                        {
+                            taskName = dto.taskName,
+                            taskDescription = dto.taskDescription,
+                            UserId = dto.UserId,
+                            dueDate = dto.dueDate,
+                            priority = dto.priority,
+                            createdBy = dto.createdBy,
+                            taskType = dto.taskType,
+                            referenceId = referenceId
+                        };
+
+                        _db.Task.Add(task);
+                        await _db.SaveChangesAsync();
+
+                        var newTaskId = task.taskId;
+
+                        var user = await _db.User.FindAsync(dto.UserId);
+                        if (user == null)
+                        {
+                            _logger.LoggWarning("User not found for ID {UserId}", dto.UserId);
+                            return;
+                        }
+
+                        var userTasks = await _db.Task
+                                                  .Where(t => t.taskId == newTaskId)
+                                                  .ToListAsync();
+
+                        if (userTasks.Any())
+                        {
+                            var content = _contentBuilder.BuildContent(user, userTasks);
+                            await _emailService.SendEmailAsync(user.Email, "New Task Added", content);
+                        }
+
+                        break; 
+                    }
+                    catch (DbUpdateException ex) when (IsDuplicateReferenceIdException(ex))
+                    {
+                        attempts++;
+                        _logger.LoggWarning("Duplicate reference ID generated — retrying... Attempt {Attempt}", attempts);
+                        await Task.Delay(50);
+                    }
+                }
+
+                if (attempts == maxAttempts)
+                {
+                    throw new Exception("Failed to create task after multiple attempts due to reference ID conflicts.");
+                }
             }
             catch (Exception ex)
             {
-                _logger.LoggError(ex, "AddTask - Unexpected error occurred while adding task for user ID {UserId}", dto.UserId);
+                _logger.LoggError(ex, "AddTask - Failed to add task for user ID {UserId}", dto.UserId);
                 throw;
             }
             finally
@@ -184,6 +199,12 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 _semaphore.Release();
             }
         }
+        private bool IsDuplicateReferenceIdException(DbUpdateException ex)
+        {
+            return ex.InnerException?.Message.Contains("Duplicate entry") == true
+                && ex.InnerException?.Message.Contains("referenceId") == true;
+        }
+
 
         public async Task<string>GenerateUniqueNumericIDTaskAsync(string prefix)
         {
@@ -307,17 +328,41 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 else
                 {
                     // --- EF CORE BLOCK ---
-                    string lastRefId = await GetLastReferenceIdEFAsyncUploadEF(_taskSettings.IDTaskPrefix);
-                    int nextNumber = ExtractNumberFromReferenceIdUploadEF(lastRefId) + 1;
-                    foreach (var task in validTasks)
+
+                    const int maxAttempts = 5;
+                    int attempt = 0;
+                    bool saved = false;
+                    while (attempt < maxAttempts && !saved)
                     {
-                        task.referenceId = $"{_taskSettings.IDTaskPrefix}-{nextNumber}";
-                        nextNumber++;
+
+                        attempt++;
+                        try
+                        {
+                            string lastRefId = await GetLastReferenceIdEFAsyncUploadEF(_taskSettings.IDTaskPrefix);
+                            int nextNumber = ExtractNumberFromReferenceIdUploadEF(lastRefId) + 1;
+                            foreach (var task in validTasks)
+                            {
+                                task.referenceId = $"{_taskSettings.IDTaskPrefix}-{nextNumber}";
+                                nextNumber++;
+
+                            }
+
+                            _db.Task.AddRange(validTasks);
+                            await _db.SaveChangesAsync();
+                            saved = true;
+
+                        }
+                        catch (DbUpdateException ex) when (IsDuplicateReferenceIdException(ex))
+                        {
+                            _logger.LoggWarning("Attempt {Attempt}: Duplicate referenceId. Retrying...", attempt);
+                            await Task.Delay(100);
+                        }
 
                     }
-
-                    _db.Task.AddRange(validTasks);
-                    await _db.SaveChangesAsync();
+                    if (!saved)
+                    {
+                        throw new Exception("Failed to upload tasks due to repeated referenceId conflicts.");
+                    }
 
                     var tasksByUser = validTasks
                         .GroupBy(t => t.UserId)
