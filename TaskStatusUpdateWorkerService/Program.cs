@@ -3,8 +3,8 @@ using LoggingLibrary;
 using LoggingLibrary.Implementations;
 using LoggingLibrary.Interfaces;
 using Scheduler.Configurations;
+using Scheduler.Service;
 using Scheduler.Services.EmailServices;
-using Scheduler.Services.TaskStatusUpdateService;
 
 IHost host = Host.CreateDefaultBuilder(args)
     .UseWindowsService()
@@ -22,8 +22,8 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton(typeof(Log4NetLogger<>));
         services.AddSingleton(typeof(IAppLogger<>), typeof(AppLoggerFactory<>));
 
-        services.AddHostedService<TaskStatusUpdateServiceWorker>();
-        services.AddHostedService<OverdueTaskEmailWorker>();
+        services.AddHostedService<TaskStatusUpdateServiceWorkerService>();
+        services.AddHostedService<OverdueTaskEmailWorkerService>();
 
     })
     .Build();

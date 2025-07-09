@@ -1,12 +1,9 @@
 ﻿using LoggingLibrary.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc; 
+using Microsoft.AspNetCore.Mvc;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Domain.Interfaces;
-using TaskManagementWebAPI.Infrastructure.Services.EmailService;
-using TaskManagementWebAPI.Infrastructure.Services.TaskStatusUpdateService;
 
 namespace TaskManagementWebAPI.Controllers
 {
