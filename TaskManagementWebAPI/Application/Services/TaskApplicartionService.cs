@@ -41,7 +41,7 @@ namespace TaskManagementWebAPI.Application.Services
 
         public async Task AddTaskAsync(AddTaskDTO dto)
         {
-            await _semaphore.WaitAsync();
+            await _semaphore.WaitAsync();      
             try
             {
                 var task = new Tasks

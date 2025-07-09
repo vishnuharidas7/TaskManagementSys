@@ -7,6 +7,7 @@ using System.Data.Common;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models; 
 using TaskManagementWebAPI.Infrastructure.Persistence;
@@ -17,11 +18,11 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
     {
         private readonly ApplicationDbContext _db;
         private readonly IAppLogger<UserRepository> _logger;
-        private readonly INewUserEmailContentBuilder _userEmailContentBuilder;
+        private readonly IUserCreatedEmailContentBuilder _userEmailContentBuilder;
         private readonly IEmailService _emailService;
         private readonly IRandomPasswordGenerator _randomPasswordGenerator;
 
-        public UserRepository(ApplicationDbContext db, IAppLogger<UserRepository> logger, INewUserEmailContentBuilder userEmailContentBuilder, IEmailService emailService,IRandomPasswordGenerator randomPasswordGenerator)
+        public UserRepository(ApplicationDbContext db, IAppLogger<UserRepository> logger, IUserCreatedEmailContentBuilder userEmailContentBuilder, IEmailService emailService,IRandomPasswordGenerator randomPasswordGenerator)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db), "db cannot be null.");
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");

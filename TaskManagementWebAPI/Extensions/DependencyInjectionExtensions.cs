@@ -2,12 +2,8 @@
 using TaskManagementWebAPI.ConfigurationLayer;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Infrastructure.Persistence;
-using TaskManagementWebAPI.Infrastructure.Repositories;
-using TaskManagementWebAPI.Infrastructure.Services.EmailService;
+using TaskManagementWebAPI.Infrastructure.Repositories; 
 using TaskManagementWebAPI.Infrastructure.Services.FileUpload;
-using TaskManagementWebAPI.Infrastructure.Services.PasswordService;
-using TaskManagementWebAPI.Infrastructure.Services.TaskOndueUpdate;
-using TaskManagementWebAPI.Infrastructure.Services.TaskStatusUpdateService;
 using LoggingLibrary.Interfaces;
 using LoggingLibrary.Implementations;
 using LoggingLibrary;
@@ -15,6 +11,10 @@ using System.Data;
 using FileParser.Factory;
 using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Application.Services;
+using TaskManagementWebAPI.Application.Services.FileUpload;
+using TaskManagementWebAPI.Application.PasswordService;
+using TaskManagementWebAPI.Application.Services.TaskStatusUpdateService;
+using TaskManagementWebAPI.Application.Services.EmailService;
 
 namespace TaskManagementWebAPI.Extensions
 {
@@ -55,15 +55,15 @@ namespace TaskManagementWebAPI.Extensions
             // Email Service
             services.AddScoped<ITaskEmailRepository, InMemoryTaskRepository>();
             services.AddScoped<IUserEmailRepository, InMemoryUserRepository>();
-            services.AddScoped<ITaskStatusContentBuilder, NewTaskContentBuilder>();
-            services.AddScoped<ITaskStatusContentBuilder, OnDueTaskContentBuilder>();
-            services.AddScoped<ITaskStatusContentBuilder, CompletedTaskContentBuilder>();
-            services.AddScoped<ITaskStatusContentBuilder, OverDueTaskContentBuilder>();
+            services.AddScoped<ITaskStatusContentBuilder, TaskCreatedContentBuilder>();
+            services.AddScoped<ITaskStatusContentBuilder, TaskOnDueEmailContentBuilder>();
+            services.AddScoped<ITaskStatusContentBuilder, TaskCompletedContentBuilder>();
+            services.AddScoped<ITaskStatusContentBuilder, TaskOverDueEmailContentBuilder>();
             services.AddScoped<IEmailContentBuilder, TaskEmailContentBuilder>();
-            services.AddScoped<INewUserEmailContentBuilder, NewUserEmailContentBuilder>();
+            services.AddScoped<IUserCreatedEmailContentBuilder, UserCreatedEmailContentBuilder>();
             services.AddSingleton(EmailServiceFactory.CreateEmailService(configuration));
             services.AddScoped<TaskEmailDispatcher>();
-            services.AddHostedService<OverdueTaskEmailWorker>();
+            services.AddHostedService<TaskReminderEmailWorker>(); 
             services.AddScoped<GmailSmtpEmailService>();
             services.AddScoped<IForgotPasswordHandler, ForgotPasswordHandler>();
 
