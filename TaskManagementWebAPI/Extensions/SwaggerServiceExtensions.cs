@@ -1,5 +1,6 @@
-﻿using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace TaskManagementWebAPI.Extensions
 {
@@ -33,6 +34,9 @@ namespace TaskManagementWebAPI.Extensions
                         Array.Empty<string>()
                     }
                 });
+
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
             });
 
             return services;

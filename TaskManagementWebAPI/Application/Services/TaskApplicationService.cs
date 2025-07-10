@@ -13,7 +13,7 @@ using TaskManagementWebAPI.Infrastructure.Repositories;
 
 namespace TaskManagementWebAPI.Application.Services
 {
-    public class TaskApplicartionService : ITaskApplicartionService
+    public class TaskApplicationService : ITaskApplicationService
     {
         private readonly ApplicationDbContext _db;
         private readonly ITaskManagementRepository _taskManagementRepository;
@@ -25,7 +25,7 @@ namespace TaskManagementWebAPI.Application.Services
         private readonly IMaptoTasks _taskMapper;
         private readonly IConfiguration _configuration;
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-        public TaskApplicartionService(ITaskManagementRepository taskManagementRepository, IAppLogger<UserAuthRepository> logger,
+        public TaskApplicationService(ITaskManagementRepository taskManagementRepository, IAppLogger<UserAuthRepository> logger,
           IOptions<TaskSettings> taskSettings, ApplicationDbContext db, IEmailContentBuilder emailContentBuilder,
           IEmailService emailService, ITaskFileParserFactory parserFactory, IMaptoTasks taskMapper, IConfiguration configuration)
         {

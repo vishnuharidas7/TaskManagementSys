@@ -13,11 +13,11 @@ namespace TaskManagementWebAPI.Controllers
     {
         private ITaskManagementRepository _task;
         private readonly IAppLogger<TasksController> _logger;
-        private readonly ITaskApplicartionService _taskControllerService;
+        private readonly ITaskApplicationService _taskControllerService;
         private readonly ITaskEmailDispatcher _taskEmailDispatcher;
-        private readonly TTaskApplicationServices _taskApplicationService;
+        private readonly ITaskDueStatusUpdateService _taskApplicationService;
 
-        public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger, TTaskApplicationServices taskAppService,ITaskEmailDispatcher taskEmailDispatcher, ITaskApplicartionService taskControllerService)
+        public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger, ITaskDueStatusUpdateService taskAppService,ITaskEmailDispatcher taskEmailDispatcher, ITaskApplicationService taskControllerService)
         {
             _task = task ?? throw new ArgumentNullException(nameof(task), "Task cannot be null.");
             _logger =logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
@@ -220,9 +220,11 @@ namespace TaskManagementWebAPI.Controllers
                 throw;
             }
         }
-
-        //scheduler
-        //[Authorize(Roles = "Admin,User")]
+         
+        /// <summary>
+        /// This API is a part of scheduler service - Purpose is to update task status corresponding to due date
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("update-Taskstatuses")]
         public IActionResult UpdateTaskStatuses()
         {
@@ -238,9 +240,11 @@ namespace TaskManagementWebAPI.Controllers
                 return StatusCode(500, "Error updating tasks.");
             }
         }
-
-        //scheduler
-        //[Authorize(Roles = "Admin,User")]
+         
+        /// <summary>
+        /// This API is a part of scheduler service - Purpose is to send email reminder for task completion
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("send-overduetaskmail")]
         public IActionResult OverdueTaskEmail()
         {
