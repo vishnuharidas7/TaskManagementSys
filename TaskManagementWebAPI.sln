@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingLibrary", "LoggingLi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileParser", "FileParser\FileParser.csproj", "{EF7532C4-7224-460D-A27C-5D3FDE9F2B7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler", "TaskStatusUpdateWorkerService\Scheduler.csproj", "{FCB59E3D-D678-4C43-9724-F029B20E8BD3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManagementScheduler", "Scheduler\TaskManagementScheduler.csproj", "{FCB59E3D-D678-4C43-9724-F029B20E8BD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

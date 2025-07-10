@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Scheduler.Configurations
 {
-    public class OverdueTaskEmailWorkerSettings
+    public class TaskCompletionReminderWorkerSettings
     {
         public int TimeTaskEmail { get; set; }
         public string ApiUrlTaskEmail { get; set; }

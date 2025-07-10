@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 
 namespace Scheduler.Service
 {
-    public class TaskStatusUpdateServiceWorkerService: BackgroundService
+    public class TaskStatusUpdateWorker: BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IAppLogger<TaskStatusUpdateServiceWorkerService> _logger;
+        private readonly IAppLogger<TaskStatusUpdateWorker> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly TaskStatusUpdateServiceWorkerSettings _settings;
+        private readonly TaskStatusUpdateWorkerSettings _settings;
 
-        public TaskStatusUpdateServiceWorkerService(
+        public TaskStatusUpdateWorker(
             IHttpClientFactory httpClientFactory,
             IServiceProvider serviceProvider,
-            IAppLogger<TaskStatusUpdateServiceWorkerService> logger,
-            IOptions<TaskStatusUpdateServiceWorkerSettings> settings)
+            IAppLogger<TaskStatusUpdateWorker> logger,
+            IOptions<TaskStatusUpdateWorkerSettings> settings)
         {
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
