@@ -19,7 +19,7 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
         {
             try
             {
-                throw new ApplicationException("Failed to build completed task section.");
+      
                 var sb = new StringBuilder();
                 sb.AppendLine("✅ Completed Tasks:");
 
