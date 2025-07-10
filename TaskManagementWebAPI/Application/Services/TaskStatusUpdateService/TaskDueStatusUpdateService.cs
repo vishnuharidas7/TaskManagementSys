@@ -3,10 +3,10 @@ using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Application.Services.TaskStatusUpdateService
 {
-    public class TaskStatusService
+    public class TaskDueStatusUpdateService
     {
-        private readonly IAppLogger<TaskStatusService> _logger;
-        public TaskStatusService(IAppLogger<TaskStatusService> logger)
+        private readonly IAppLogger<TaskDueStatusUpdateService> _logger;
+        public TaskDueStatusUpdateService(IAppLogger<TaskDueStatusUpdateService> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
         }
