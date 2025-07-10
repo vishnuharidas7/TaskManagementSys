@@ -13,17 +13,17 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddHttpClient();
         var configuration = hostContext.Configuration;
 
-        services.Configure<OverdueTaskEmailWorkerSettings>(
+        services.Configure<TaskCompletionReminderWorkerSettings>(
             configuration.GetSection("OverdueTaskEmailWorkerSettings"));
-        services.Configure<TaskStatusUpdateServiceWorkerSettings>(
+        services.Configure<TaskStatusUpdateWorkerSettings>(
           configuration.GetSection("TaskStatusUpdateServiceWorkerSettings"));
 
         services.AddSingleton(typeof(SerilogLogger<>));
         services.AddSingleton(typeof(Log4NetLogger<>));
         services.AddSingleton(typeof(IAppLogger<>), typeof(AppLoggerFactory<>));
 
-        services.AddHostedService<TaskStatusUpdateServiceWorkerService>();
-        services.AddHostedService<OverdueTaskEmailWorkerService>();
+        services.AddHostedService<TaskStatusUpdateWorker>();
+        services.AddHostedService<TaskCompletionReminderWorker>();
 
     })
     .Build();

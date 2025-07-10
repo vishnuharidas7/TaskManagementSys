@@ -9,18 +9,18 @@ using System.Threading.Tasks;
 
 namespace Scheduler.Services.EmailServices
 {
-    public class OverdueTaskEmailWorkerService : BackgroundService
+    public class TaskCompletionReminderWorker : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IAppLogger<OverdueTaskEmailWorkerService> _logger;
+        private readonly IAppLogger<TaskCompletionReminderWorker> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly OverdueTaskEmailWorkerSettings _settings;
+        private readonly TaskCompletionReminderWorkerSettings _settings;
 
-        public OverdueTaskEmailWorkerService(
+        public TaskCompletionReminderWorker(
             IHttpClientFactory httpClientFactory,
             IServiceProvider serviceProvider,
-            IAppLogger<OverdueTaskEmailWorkerService> logger,
-            IOptions<OverdueTaskEmailWorkerSettings> settings)
+            IAppLogger<TaskCompletionReminderWorker> logger,
+            IOptions<TaskCompletionReminderWorkerSettings> settings)
         {
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
