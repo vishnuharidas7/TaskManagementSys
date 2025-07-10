@@ -3,14 +3,14 @@ using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models;
 using TaskManagementWebAPI.Infrastructure.Persistence;
 
-namespace TaskManagementWebAPI.Application.Services.TaskStatusUpdateService
+namespace TaskManagementWebAPI.Infrastructure.Repositories
 {
-    public class TaskStatusRepository : ITaskStatusRepository
+    public class TaskStatusUpdateServiceRepository : ITaskStatusUpdateServiceRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly IAppLogger<TaskStatusRepository> _logger;
+        private readonly IAppLogger<TaskStatusUpdateServiceRepository> _logger;
 
-        public TaskStatusRepository(ApplicationDbContext context,IAppLogger<TaskStatusRepository> logger)
+        public TaskStatusUpdateServiceRepository(ApplicationDbContext context,IAppLogger<TaskStatusUpdateServiceRepository> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context), "context cannot be null.");
             _logger= logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");

@@ -30,7 +30,7 @@ namespace TaskManagementWebAPI.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITaskManagementRepository, TaskManagementRepository>();
             services.AddHttpClient<IUserAuthRepository, UserAuthRepository>();
-            services.AddScoped<ITaskApplicartionService, TaskApplicartionService>();
+            services.AddScoped<ITaskApplicationService, TaskApplicationService>();
             services.AddScoped<IUserApplicationService, UserApplicationService>();
 
             // File Upload
@@ -46,9 +46,9 @@ namespace TaskManagementWebAPI.Extensions
             });
 
             // Task status
-            services.AddScoped<ITaskStatusRepository, TaskStatusRepository>();
-            services.AddScoped<TaskStatusService>();
-            services.AddScoped<TTaskApplicationServices, TaskApplicationService>();
+            services.AddScoped<ITaskStatusUpdateServiceRepository, TaskStatusUpdateServiceRepository>();
+            services.AddScoped<TaskDueStatusUpdateService>();
+            services.AddScoped<ITaskDueStatusUpdateService, TaskStatusUpdateApplicationService>();
           //  services.AddHostedService<TaskStatusUpdateService>();
             services.AddScoped<ITaskUploadDapperRepository, TaskUploadDapperRepository>();
 

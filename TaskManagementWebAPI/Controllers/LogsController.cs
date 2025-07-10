@@ -16,7 +16,7 @@ namespace TaskManagementWebAPI.Controllers
         }
 
         /// <summary>
-        /// Logs the message based on the specified log level (INFO, WARNING, or ERROR).
+        /// Logs the message based on the specified log level (INFO, WARNING, or ERROR) from Front-End.
         /// </summary>
         /// <param name="logDto"></param>
         /// <returns></returns>

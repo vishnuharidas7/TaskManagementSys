@@ -3,7 +3,7 @@ using TaskManagementWebAPI.Application.Services.TaskStatusUpdateService;
 
 namespace TaskManagementWebAPI.Domain.Interfaces
 {
-    public interface ITaskStatusRepository
+    public interface ITaskStatusUpdateServiceRepository
     {
         /// <summary>
         /// To fetch all task details to update task state

@@ -18,8 +18,7 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
         public string BuildSection(IEnumerable<Tasks> tasks)
         {
             try
-            {
-                throw new ApplicationException("Failed to build completed task section.");
+            { 
                 var sb = new StringBuilder();
                 sb.AppendLine("✅ Completed Tasks:");
 
