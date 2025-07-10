@@ -18,7 +18,8 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
         public string BuildSection(IEnumerable<Tasks> tasks)
         {
             try
-            { 
+            {
+      
                 var sb = new StringBuilder();
                 sb.AppendLine("✅ Completed Tasks:");
 
