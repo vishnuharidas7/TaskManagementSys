@@ -61,7 +61,7 @@ namespace AuthenticationAPI.Controllers
 
 
         /// <summary>
-        /// API Controller for refrshing the token
+        /// API Controller for refreshing the token
         /// </summary>
         /// <param name="tokens"></param>
         /// <returns></returns>
