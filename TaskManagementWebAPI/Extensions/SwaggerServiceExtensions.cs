@@ -37,6 +37,11 @@ namespace TaskManagementWebAPI.Extensions
 
                 var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+                //var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+                //options.IncludeXmlComments(xmlPath);
+
+
             });
 
             return services;
