@@ -9,25 +9,86 @@
         {
             _next = next ?? throw new ArgumentNullException(nameof(next), "RequestDelegate cannot be null.");
         }
+        //public async Task Invoke(HttpContext context)
+        //{
+        //    try
+        //    {
+        //        await _next(context);
+        //    }
+        //    catch (UnauthorizedAccessException ex)
+        //    {
+        //        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        //        context.Response.ContentType = "application/json";
+        //        var response = new
+        //        {
+        //            StatusCode = context.Response.StatusCode,
+        //            Message = "Unauthorized access.",
+        //            Detail = ex.Message
+        //        };
+        //        await context.Response.WriteAsJsonAsync(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        //        context.Response.ContentType = "application/json";
+        //        var response = new
+        //        {
+        //            StatusCode = context.Response.StatusCode,
+        //            Message = "An unexpected error occurred. Please try again later.",
+        //            Detail = ex.Message
+        //        };
+        //        await context.Response.WriteAsJsonAsync(response);
+        //    }
+
+
+        //}
+
         public async Task Invoke(HttpContext context)
         {
             try
             {
                 await _next(context);
             }
-            catch (Exception ex)
-            {
-                context.Response.StatusCode = 500;
-                context.Response.ContentType = "application/json";
-                var response = new
-                {
-                    StatusCode = context.Response.StatusCode,
-                    Message = "An unexpected error occurred. Please try again later.",
-                    detail = ex.Message
-                };
-                await context.Response.WriteAsJsonAsync(response);
+            catch (UnauthorizedAccessException ex)
+            { 
+                await HandleExceptionAsync(context, StatusCodes.Status401Unauthorized, "Unauthorized access", ex);
             }
+            catch (ArgumentNullException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, "Null Values cannot be acceptable", ex);
+            }
+            catch (HttpRequestException ex)
+            { 
+                await HandleExceptionAsync(context, StatusCodes.Status503ServiceUnavailable, "External service unavailable", ex);
+            }
+            catch (TaskCanceledException ex)
+            { 
+                await HandleExceptionAsync(context, StatusCodes.Status504GatewayTimeout, "Request timed out", ex);
+            }
+            catch (InvalidOperationException ex)
+            { 
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, "Invalid operation", ex);
+            }
+            catch (Exception ex)
+            { 
+                await HandleExceptionAsync(context, StatusCodes.Status500InternalServerError, "An unexpected error occurred", ex);
+            }
+        }
 
+        private static async Task HandleExceptionAsync(HttpContext context, int statusCode, string message, Exception ex)
+        {
+            context.Response.StatusCode = statusCode;
+            context.Response.ContentType = "application/json";
+
+            var errorResponse = new
+            {
+                StatusCode = statusCode,
+                Message = message,
+                Detail = ex.Message,
+                Timestamp = DateTime.UtcNow
+            };
+
+            await context.Response.WriteAsJsonAsync(errorResponse);
         }
 
     }

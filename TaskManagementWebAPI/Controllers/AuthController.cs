@@ -25,8 +25,12 @@ namespace TaskManagementWebAPI.Controllers
         /// <summary>
         /// API Controller for user Authentication
         /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
+        /// <param name="dto">To input Login Credentials provided by the User</param>
+        /// <returns>Returns Bearer token</returns>
+        /// <response code="200">Login Successful, Returns Bearer Token.</response>
+        /// <response code="400">Bad request</response>
+        /// <response code="401">Unauthorized – Invalid credentials.</response>
+        /// <response code="500">Internal server error.</response>
         [HttpPost("loginAuth")]
         public async Task<IActionResult> ExternalLogin([FromBody] LoginDTO dto)
         {
@@ -46,7 +50,7 @@ namespace TaskManagementWebAPI.Controllers
         /// For bearer token refresh to keep the user login
         /// </summary>
         /// <param name="tokens"></param>
-        /// <returns></returns>
+        /// <returns>Returns New Tokens</returns>
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenResponseDTO tokens)
         {
@@ -66,7 +70,10 @@ namespace TaskManagementWebAPI.Controllers
         /// For forgot password request to reset password
         /// </summary>
         /// <param name="request"></param>
-        /// <returns></returns>
+        /// <returns>Password updated successfully and send Mail.</returns>
+        /// <response code="200">Password updated successfully.</response>
+        /// <response code="400">Bad request</response>
+        /// <response code="500">Internal server error.</response>
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {

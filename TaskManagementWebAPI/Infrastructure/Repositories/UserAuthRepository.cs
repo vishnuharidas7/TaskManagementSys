@@ -2,8 +2,12 @@
 using MathNet.Numerics.RootFinding;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Tls;
+using SendGrid.Helpers.Errors.Model;
+using SendGrid.Helpers.Mail;
+using System.Net;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Domain.Interfaces;
+using static System.Net.WebRequestMethods;
 
 namespace TaskManagementWebAPI.Infrastructure.Repositories
 {
@@ -18,39 +22,94 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
         }
 
+        //public async Task<string> LoginAsync(LoginDTO dto)
+        //{
+        //    try
+        //    {
+        //        var requestUrl = "https://localhost:7268/api/Auth/login";
+        //        var response = await _httpClient.PostAsJsonAsync(requestUrl, dto);
+
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            return await response.Content.ReadAsStringAsync();
+        //        }
+        //        var content = await response.Content.ReadAsStringAsync();
+        //        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        //        {
+        //            throw new UnauthorizedAccessException($"login failed: {content}");
+        //        }
+
+        //        var error = await response.Content.ReadAsStringAsync();
+        //        throw new Exception($"Login failed: {content}");
+        //    }
+        //    catch (HttpRequestException httpEx)
+        //    {
+        //        _logger.LoggError(httpEx, "LoginAsync - HTTP request failed");
+        //        throw;
+        //    }
+        //    catch (TaskCanceledException tcEx) when (!tcEx.CancellationToken.IsCancellationRequested)
+        //    {
+        //        _logger.LoggError(tcEx, "LoginAsync - Request timed out");
+        //        throw;
+        //    }
+        //    catch (InvalidOperationException invOpEx)
+        //    {
+        //        _logger.LoggError(invOpEx, "LoginAsync - Login operation failed");
+        //        throw;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LoggError(ex, "LoginAsync - Unexpected error");
+        //        throw;
+        //    }
+        //}
+
         public async Task<string> LoginAsync(LoginDTO dto)
         {
             try
             {
+                if (dto == null)
+                {
+                    throw new ArgumentNullException(nameof(dto), "Login data (dto) cannot be null.");
+                }
+
                 var requestUrl = "https://localhost:7268/api/Auth/login";
-                var response = await _httpClient.PostAsJsonAsync(requestUrl, dto);
+                HttpResponseMessage response;
+
+                try
+                {
+                    response = await _httpClient.PostAsJsonAsync(requestUrl, dto);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LoggError(ex, "LoginAsync - HTTP request failed");
+                    throw new Exception("Login service is unavailable.", ex);
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadAsStringAsync();
+                    return content;
                 }
 
-                var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Login failed: {error}");
-            }
-            catch (HttpRequestException httpEx)
-            {
-                _logger.LoggError(httpEx, "LoginAsync - HTTP request failed");
-                throw;
-            }
-            catch (TaskCanceledException tcEx) when (!tcEx.CancellationToken.IsCancellationRequested)
-            {
-                _logger.LoggError(tcEx, "LoginAsync - Request timed out");
-                throw;
-            }
-            catch (InvalidOperationException invOpEx)
-            {
-                _logger.LoggError(invOpEx, "LoginAsync - Login operation failed");
-                throw;
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Unauthorized:
+                        throw new UnauthorizedAccessException($"Unauthorized: {content}");
+
+                    case HttpStatusCode.BadRequest:
+                        throw new BadRequestException($"Bad request: {content}");
+
+                    case HttpStatusCode.InternalServerError:
+                        throw new Exception($"Auth service internal error: {content}");
+
+                    default:
+                        throw new Exception($"Unhandled error from Auth API ({response.StatusCode}): {content}");
+                }
             }
             catch (Exception ex)
             {
-                _logger.LoggError(ex, "LoginAsync - Unexpected error");
                 throw;
             }
         }

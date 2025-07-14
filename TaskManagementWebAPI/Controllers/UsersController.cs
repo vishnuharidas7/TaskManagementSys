@@ -34,7 +34,11 @@ namespace TaskManagementWebAPI.Controllers
         /// Validation for username at the time for user registration
         /// </summary>
         /// <param name="username"></param>
-        /// <returns></returns>
+        /// <returns>Username already exists</returns>
+        /// <response code="200">Checks and return username already taken if any</response>
+        /// <response code="400">Bad request</response>
+        /// <response code="403">Forbidden page</response>
+        /// <response code="500">Internal server error.</response>
         [Authorize(Roles = "Admin,User")]
         [HttpGet("check-username")]
         public async Task<IActionResult> CheckUsernameExists([FromQuery] string username)
@@ -54,8 +58,12 @@ namespace TaskManagementWebAPI.Controllers
         /// <summary>
         /// For register a new user to the system
         /// </summary>
-        /// <param name="dto"></param>
+        /// <param name="dto">The Registeration DTO contains used details for registeration</param>
         /// <returns></returns>
+        ///  <response code="200">Returns Successful message if user details added to DB</response>
+        ///  <response code="400">Bad request</response>
+        ///  <response code="403">Forbidden page</response>
+        ///  <response code="500">Internal server error.</response>
         [Authorize(Roles = "Admin,User")]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(RegisterDTO dto)
@@ -83,7 +91,10 @@ namespace TaskManagementWebAPI.Controllers
         /// <summary>
         /// To list the user details
         /// </summary>
-        /// <returns></returns>
+        /// <returns>User details</returns>
+        ///  <response code="200">Fetch all the user details</response>
+        ///  <response code="403">Forbidden page</response>
+        ///  <response code="500">Internal server error.</response>
         [Authorize(Roles = "Admin,User")]
         [HttpGet("viewusers")]
         public async Task<ActionResult> UserList()
@@ -113,9 +124,13 @@ namespace TaskManagementWebAPI.Controllers
         /// <summary>
         /// To update user details for the corresponding user id
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="id">Corresponding User Id</param>
+        /// <param name="obj">Updated details</param>
+        /// <returns>Successfully updated message if no error is occurred</returns>
+        ///  <response code="200">Successfully updated user details</response>
+        ///  <response code="400">Bad request</response>
+        ///  <response code="403">Forbidden page</response>
+        ///  <response code="500">Internal server error.</response>
         [Authorize(Roles = "Admin,User")]
         [HttpPut("updateuser/{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO obj)
@@ -135,8 +150,12 @@ namespace TaskManagementWebAPI.Controllers
         /// <summary>
         /// For deleting the user details corresponding to the user id from the system
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Corresponding userid to be removed from the system</param>
+        /// <returns>Successfully removed the user</returns>
+        ///  <response code="200">Successfully removed the user</response>
+        ///  <response code="400">Bad request</response>
+        ///  <response code="403">Forbidden page</response>
+        ///  <response code="500">Internal server error.</response>
         [Authorize(Roles = "Admin,User")]
         [HttpDelete("deleteUser/{id}")]
         public async Task<ActionResult> DeleteUser(int id)
@@ -158,7 +177,11 @@ namespace TaskManagementWebAPI.Controllers
         /// TO view user details correspondig to the user id
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>User Details</returns>
+        /// <response code="200">Fetch user details corresponding to the user id.provided</response>
+        /// <response code="400">Bad request</response>
+        /// <response code="403">Forbidden page</response>
+        /// <response code="500">Internal server error.</response>
         [Authorize(Roles = "Admin,User")]
         [HttpGet("viewusersByid/{id}")]
         public async Task<ActionResult> UserListById(int id)
@@ -178,9 +201,13 @@ namespace TaskManagementWebAPI.Controllers
         /// <summary>
         /// To update user password
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="id">User Id</param>
+        /// <param name="obj">DTO containing current password, new password and confirm password</param>
+        /// <returns>Password Updated Successfully</returns>
+        /// <response code="200">Password updated successfully</response>
+        /// <response code="400">Bad request</response>
+        /// <response code="403">Forbidden page</response>
+        /// <response code="500">Internal server error.</response>
         [Authorize(Roles = "Admin,User")]
         [HttpPut("updatePswd/{id}")]
         public async Task<ActionResult>UpdatePassword(int id,UpdatePasswordDTO obj)
