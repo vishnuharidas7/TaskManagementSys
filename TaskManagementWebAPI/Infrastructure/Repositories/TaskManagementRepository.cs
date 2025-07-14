@@ -97,12 +97,12 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             catch (InvalidOperationException ex)
             {
                 _logger.LoggError(ex, "ViewAllTasks - Invalid operation while querying tasks.");
-                throw ex.InnerException;
+                throw;
             }
             catch (DbException ex)
             {
                 _logger.LoggError(ex, "ViewAllTasks - Database error while fetching tasks.");
-                throw ex.InnerException;
+                throw;
             }
             catch (Exception ex)
             {

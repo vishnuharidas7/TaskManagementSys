@@ -23,8 +23,25 @@ namespace AuthenticationAPI.Repositories
             {
                 return await _context.User.Include(u => u.Role).FirstOrDefaultAsync(u => u.UserName == dto.UserName && u.IsActive && !u.IsDelete);
             }
-            catch (Exception ex) {
-                _logger.LoggWarning("GetActiveUserAsync-get active user failed");
+            catch (DbUpdateException ex)
+            {
+                _logger.LoggWarning("Null argument in GetActiveUserAsync.", ex);
+                throw;
+            }
+
+            catch (ArgumentNullException ex)
+            {
+                _logger.LoggWarning("Null argument in GetActiveUserAsync.", ex);
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex, "Invalid operation during GetActiveUserAsync.",ex);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "GetActiveUserAsync - unexpected error occurred.",ex);
                 throw;
             }
         }
@@ -35,11 +52,22 @@ namespace AuthenticationAPI.Repositories
             {
                 return await _context.User.Include(u => u.Role).FirstOrDefaultAsync(u => u.UserId == userid);
             }
-            catch (Exception ex) {
-                _logger.LoggWarning("GetUserAsync-get user failed");
+            catch (ArgumentException ex)
+            {
+                _logger.LoggWarning("Invalid input in GetUserAsync.",ex);
                 throw;
             }
-           
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex,"Invalid EF operation in GetUserAsync.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "GetUserAsync - unexpected failure.");
+                throw;
+            }
+
         }
     }
 }
