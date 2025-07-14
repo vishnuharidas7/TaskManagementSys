@@ -66,77 +66,6 @@ namespace TaskManagementWebAPI.Application.Services
             }
         }
 
-        //public async Task<Users?> ForgotPassword(string email)
-        //{
-        //    try
-        //    {
-        //        Users? user;
-
-        //        try
-        //        {
-        //            user = await _db.User.Where(u => u.Email == email).FirstOrDefaultAsync();
-        //        }
-        //        catch (InvalidOperationException invEx)
-        //        {
-        //            _logger.LoggWarning("ForgotPassword - Invalid operation while retrieving user: {Message}", invEx.Message);
-        //            throw invEx;
-        //        }
-        //        catch (DbUpdateException dbEx)
-        //        {
-        //            _logger.LoggWarning("ForgotPassword - Database access error: {Message}", dbEx.Message);
-        //            throw dbEx;
-        //        }
-
-        //        if (user != null)
-        //        {
-        //            string newPassword;
-        //            string hashedPassword;
-        //            try
-        //            {
-        //                newPassword = _randomPasswordGenerator.GenerateRandomPassword(8);
-        //                hashedPassword = BCrypt.Net.BCrypt.HashPassword(newPassword);//_passwordHasher.Hash(newPassword);
-        //            }
-        //            catch (ArgumentException argEx)
-        //            {
-        //                _logger.LoggWarning("ForgotPassword - Error generating or hashing password: {Message}", argEx.Message);
-        //                throw;
-        //            }
-        //            catch (CryptographicException cryptoEx)
-        //            {
-        //                _logger.LoggWarning("ForgotPassword - Cryptographic error while hashing password: {Message}", cryptoEx.Message);
-        //                throw;
-        //            }
-
-        //            try
-        //            {
-        //                user.UpdatePassword(hashedPassword); // use domain method to update
-        //                await _db.SaveChangesAsync();
-        //            }
-        //            catch (DbUpdateException dbEx)
-        //            {
-        //                _logger.LoggWarning("ForgotPassword - Error saving new password to database: {Message}", dbEx.Message);
-        //                throw;
-        //            }
-
-
-        //            var content = _userEmailContentBuilder.BuildContentforPasswordReset(user, user.UserId, newPassword);
-        //            await _emailService.SendEmailAsync(user.Email, "Reset Password – Your Account Details", content);
-
-        //            return user;
-        //        }
-
-        //        else return user;
-
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LoggWarning("ViewUser for password resert - View user failed");
-        //        throw;
-        //    }
-        //}
-
-
         public async Task<Users?> ForgotPassword(string email)
         {
             try
@@ -144,7 +73,10 @@ namespace TaskManagementWebAPI.Application.Services
                 var user = await _userRepository.GetUserByEmailAsync(email);
 
                 if (user == null)
-                    return null;
+                {
+                    throw new InvalidOperationException("No user exists with the specified email.");
+                }
+                    //return null;
 
                 string newPassword;
                 string hashedPassword;

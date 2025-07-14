@@ -343,7 +343,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             {
                 if (obj.newpswd != obj.confrmNewpswd)
                 {
-                    throw new Exception("New password and confirmation do not match.");
+                    throw new ArgumentException("New password and confirmation do not match.");
+                    //throw new Exception("New password and confirmation do not match.");
                 }
                 var user = await _db.User.FindAsync(id);
                 if (user == null)
