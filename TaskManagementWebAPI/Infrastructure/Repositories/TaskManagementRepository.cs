@@ -31,11 +31,11 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public TaskManagementRepository(ApplicationDbContext db, IAppLogger<UserAuthRepository> logger, 
             ITaskUploadDapperRepository dapper, IDbConnection connection)
-        { 
-            _db = db; 
-            _logger = logger; 
-            _dapper = dapper;
-            _connection = connection; 
+        {
+            _db = db ?? throw new ArgumentNullException(nameof(db), "ApplicationDbContext cannot be null.");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+            _dapper = dapper ?? throw new ArgumentNullException(nameof(dapper), "Dapper repository cannot be null.");
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection), "Database connection cannot be null.");
         }
 
         public async Task<List<AssignUserDTO>> ViewUsers()

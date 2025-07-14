@@ -27,6 +27,12 @@ namespace AuthenticationAPI.Controllers
             _authRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository), "AuthRepository cannot be null.");
         }
 
+
+        /// <summary>
+        /// API Controller for Lgin the users
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
@@ -54,6 +60,11 @@ namespace AuthenticationAPI.Controllers
         }
 
 
+        /// <summary>
+        /// API Controller for refreshing the token
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenResponseDTO tokens)
         {
