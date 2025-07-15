@@ -34,16 +34,8 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPost("loginAuth")]
         public async Task<IActionResult> ExternalLogin([FromBody] LoginDTO dto)
         {
-            try
-            {
                 var token = await _user.LoginAsync(dto);
                 return Ok(token);
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("loginAuth API failed");
-                throw;
-            }
         }
 
         /// <summary>
@@ -54,16 +46,8 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenResponseDTO tokens)
         {
-            try
-            {
                 var token = await _user.Refresh(tokens);
                 return Ok(token);
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("refresh API failed");
-                throw;
-            }
         }
 
         /// <summary>
@@ -77,8 +61,6 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
-            try
-            {
                 var user = await _forgotPasswordHandler.HandleAsync(request);
 
                 if (user == null)
@@ -87,12 +69,6 @@ namespace TaskManagementWebAPI.Controllers
                 }
 
                 return Ok(new { Message = "New credentials has been sent to the provided Email." });
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("forgot password API failed");
-                throw;
-            }
         }
 
     }

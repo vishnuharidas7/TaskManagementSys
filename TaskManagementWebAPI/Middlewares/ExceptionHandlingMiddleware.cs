@@ -1,4 +1,6 @@
-﻿namespace TaskManagementWebAPI.Middlewares
+﻿using SendGrid.Helpers.Errors.Model;
+
+namespace TaskManagementWebAPI.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
@@ -68,6 +70,10 @@
             catch (InvalidOperationException ex)
             { 
                 await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, "Invalid operation", ex);
+            }
+            catch (NotFoundException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status404NotFound, ex.Message, ex);
             }
             catch (Exception ex)
             { 

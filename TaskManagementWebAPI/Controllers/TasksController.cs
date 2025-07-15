@@ -38,16 +38,8 @@ namespace TaskManagementWebAPI.Controllers
         [HttpGet("AssignUser")]
         public async Task<ActionResult> assignUserList()
         {
-            try
-            {
                 var allUser = await _task.ViewUsers();
                 return Ok(allUser);
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("AssignUser API failed");
-                throw;
-            }
         }
 
         /// <summary>
@@ -62,16 +54,8 @@ namespace TaskManagementWebAPI.Controllers
         [HttpGet("ViewAllTasks")]
         public async Task<ActionResult> viewAllTask()
         {
-            try
-            {
-                var allTasks = await _task.viewAllTasks();
+            var allTasks = await _task.viewAllTasks();
                 return Ok(allTasks);
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("ViewAllTasks API failed");
-                throw;
-            }
         }
 
         /// <summary>
@@ -87,18 +71,9 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPost("AddTask")]
         public async Task<IActionResult> AddTask(AddTaskDTO dto)
         {
-            try
-            {
                 //await _task.AddTask(dto);
                 await _taskControllerService.AddTaskAsync(dto);
-                _logger.LoggWarning("AddTask success");
                 return Ok(dto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("AddTask API failed");
-                throw;
-            }
         }
 
         /// <summary>
@@ -116,17 +91,9 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPut("UpdateTask/{id}")]
         public async Task<ActionResult> UpdateUserTask(int id, [FromBody] AddTaskDTO obj)
         {
-            try
-            {
-                //await _task.UpdateTask(id, obj);
-                await _taskControllerService.UpdateTask(id, obj);
-                return Ok(obj);
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("UpdateTask API failed");
-                throw;
-            }
+            
+            await _taskControllerService.UpdateTask(id, obj);
+            return Ok(obj);
         }
 
         /// <summary>
@@ -142,20 +109,11 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPost("upload")]
         public async Task<IActionResult> FileUpload(IFormFile file)
         {
-            try
-            {
-                if (file == null || file.Length == 0)
+             if (file == null || file.Length == 0)
                     return BadRequest("No file uploaded.");
-
-
                 await _taskControllerService.ProcessFileAsync(file);
                 return Ok("File processed and tasks saved.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("upload API failed");
-                throw;
-            }
+           
         }
 
         /// <summary>
@@ -172,17 +130,8 @@ namespace TaskManagementWebAPI.Controllers
         [HttpDelete("deleteTask/{id}")]
         public async Task<ActionResult> DeleteTask(int id)
         {
-            try
-            {
                 await _task.DeleteTask(id);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("deleteTask API failed");
-                throw;
-            }
-
         }
 
         /// <summary>
@@ -198,16 +147,8 @@ namespace TaskManagementWebAPI.Controllers
         [HttpGet("task/{userId:int}")]
         public async Task<IEnumerable<ViewTasksDTO>> GetTasksByUserId(int userId)
         {
-            try
-            {
                 var userTask = await _task.GetTasksByUserId(userId);
                 return userTask;
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("task API failed");
-                throw;
-            }
         }
 
         /// <summary>
@@ -223,16 +164,8 @@ namespace TaskManagementWebAPI.Controllers
         [HttpGet("taskNotification/{userId:int}")]
         public async Task<IEnumerable<NotificationDTO>> GetTasksNotificationbByUserId(int userId)
         {
-            try
-            {
-                var userTask = await _task.GetTasksNotificationByUserId(userId);
-                return userTask;
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("task API failed");
-                throw;
-            }
+            var userTask = await _task.GetTasksNotificationByUserId(userId);
+            return userTask;
         }
 
         /// <summary>
@@ -246,16 +179,8 @@ namespace TaskManagementWebAPI.Controllers
         [HttpGet("taskNotificationAdmin")]
         public async Task<IEnumerable<NotificationDTO>> GetTasksNotificationbByAdmin()
         {
-            try
-            {
                 var userTask = await _task.GetTasksNotificationbByAdmin();
                 return userTask;
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("task API failed");
-                throw;
-            }
         }
 
         /// <summary>
@@ -267,17 +192,10 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPost("update-Taskstatuses")]
         public IActionResult UpdateTaskStatuses()
         {
-            try
-            {
                 _taskApplicationService.UpdateTaskStatuses();
                 _logger.LoggInformation("Task statuses updated via API");
                 return Ok("Task statuses updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggError(ex, "Error updating task statuses");
-                return StatusCode(500, "Error updating tasks.");
-            }
+            
         }
 
         /// <summary>
@@ -289,17 +207,10 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPost("send-overduetaskmail")]
         public IActionResult OverdueTaskEmail()
         {
-            try
-            {
                 _taskEmailDispatcher.DispatchEmailsAsync();
                 _logger.LoggInformation("Task over due mail generated via API");
                 return Ok("Task statuses updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggError(ex, "ErrorTask over due mail generating");
-                return StatusCode(500, "Error ver due mail generating.");
-            }
+           
         }
 
     }
