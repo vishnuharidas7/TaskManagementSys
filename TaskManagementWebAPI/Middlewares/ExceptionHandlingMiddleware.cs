@@ -1,4 +1,6 @@
-﻿using SendGrid.Helpers.Errors.Model;
+﻿using Org.BouncyCastle.Tsp;
+using SendGrid.Helpers.Errors.Model;
+using TaskManagementWebAPI.CustomException;
 using TaskManagementWebAPI.Domain.Custom_Exceptions;
 
 namespace TaskManagementWebAPI.Middlewares
@@ -12,39 +14,7 @@ namespace TaskManagementWebAPI.Middlewares
         {
             _next = next ?? throw new ArgumentNullException(nameof(next), "RequestDelegate cannot be null.");
         }
-        //public async Task Invoke(HttpContext context)
-        //{
-        //    try
-        //    {
-        //        await _next(context);
-        //    }
-        //    catch (UnauthorizedAccessException ex)
-        //    {
-        //        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        //        context.Response.ContentType = "application/json";
-        //        var response = new
-        //        {
-        //            StatusCode = context.Response.StatusCode,
-        //            Message = "Unauthorized access.",
-        //            Detail = ex.Message
-        //        };
-        //        await context.Response.WriteAsJsonAsync(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        //        context.Response.ContentType = "application/json";
-        //        var response = new
-        //        {
-        //            StatusCode = context.Response.StatusCode,
-        //            Message = "An unexpected error occurred. Please try again later.",
-        //            Detail = ex.Message
-        //        };
-        //        await context.Response.WriteAsJsonAsync(response);
-        //    }
-
-
-        //}
+      
 
         public async Task Invoke(HttpContext context)
         {
@@ -94,6 +64,26 @@ namespace TaskManagementWebAPI.Middlewares
             catch (NotFoundException ex)
             {
                 await HandleExceptionAsync(context, StatusCodes.Status404NotFound, ex.Message, ex);
+            }
+            //Custom exception
+            catch (TaskValidationException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
+            }
+            //Custom exception
+            catch (TaskFileParserException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status422UnprocessableEntity, ex.Message, ex);
+            }
+            //Custom exception
+            catch (AuthServiceUnavailableException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status503ServiceUnavailable, ex.Message, ex);
+            }
+            //Custom exception
+            catch (TokenRefreshFailedException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status504GatewayTimeout, ex.Message, ex);
             }
             catch (Exception ex)
             { 

@@ -6,6 +6,7 @@ using SendGrid.Helpers.Errors.Model;
 using SendGrid.Helpers.Mail;
 using System.Net;
 using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Domain.Custom_Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
 using static System.Net.WebRequestMethods;
 
@@ -21,48 +22,6 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient), "httpClient cannot be null.");
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
         }
-
-        //public async Task<string> LoginAsync(LoginDTO dto)
-        //{
-        //    try
-        //    {
-        //        var requestUrl = "https://localhost:7268/api/Auth/login";
-        //        var response = await _httpClient.PostAsJsonAsync(requestUrl, dto);
-
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            return await response.Content.ReadAsStringAsync();
-        //        }
-        //        var content = await response.Content.ReadAsStringAsync();
-        //        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        //        {
-        //            throw new UnauthorizedAccessException($"login failed: {content}");
-        //        }
-
-        //        var error = await response.Content.ReadAsStringAsync();
-        //        throw new Exception($"Login failed: {content}");
-        //    }
-        //    catch (HttpRequestException httpEx)
-        //    {
-        //        _logger.LoggError(httpEx, "LoginAsync - HTTP request failed");
-        //        throw;
-        //    }
-        //    catch (TaskCanceledException tcEx) when (!tcEx.CancellationToken.IsCancellationRequested)
-        //    {
-        //        _logger.LoggError(tcEx, "LoginAsync - Request timed out");
-        //        throw;
-        //    }
-        //    catch (InvalidOperationException invOpEx)
-        //    {
-        //        _logger.LoggError(invOpEx, "LoginAsync - Login operation failed");
-        //        throw;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LoggError(ex, "LoginAsync - Unexpected error");
-        //        throw;
-        //    }
-        //}
 
         public async Task<string> LoginAsync(LoginDTO dto)
         {
@@ -83,7 +42,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 catch (Exception ex)
                 {
                     _logger.LoggError(ex, "LoginAsync - HTTP request failed");
-                    throw new Exception("Login service is unavailable.", ex);
+                    //throw new Exception("Login service is unavailable.", ex);
+                    throw new AuthServiceUnavailableException("Login service is unavailable.", ex);
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
@@ -127,17 +87,17 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 }
 
                 var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Token refresh failed: {error}");
+                throw new TokenRefreshFailedException($"Token refresh failed: {error}");
             }
             catch (HttpRequestException httpEx)
             {
                 _logger.LoggError(httpEx, "Refresh - HTTP request failed");
-                throw;
+                throw new AuthServiceUnavailableException("Token refresh service is unavailable.", httpEx);
             }
             catch (TaskCanceledException tcEx) when (!tcEx.CancellationToken.IsCancellationRequested)
             {
                 _logger.LoggError(tcEx, "Refresh - Request timed out");
-                throw;
+                throw new TokenRefreshFailedException("Token refresh timed out.", tcEx);
             }
             catch (InvalidOperationException invOpEx)
             {
