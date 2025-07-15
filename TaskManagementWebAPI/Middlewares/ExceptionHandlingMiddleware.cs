@@ -1,4 +1,6 @@
-﻿namespace TaskManagementWebAPI.Middlewares
+﻿using TaskManagementWebAPI.Domain.Custom_Exceptions;
+
+namespace TaskManagementWebAPI.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
@@ -69,6 +71,24 @@
             { 
                 await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, "Invalid operation", ex);
             }
+
+            //Custom exception for phone number validation
+            catch (InvalidPhoneNumberException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
+            }
+
+            //Custom exception for email format validation
+            catch (InvalidEmailFormatException ex)
+            {
+                await HandleExceptionAsync(context,StatusCodes.Status400BadRequest, ex.Message,ex);
+            }
+
+            catch (InvalidRoleIdException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex); 
+            }
+
             catch (Exception ex)
             { 
                 await HandleExceptionAsync(context, StatusCodes.Status500InternalServerError, "An unexpected error occurred", ex);
