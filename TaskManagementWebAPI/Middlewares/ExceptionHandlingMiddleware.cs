@@ -79,7 +79,7 @@ namespace TaskManagementWebAPI.Middlewares
                 await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
             }
 
-            //Custom exception for email format validation
+            //Custom exception for Email format validation
             catch (InvalidEmailFormatException ex)
             {
                 await HandleExceptionAsync(context,StatusCodes.Status400BadRequest, ex.Message,ex);
