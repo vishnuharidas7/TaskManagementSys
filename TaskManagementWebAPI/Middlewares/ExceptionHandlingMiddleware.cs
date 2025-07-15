@@ -1,4 +1,5 @@
-﻿using TaskManagementWebAPI.Domain.Custom_Exceptions;
+﻿using SendGrid.Helpers.Errors.Model;
+using TaskManagementWebAPI.Domain.Custom_Exceptions;
 
 namespace TaskManagementWebAPI.Middlewares
 {
@@ -84,11 +85,16 @@ namespace TaskManagementWebAPI.Middlewares
                 await HandleExceptionAsync(context,StatusCodes.Status400BadRequest, ex.Message,ex);
             }
 
+            //Custom exception for RoleId validation
             catch (InvalidRoleIdException ex)
             {
                 await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex); 
-            }
+            } 
 
+            catch (NotFoundException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status404NotFound, ex.Message, ex);
+            }
             catch (Exception ex)
             { 
                 await HandleExceptionAsync(context, StatusCodes.Status500InternalServerError, "An unexpected error occurred", ex);
