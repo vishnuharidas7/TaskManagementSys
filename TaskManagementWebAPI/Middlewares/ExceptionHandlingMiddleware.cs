@@ -1,4 +1,5 @@
 ﻿using SendGrid.Helpers.Errors.Model;
+using TaskManagementWebAPI.Domain.Custom_Exceptions;
 
 namespace TaskManagementWebAPI.Middlewares
 {
@@ -71,6 +72,25 @@ namespace TaskManagementWebAPI.Middlewares
             { 
                 await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, "Invalid operation", ex);
             }
+
+            //Custom exception for phone number validation
+            catch (InvalidPhoneNumberException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
+            }
+
+            //Custom exception for Email format validation
+            catch (InvalidEmailFormatException ex)
+            {
+                await HandleExceptionAsync(context,StatusCodes.Status400BadRequest, ex.Message,ex);
+            }
+
+            //Custom exception for RoleId validation
+            catch (InvalidRoleIdException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex); 
+            } 
+
             catch (NotFoundException ex)
             {
                 await HandleExceptionAsync(context, StatusCodes.Status404NotFound, ex.Message, ex);
