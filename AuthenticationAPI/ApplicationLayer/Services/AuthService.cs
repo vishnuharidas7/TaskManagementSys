@@ -1,12 +1,13 @@
-﻿using AuthenticationAPI.InfrastructureLayer.Data;
-using AuthenticationAPI.ApplicationLayer.DTOs;
+﻿using AuthenticationAPI.ApplicationLayer.DTOs;
+using AuthenticationAPI.InfrastructureLayer.Data;
 using AuthenticationAPI.InfrastructureLayer.Helpers;
 using AuthenticationAPI.Repositories;
+using LoggingLibrary.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using LoggingLibrary.Interfaces;
 
 namespace AuthenticationAPI.Services
 {
@@ -48,6 +49,26 @@ namespace AuthenticationAPI.Services
                     RefreshToken = refreshToken  // Send back only the access token ideally
                 };
             }
+            catch (ArgumentNullException ex)
+            {
+                _logger.LoggError(ex, "LoginAsync - Null or missing input");
+                throw;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LoggWarning("LoginAsync - Unauthorized login attempt for Username: {Username}",ex);
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex, "LoginAsync - Invalid operation while authenticating Username: {Username}");
+                throw;
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LoggError(ex,"LoginAsync - Database issue while authenticating Username: {Username}");
+                throw;
+            }
             catch (Exception ex) {
                 _logger.LoggWarning("LoginAsync failed");
                 throw;
@@ -81,6 +102,21 @@ namespace AuthenticationAPI.Services
                 return principal;
 
 
+            }
+            catch (ArgumentNullException ex)
+            {
+                _logger.LoggError(ex, "Token was null or missing");
+                throw;
+            }
+            catch (SecurityTokenExpiredException ex)
+            {
+                _logger.LoggWarning("Token is expired, but still valid for refresh");
+                throw; // Optional: if you extend `SecurityTokenExpiredException`
+            }
+            catch (SecurityTokenException ex)
+            {
+                _logger.LoggWarning("Security token validation failed");
+                throw;
             }
             catch (Exception ex)
             {

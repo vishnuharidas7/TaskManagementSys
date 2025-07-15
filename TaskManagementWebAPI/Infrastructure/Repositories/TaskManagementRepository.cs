@@ -5,12 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using SendGrid.Helpers.Errors.Model;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Xml.Linq; 
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
@@ -97,12 +99,12 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             catch (InvalidOperationException ex)
             {
                 _logger.LoggError(ex, "ViewAllTasks - Invalid operation while querying tasks.");
-                throw ex.InnerException;
+                throw;
             }
             catch (DbException ex)
             {
                 _logger.LoggError(ex, "ViewAllTasks - Database error while fetching tasks.");
-                throw ex.InnerException;
+                throw;
             }
             catch (Exception ex)
             {
@@ -266,15 +268,12 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 var task = await _db.Task.FindAsync(id);
                 if (task == null)
                 {
-                    throw new Exception("Task not found");
+                    throw new NotFoundException($"Task with ID {id} not found.");
                 }
                 _db.Task.Remove(task);
                 await _db.SaveChangesAsync();
             }
-            catch (KeyNotFoundException)
-            {
-                throw;
-            }
+           
             catch (DbUpdateException dbEx)
             {
                 _logger.LoggError(dbEx, "Database update error while deleting task with ID {TaskId}.", id);
@@ -290,8 +289,6 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public async Task UpdateTask(Tasks task)
         {
-            try
-            {
                 try
                 {
                     _db.Task.Update(task);
@@ -302,18 +299,11 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     _logger.LoggWarning("Database error while retrieving user/tasks: {Message}", dbEx.Message);
                     throw dbEx.InnerException;
                 }
-                               
-            }
-            catch (KeyNotFoundException)
-            {
+            //catch (ApplicationException)
+            //{
                 
-                throw;
-            }
-            catch (ApplicationException)
-            {
-                
-                throw;
-            }
+            //    throw;
+            //}
             catch (Exception ex)
             {
                 _logger.LoggError(ex, "Unexpected error occurred while updating task with ID {TaskId}.", task.taskId);
@@ -342,6 +332,10 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                         referenceId=t.referenceId
                     })
                     .ToListAsync();
+                if (tasks == null)
+                {
+                    throw new NotFoundException($"Task with UserID {userId} not found.");
+                }
 
                 return tasks;
             }
@@ -380,6 +374,10 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                         referenceId=t.referenceId
                     })
                     .ToListAsync();
+                //if (tasks == null)
+                //{
+                //    throw new NotFoundException($"Task with User ID {userId} not found.");
+                //}
 
                 return tasks;
             }
@@ -421,7 +419,10 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             })
             .ToListAsync();
 
-
+                //if (tasks == null)
+                //{
+                //    throw new NotFoundException($"Task with User ID {userId} not found.");
+                //}
                 return tasks;
             }
             catch (ArgumentNullException argEx)

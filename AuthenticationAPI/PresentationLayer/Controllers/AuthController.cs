@@ -1,11 +1,12 @@
-﻿using AuthenticationAPI.InfrastructureLayer.Data;
-using AuthenticationAPI.ApplicationLayer.DTOs;
+﻿using AuthenticationAPI.ApplicationLayer.DTOs;
+using AuthenticationAPI.InfrastructureLayer.Data;
 using AuthenticationAPI.InfrastructureLayer.Helpers;
 using AuthenticationAPI.Repositories;
 using AuthenticationAPI.Services;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using LoggingLibrary.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace AuthenticationAPI.Controllers
 {
@@ -29,10 +30,14 @@ namespace AuthenticationAPI.Controllers
 
 
         /// <summary>
-        /// API Controller for Lgin the users
+        /// Authenticates a user and returns JWT tokens.
         /// </summary>
-        /// <param name="dto"></param>
-        /// <returns></returns>
+        /// <param name="dto">Login credentials (username and password)</param>
+        /// <returns>JWT tokens (AccessToken and RefreshToken)</returns>
+        /// <response code="200">Login successful, tokens returned</response>
+        /// <response code="400">Invalid input or null data</response>
+        /// <response code="401">Unauthorized - invalid credentials</response>
+        /// <response code="500">Internal server error</response>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
@@ -52,6 +57,16 @@ namespace AuthenticationAPI.Controllers
                 //_logger.LogInformation("Login successful for username: {Username}", dto.UserName);
                 return Ok(token);
             }
+            //catch (UnauthorizedAccessException ex)
+            //{
+            //    _logger.LoggWarning("Login failed due to invalid credentials.");
+            //    throw;
+            //}
+            //catch (ArgumentNullException ex)
+            //{
+            //    _logger.LoggWarning("Login failed due to null or missing data.");
+            //    throw;
+            //}
             catch (Exception ex) {
                 _logger.LoggWarning("login API failed");
                 throw;
@@ -63,9 +78,18 @@ namespace AuthenticationAPI.Controllers
         /// <summary>
         /// API Controller for refreshing the token
         /// </summary>
-        /// <param name="tokens"></param>
-        /// <returns></returns>
+        /// <param name="tokens">Tokens is Mandatory</param>
+        /// <returns>New access token</returns>
+        /// <response code="200">Successfully refreshed token</response>
+        /// <response code="400">Invalid refresh token or input</response>
+        /// <response code="401">Unauthorized - refresh token expired or tampered</response>
+        /// <response code="500">Internal server error</response>
+
         [HttpPost("refresh")]
+        [ProducesResponseType(typeof(object), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string), 401)]
+        [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> Refresh([FromBody] TokenResponseDTO tokens)
         {
             try
@@ -96,14 +120,22 @@ namespace AuthenticationAPI.Controllers
 
                 });
             }
-            catch(Exception ex)
+            //catch (SecurityTokenException ex)
+            //{
+            //    _logger.LoggWarning("Security token validation failed during refresh",ex);
+            //    return BadRequest("Invalid refresh token");
+            //}
+            //catch (ArgumentException ex)
+            //{
+            //    _logger.LoggWarning("Argument exception during token refresh",ex);
+            //    return BadRequest("Invalid refresh token");
+            //}
+            catch (Exception ex)
             {
                 _logger.LoggWarning("Refresh API failed");
                 throw;
             }
            
         }
-
-
     }
 }

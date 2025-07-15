@@ -67,7 +67,6 @@ namespace TaskManagementWebAPI.Controllers
                     return NotFound(new { Error = "User with provided email does not exist." });
                 } 
                 return Ok(new { Message = "New credentials has been sent to the provided Email." });
-            
         }
 
     }

@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NPOI.XWPF.UserModel;
+using SendGrid.Helpers.Errors.Model;
 using System.Threading;
+using System.Threading.Tasks;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.ConfigurationLayer;
@@ -171,7 +173,7 @@ namespace TaskManagementWebAPI.Application.Services
                 var task = await _db.Task.FindAsync(id);
                 if (task == null)
                 {
-                    throw new Exception("Task not found");
+                    throw new NotFoundException($"Task with ID {id} not found.");
                 }
 
                 task.taskName = obj.taskName;
@@ -211,16 +213,7 @@ namespace TaskManagementWebAPI.Application.Services
                     }
                 }
             }
-            catch (KeyNotFoundException)
-            {
-
-                throw;
-            }
-            catch (ApplicationException)
-            {
-
-                throw;
-            }
+           
             catch (Exception ex)
             {
                 _logger.LoggError(ex, "Unexpected error occurred while updating task with ID {TaskId}.", id);
@@ -235,7 +228,10 @@ namespace TaskManagementWebAPI.Application.Services
                 var parser = _parserFactory.GetParser(file.FileName);
                 var rawData = await parser.ParseAsync(file);
                 var tasks = _taskMapper.MapToTasks(rawData);
-
+                if (tasks == null)
+                {
+                    throw new NotFoundException("Tasks from file not found.");
+                }
                 var tomorrow = DateTime.Today.AddDays(1);
                 var validTasks = tasks
                     .Where(t => t.dueDate.Date >= tomorrow)
