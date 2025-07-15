@@ -65,18 +65,22 @@ namespace TaskManagementWebAPI.Middlewares
             {
                 await HandleExceptionAsync(context, StatusCodes.Status404NotFound, ex.Message, ex);
             }
+            //Custom exception
             catch (TaskValidationException ex)
             {
                 await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
             }
+            //Custom exception
             catch (TaskFileParserException ex)
             {
                 await HandleExceptionAsync(context, StatusCodes.Status422UnprocessableEntity, ex.Message, ex);
             }
+            //Custom exception
             catch (AuthServiceUnavailableException ex)
             {
                 await HandleExceptionAsync(context, StatusCodes.Status503ServiceUnavailable, ex.Message, ex);
             }
+            //Custom exception
             catch (TokenRefreshFailedException ex)
             {
                 await HandleExceptionAsync(context, StatusCodes.Status504GatewayTimeout, ex.Message, ex);
