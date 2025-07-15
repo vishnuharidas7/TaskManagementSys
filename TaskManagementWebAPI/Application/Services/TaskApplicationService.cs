@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.ConfigurationLayer;
+using TaskManagementWebAPI.CustomException;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models;
 using TaskManagementWebAPI.Infrastructure.Persistence;
@@ -226,20 +227,31 @@ namespace TaskManagementWebAPI.Application.Services
             try
             {
                 var parser = _parserFactory.GetParser(file.FileName);
-                var rawData = await parser.ParseAsync(file);
-                var tasks = _taskMapper.MapToTasks(rawData);
-                if (tasks == null)
+                parser = null;
+                if (parser == null)
                 {
-                    throw new NotFoundException("Tasks from file not found.");
+                    throw new TaskFileParserException($"No parser found for file: {file.FileName}");
                 }
+
+                var rawData = await parser.ParseAsync(file);
+                if (rawData == null || !rawData.Any())
+                {
+                    throw new TaskFileParserException("Parsed data is empty or null.");
+                }
+
+                var tasks = _taskMapper.MapToTasks(rawData);
+                if (tasks == null || !tasks.Any())
+                {
+                    throw new TaskValidationException("No tasks could be mapped from the file.");
+                }
+
                 var tomorrow = DateTime.Today.AddDays(1);
                 var validTasks = tasks
                     .Where(t => t.dueDate.Date >= tomorrow)
                     .ToList();
-
                 if (!validTasks.Any())
                 {
-                    throw new ArgumentException("All task due dates are either today or in the past.");
+                    throw new TaskValidationException("Unable to parse the task file due to invalid format.");
                 }
 
                 var useDapper = _configuration.GetValue<bool>("UseDapper:UseDapper");
