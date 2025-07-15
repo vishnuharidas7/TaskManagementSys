@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Errors.Model;
 using System.Data.Common;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -195,7 +196,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 if (user == null)
                 {
                     _logger.LoggWarning("UpdateUser-User not found");
-                    throw new Exception("User not found");
+                    throw new NotFoundException("User not found");
                 }
 
                 user.UserName = obj.UserName;
@@ -251,7 +252,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 if (user == null)
                 {
                     _logger.LoggWarning("DeleteUser-User not found");
-                    throw new Exception("User not found");
+                    throw new NotFoundException("User not found");
                 }
                 try
                 {
@@ -306,6 +307,12 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                         Password = u.Password,
                         Gender = u.gender
                     }).FirstOrDefaultAsync();
+
+                    if(userWithId ==null)
+                    {
+                        _logger.LoggWarning("UserListById-User not found");
+                        throw new NotFoundException("User not found");
+                    }
                 }
                 catch (InvalidOperationException invOpEx)
                 {
@@ -350,7 +357,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 if (user == null)
                 {
                     _logger.LoggWarning("UpdatePassword-User not found");
-                    throw new Exception("User not found");
+                    throw new NotFoundException("User not found");
                 }
 
                 if (!BCrypt.Net.BCrypt.Verify(obj.curpswd,user.Password))

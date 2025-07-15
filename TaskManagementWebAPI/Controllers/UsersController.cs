@@ -42,17 +42,10 @@ namespace TaskManagementWebAPI.Controllers
         [Authorize(Roles = "Admin,User")]
         [HttpGet("check-username")]
         public async Task<IActionResult> CheckUsernameExists([FromQuery] string username)
-        {
-            try
-            {
-                var exists = await _db.User.AnyAsync(u => u.UserName.ToLower() == username.ToLower());
+        { 
+            var exists = await _db.User.AnyAsync(u => u.UserName.ToLower() == username.ToLower());
                 return Ok(exists);
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("check-username API failed");
-                throw;
-            }
+           
         }
 
         /// <summary>
@@ -67,25 +60,15 @@ namespace TaskManagementWebAPI.Controllers
         [Authorize(Roles = "Admin,User")]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(RegisterDTO dto)
-        {
-            try
-            {
-                
-                var exists = await _db.User.AnyAsync(u => u.Email == dto.Email);
+        { 
+            var exists = await _db.User.AnyAsync(u => u.Email == dto.Email);
                 if (exists)
                     return BadRequest(new { error = "Email already exists." });
 
 
                 await _userApplicationService.RegisterAsync(dto);
                 _logger.LoggInformation("Registered successfully");
-                return Ok(dto);
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("register API failed");
-                throw;
-            }
+                return Ok(dto); 
         }
 
         /// <summary>
@@ -98,9 +81,7 @@ namespace TaskManagementWebAPI.Controllers
         [Authorize(Roles = "Admin,User")]
         [HttpGet("viewusers")]
         public async Task<ActionResult> UserList()
-        {
-            try
-            {
+        { 
                 string authHeader = Request.Headers["Authorization"];
                 if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
                 {
@@ -112,12 +93,7 @@ namespace TaskManagementWebAPI.Controllers
 
                 var allUser = await _user.ViewUsers();
                 return Ok(allUser);
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("viewusers API failed");
-                throw;
-            }
+             
         }
 
 
@@ -134,17 +110,10 @@ namespace TaskManagementWebAPI.Controllers
         [Authorize(Roles = "Admin,User")]
         [HttpPut("updateuser/{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO obj)
-        {
-            try
-            {
-                await _user.UpdateUser(id, obj);
+        { 
+            await _user.UpdateUser(id, obj);
                 return Ok(obj);
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("updateuser API failed");
-                throw;
-            }
+             
         }
 
         /// <summary>
@@ -159,18 +128,10 @@ namespace TaskManagementWebAPI.Controllers
         [Authorize(Roles = "Admin,User")]
         [HttpDelete("deleteUser/{id}")]
         public async Task<ActionResult> DeleteUser(int id)
-        {
-            try
-            {
-                await _user.DeleteUser(id);
+        { 
+            await _user.DeleteUser(id);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("deleteUser API failed");
-                throw;
-            }
-
+             
         }
 
         /// <summary>
@@ -186,16 +147,9 @@ namespace TaskManagementWebAPI.Controllers
         [HttpGet("viewusersByid/{id}")]
         public async Task<ActionResult> UserListById(int id)
         {
-            try
-            {
-                var userById = await _user.UserListById(id);
+            var userById = await _user.UserListById(id);
                 return Ok(userById);
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("viewusers API failed");
-                throw;
-            }
+             
         }
 
         /// <summary>
@@ -212,16 +166,10 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPut("updatePswd/{id}")]
         public async Task<ActionResult>UpdatePassword(int id,UpdatePasswordDTO obj)
         {
-            try
-            {
+             
                 await _user.UpdatePassword(id, obj);
                 return Ok(obj);
-            }
-            catch
-            {
-                _logger.LoggWarning("updatPassword API failed");
-                throw;
-            }
+             
         }
     }
 }
