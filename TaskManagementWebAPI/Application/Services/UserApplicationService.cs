@@ -1,9 +1,12 @@
 ﻿using LoggingLibrary.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Errors.Model;
 using System.Data.Common;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Domain.Custom_Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models;
 using TaskManagementWebAPI.Infrastructure.Persistence;
@@ -34,6 +37,21 @@ namespace TaskManagementWebAPI.Application.Services
         {
             try
             {
+                if (!IsValidPhoneNumber(dto.PhoneNumber))
+                {
+                    throw new InvalidPhoneNumberException($"Invalid phone number - {dto.PhoneNumber}"); //Custom Exception for phone number validation
+                }
+                if(!IsValidEmailFormat(dto.Email))
+                {
+                    throw new InvalidEmailFormatException($"Invalid email format - {dto.Email}"); //Custom exception for email format
+                }
+
+                var roleid = await _db.Role.FindAsync(dto.RoleId);
+                if (roleid == null)
+                { 
+                    throw new InvalidRoleIdException($"Invalid RoleId - {dto.RoleId}");
+                }
+
                 string randomPswd = _randomPasswordGenerator.GenerateRandomPassword(8);
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(randomPswd);
                 var user = new Users
@@ -66,6 +84,18 @@ namespace TaskManagementWebAPI.Application.Services
             }
         }
 
+        //Added for phone number validation
+        private bool IsValidPhoneNumber(string phone)
+        {
+            return Regex.IsMatch(phone, @"^\d{10}$"); // Example: valid 10-digit number
+        }
+
+        //Added for email format validation
+        private bool IsValidEmailFormat(string email)
+        { 
+            return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+        }
+
         public async Task<Users?> ForgotPassword(string email)
         {
             try
@@ -74,7 +104,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                 if (user == null)
                 {
-                    throw new InvalidOperationException("No user exists with the specified email.");
+                    throw new NotFoundException("No user exists with the specified email.");
                 }
                     //return null;
 
