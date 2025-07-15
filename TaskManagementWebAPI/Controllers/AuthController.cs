@@ -34,7 +34,7 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPost("loginAuth")]
         public async Task<IActionResult> ExternalLogin([FromBody] LoginDTO dto)
         {
-                var token = await _user.LoginAsync(dto);
+              var token = await _user.LoginAsync(dto);
                 return Ok(token);
         }
 
@@ -46,7 +46,7 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh([FromBody] TokenResponseDTO tokens)
         {
-                var token = await _user.Refresh(tokens);
+              var token = await _user.Refresh(tokens);
                 return Ok(token);
         }
 
@@ -62,12 +62,10 @@ namespace TaskManagementWebAPI.Controllers
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
                 var user = await _forgotPasswordHandler.HandleAsync(request);
-
                 if (user == null)
                 {
                     return NotFound(new { Error = "User with provided email does not exist." });
-                }
-
+                } 
                 return Ok(new { Message = "New credentials has been sent to the provided Email." });
         }
 
