@@ -1,7 +1,6 @@
 ﻿using Org.BouncyCastle.Tsp;
 using SendGrid.Helpers.Errors.Model;
-using TaskManagementWebAPI.CustomException;
-using TaskManagementWebAPI.Domain.Custom_Exceptions;
+using TaskManagementWebAPI.Domain.Exceptions;
 
 namespace TaskManagementWebAPI.Middlewares
 {
@@ -85,6 +84,19 @@ namespace TaskManagementWebAPI.Middlewares
             {
                 await HandleExceptionAsync(context, StatusCodes.Status504GatewayTimeout, ex.Message, ex);
             }
+
+            //Custom exception for email validation
+            catch (DuplicateEmailException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
+            }
+
+            //Custom exception for username validation
+            catch (DuplicateUsernameException ex)
+            {
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
+            }
+
             catch (Exception ex)
             { 
                 await HandleExceptionAsync(context, StatusCodes.Status500InternalServerError, "An unexpected error occurred", ex);

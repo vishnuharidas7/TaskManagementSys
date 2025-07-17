@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
-using TaskManagementWebAPI.Domain.Custom_Exceptions;
+using TaskManagementWebAPI.Domain.Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models;
 using TaskManagementWebAPI.Infrastructure.Persistence;
@@ -33,24 +33,54 @@ namespace TaskManagementWebAPI.Application.Services
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService), "emailService cannot be null.");
             _userEmailContentBuilder = userEmailContentBuilder ?? throw new ArgumentNullException(nameof(userEmailContentBuilder), "userEmailContentBuilder cannot be null.");
         }
+
+        public async Task<bool> CheckUserExists(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("Username cannot be null or empty.", nameof(username));
+
+            return await _db.User.AnyAsync(u => u.UserName.ToLower() == username.ToLower());
+        }
+
         public async Task RegisterAsync(RegisterDTO dto)
         {
             try
             {
+                //Phone number validation
                 if (!IsValidPhoneNumber(dto.PhoneNumber))
                 {
                     throw new InvalidPhoneNumberException($"Invalid phone number - {dto.PhoneNumber}"); //Custom Exception for phone number validation
                 }
+                //Email Format validation
                 if(!IsValidEmailFormat(dto.Email))
                 {
                     throw new InvalidEmailFormatException($"Invalid email format - {dto.Email}"); //Custom exception for email format
                 }
-
+                //Email already exists validation
+                var emailexists = await _db.User.AnyAsync(u => u.Email == dto.Email);
+                if (emailexists)
+                {
+                    throw new DuplicateEmailException($"Email '{dto.Email}' is already registered.");
+                } 
+                //RoleId validation
                 var roleid = await _db.Role.FindAsync(dto.RoleId);
                 if (roleid == null)
                 { 
                     throw new InvalidRoleIdException($"Invalid RoleId - {dto.RoleId}");
+                } 
+                //Username validation
+                string username = dto.UserName;
+                if (string.IsNullOrWhiteSpace(username))
+                {
+                    throw new ArgumentException("Username cannot be null or empty.", nameof(username));
                 }
+                var checkUsernameExist = await _db.User.AnyAsync(u => u.UserName.ToLower() == username.ToLower());
+                if (checkUsernameExist)
+                {
+                    throw new DuplicateUsernameException($"Username {username} Already exists.");
+                }
+
+
 
                 string randomPswd = _randomPasswordGenerator.GenerateRandomPassword(8);
                 string hashedPassword = BCrypt.Net.BCrypt.HashPassword(randomPswd);
