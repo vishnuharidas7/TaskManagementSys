@@ -1,17 +1,44 @@
 ﻿
+using log4net;
+using log4net.Config;
 using LoggingLibrary;
+using LoggingLibrary.Config;
 using LoggingLibrary.Implementations;
 using LoggingLibrary.Interfaces;
 using Scheduler.Configurations;
 using Scheduler.Service;
 using Scheduler.Services.EmailServices;
+using Serilog;
+using System.Reflection;
+
+
+
+
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(AppContext.BaseDirectory)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .Build();
+var loggingProvider = configuration["Logging:LoggingProvider"];
+if (loggingProvider == "Serilog")
+{
+    LoggerConfigurator.ConfigureLogging(); // Custom Serilog configuration
+   //Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
+}
+else if (loggingProvider == "Log4Net")
+{
+    var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+    var log4netConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "log4net.config");
+    XmlConfigurator.Configure(logRepository, new FileInfo(log4netConfigPath));
+}
 
 IHost host = Host.CreateDefaultBuilder(args)
     .UseWindowsService()
+     .UseSerilog()
     .ConfigureServices((hostContext, services) =>
     {
-        services.AddHttpClient();
         var configuration = hostContext.Configuration;
+        services.AddHttpClient();
+     
 
         services.Configure<TaskCompletionReminderWorkerSettings>(
             configuration.GetSection("OverdueTaskEmailWorkerSettings"));

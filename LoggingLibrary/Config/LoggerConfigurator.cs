@@ -7,8 +7,9 @@ namespace LoggingLibrary.Config
         public static void ConfigureLogging()
         {
             Log.Logger = new LoggerConfiguration()
-               // .ReadFrom.Configuration(configuration)
-                //.Enrich.FromLogContext()
+                 // .ReadFrom.Configuration(configuration)
+                 //.Enrich.FromLogContext()
+                 .MinimumLevel.Information()
                 .WriteTo.Console()
                 .WriteTo.File("D:\\TaskManagement-Collab-Log\\Logg\\SeriLog-.txt",
                 rollingInterval: RollingInterval.Day,
