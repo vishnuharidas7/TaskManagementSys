@@ -12,4 +12,8 @@
     <PackageReference Include="NPOI" Version="2.7.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LoggingLibrary\LoggingLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

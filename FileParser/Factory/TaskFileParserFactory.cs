@@ -1,23 +1,26 @@
-﻿using System.Net.Http;
+﻿using LoggingLibrary.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Infrastructure.Services.FileUpload;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FileParser.Factory
 {
     public class TaskFileParserFactory : ITaskFileParserFactory
     {
         private readonly IServiceProvider _serviceProvider;
-
-        public TaskFileParserFactory(IServiceProvider serviceProvider)
+        private readonly IAppLogger<TaskFileParserFactory> _logger;
+        public TaskFileParserFactory(IServiceProvider serviceProvider, IAppLogger<TaskFileParserFactory> logger)
         {
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider), "serviceProvider cannot be null.");
+            _logger = logger;
         }
 
         public ITaskFileParser GetParser(string fileName)
         {
             try
             {
+                _logger.LoggInformation("ITaskFileParser started.");
                 if (fileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
                     return _serviceProvider.GetRequiredService<ExcelTaskFileParser>();
                 else if (fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))

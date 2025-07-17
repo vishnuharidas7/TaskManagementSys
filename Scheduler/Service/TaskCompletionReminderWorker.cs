@@ -45,8 +45,12 @@ namespace Scheduler.Services.EmailServices
                     }
                     else
                     {
-                        _logger.LoggWarning("OverdueTaskEmail work failed with status code: {code}");
+                        _logger.LoggWarning("OverdueTaskEmail work failed");
                     }
+                }
+                catch (HttpRequestException ex)
+                {
+                    _logger.LoggError(ex, "HTTP request failed OverdueTaskEmail. Ensure the API is running and accessible at {url}", _settings.ApiUrlTaskEmail);
                 }
                 catch (Exception ex)
                 {
