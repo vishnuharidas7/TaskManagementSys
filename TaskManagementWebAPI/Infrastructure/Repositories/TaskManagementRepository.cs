@@ -90,7 +90,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     taskStatus = u.taskStatus,
                     priority = u.priority,
                     taskType = u.taskType,
-                    referenceId=u.referenceId
+                    referenceId=u.referenceId,
+                    taskState = u.taskState
                 })
                 .ToListAsync();
 

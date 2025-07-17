@@ -18,5 +18,7 @@
 
         public string referenceId { get; set; }
 
+        public string taskState { get; set; }
+
     }
 }

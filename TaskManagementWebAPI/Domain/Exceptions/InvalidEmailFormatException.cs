@@ -1,4 +1,4 @@
-﻿namespace TaskManagementWebAPI.Domain.Custom_Exceptions
+﻿namespace TaskManagementWebAPI.Domain.Exceptions
 {
     public class InvalidEmailFormatException : Exception
     {

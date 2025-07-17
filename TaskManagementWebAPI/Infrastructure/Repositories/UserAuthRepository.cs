@@ -6,7 +6,7 @@ using SendGrid.Helpers.Errors.Model;
 using SendGrid.Helpers.Mail;
 using System.Net;
 using TaskManagementWebAPI.Application.DTOs;
-using TaskManagementWebAPI.Domain.Custom_Exceptions;
+using TaskManagementWebAPI.Domain.Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
 using static System.Net.WebRequestMethods;
 

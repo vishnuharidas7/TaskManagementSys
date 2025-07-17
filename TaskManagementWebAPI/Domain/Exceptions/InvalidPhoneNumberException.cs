@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
-namespace TaskManagementWebAPI.Domain.Custom_Exceptions
+namespace TaskManagementWebAPI.Domain.Exceptions
 {
     public class InvalidPhoneNumberException : Exception
     {
