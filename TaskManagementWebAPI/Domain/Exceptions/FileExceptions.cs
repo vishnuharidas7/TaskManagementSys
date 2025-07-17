@@ -1,5 +1,5 @@
 ﻿
-namespace TaskManagementWebAPI.CustomException
+namespace TaskManagementWebAPI.Domain.Exceptions
 {
     public class TaskFileParserException : Exception
     {

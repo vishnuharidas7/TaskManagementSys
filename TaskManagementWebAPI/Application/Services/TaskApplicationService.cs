@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.ConfigurationLayer;
-using TaskManagementWebAPI.CustomException;
+using TaskManagementWebAPI.Domain.Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models;
 using TaskManagementWebAPI.Infrastructure.Persistence;
