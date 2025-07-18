@@ -182,6 +182,7 @@ namespace TaskManagementWebAPI.Application.Services
                 task.dueDate = obj.dueDate;
                 task.taskDescription = obj.taskDescription;
                 task.taskStatus = obj.taskStatus;
+                task.priority = obj.priority;
                 task.taskType = obj.taskType;
                 if (obj.taskStatus == "Completed")
                 {
@@ -227,7 +228,6 @@ namespace TaskManagementWebAPI.Application.Services
             try
             {
                 var parser = _parserFactory.GetParser(file.FileName);
-                parser = null;
                 if (parser == null)
                 {
                     throw new TaskFileParserException($"No parser found for file: {file.FileName}");
