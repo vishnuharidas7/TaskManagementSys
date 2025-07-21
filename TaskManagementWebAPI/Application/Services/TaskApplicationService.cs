@@ -223,7 +223,7 @@ namespace TaskManagementWebAPI.Application.Services
             }
         }
 
-        public async Task ProcessFileAsync(IFormFile file)
+        public async Task ProcessFileAsync(int userId, IFormFile file)
         {
             try
             {
@@ -238,8 +238,10 @@ namespace TaskManagementWebAPI.Application.Services
                 {
                     throw new TaskFileParserException("Parsed data is empty or null.");
                 }
+                var users = await _db.User.ToListAsync();
+                var userMap = users.ToDictionary(u => u.UserName.ToLower(), u => u.UserId);
 
-                var tasks = _taskMapper.MapToTasks(rawData);
+                var tasks = _taskMapper.MapToTasks(rawData, userMap, userId);
                 if (tasks == null || !tasks.Any())
                 {
                     throw new TaskValidationException("No tasks could be mapped from the file.");
@@ -271,10 +273,10 @@ namespace TaskManagementWebAPI.Application.Services
 
                 foreach (var entry in tasksByUser)
                 {
-                    var userId = entry.Key;
+                    var assigneduserId = entry.Key;
                     var userTasks = entry.Value;
 
-                    var user = await _db.User.FindAsync(userId);
+                    var user = await _db.User.FindAsync(assigneduserId);
                     //var user = await _db.User.FindAsync(entry.Key);
                     if (user == null)
                     {

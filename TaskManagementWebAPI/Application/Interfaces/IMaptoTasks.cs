@@ -9,7 +9,7 @@ namespace TaskManagementWebAPI.Application.Interfaces
         /// </summary>
         /// <param name="rawData"></param>
         /// <returns></returns>
-        List<Tasks> MapToTasks(List<Dictionary<string, object>> rawData);
+        List<Tasks> MapToTasks(List<Dictionary<string, object>> rawData, Dictionary<string, int> userNameToId, int createdUserId);
         
     }
 }
