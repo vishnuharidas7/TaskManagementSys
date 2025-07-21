@@ -31,7 +31,7 @@ namespace Scheduler.Service
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LoggInformation("OverdueTaskEmailWorker started.");
+            _logger.LoggInformation("OverdueTaskStatusUpdateWorker started.");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -42,22 +42,26 @@ namespace Scheduler.Service
 
                     if (response.IsSuccessStatusCode)
                     {
-                        _logger.LoggInformation("OverdueTaskEmail work successful at: {time}", DateTimeOffset.Now);
+                        _logger.LoggInformation("OverdueTaskStatusUpdateWorker work successful at: {time}", DateTimeOffset.Now);
                     }
                     else
                     {
-                        _logger.LoggWarning("OverdueTaskEmail work failed with status code: {code}");
+                        _logger.LoggWarning("OverdueTaskStatusUpdateWorker Response failed", response.IsSuccessStatusCode);
                     }
+                }
+                catch (HttpRequestException ex)
+                {
+                    _logger.LoggError(ex, "HTTP request failed OverdueTaskStatusUpdateWorker. Ensure the API is running and accessible at {url}", _settings.ApiUrlStatusUpdate);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LoggError(ex, "Exception during OverdueTaskEmail working");
+                    _logger.LoggError(ex, "Exception during OverdueTaskStatusUpdateWorker working");
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(_settings.TimeStatusUpdate), stoppingToken);
             }
 
-            _logger.LoggInformation("OverdueTaskEmailWorker is stopping.");
+            _logger.LoggInformation("OverdueTaskStatusUpdateWorker is stopping.");
         }
     }
 }

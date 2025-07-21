@@ -182,6 +182,7 @@ namespace TaskManagementWebAPI.Application.Services
                 task.dueDate = obj.dueDate;
                 task.taskDescription = obj.taskDescription;
                 task.taskStatus = obj.taskStatus;
+                task.priority = obj.priority;
                 task.taskType = obj.taskType;
                 if (obj.taskStatus == "Completed")
                 {
