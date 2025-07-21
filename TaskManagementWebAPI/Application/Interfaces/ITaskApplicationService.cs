@@ -24,7 +24,7 @@ namespace TaskManagementWebAPI.Application.Interfaces
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        Task ProcessFileAsync(IFormFile file);
+        Task ProcessFileAsync(int userId, IFormFile file);
 
     }
 }
