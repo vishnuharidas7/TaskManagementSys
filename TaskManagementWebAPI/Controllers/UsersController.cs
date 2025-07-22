@@ -30,30 +30,13 @@ namespace TaskManagementWebAPI.Controllers
 
         }
 
-        ///// <summary>
-        ///// Validation for username at the time for user registration
-        ///// </summary>
-        ///// <param name="username"></param>
-        ///// <returns>Username already exists</returns>
-        ///// <response code="200">Checks and return username already taken if any</response>
-        ///// <response code="400">Bad request</response>
-        ///// <response code="403">Forbidden page</response>
-        ///// <response code="500">Internal server error.</response>
-        //[Authorize(Roles = "Admin,User")]
-        //[HttpGet("check-username")]
-        //public async Task<IActionResult> CheckUsernameExists([FromQuery] string username)
-        //{ 
-        //    var exists = await _db.User.AnyAsync(u => u.UserName.ToLower() == username.ToLower());
-        //        return Ok(exists);
-           
-        //}
 
         /// <summary>
         /// Checks if a user exists by username.
         /// </summary>
         /// <param name="username">The username to check.</param>
         /// <returns>True if user exists, otherwise false.</returns>
-        [HttpGet("exists/{username}")]
+        [HttpGet("check-username")]
         public async Task<IActionResult> CheckUserExists(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
