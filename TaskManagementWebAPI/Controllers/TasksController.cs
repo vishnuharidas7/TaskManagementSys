@@ -107,11 +107,11 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="500">Internal server error</response>
         [Authorize(Roles = "Admin")]
         [HttpPost("upload")]
-        public async Task<IActionResult> FileUpload(IFormFile file)
+        public async Task<IActionResult> FileUpload(int userId, IFormFile file)
         {
              if (file == null || file.Length == 0)
                     return BadRequest("No file uploaded.");
-                await _taskControllerService.ProcessFileAsync(file);
+                await _taskControllerService.ProcessFileAsync(userId, file);
                 return Ok("File processed and tasks saved.");
            
         }
