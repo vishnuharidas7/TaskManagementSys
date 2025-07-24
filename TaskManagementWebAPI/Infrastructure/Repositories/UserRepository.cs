@@ -137,7 +137,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 user.PhoneNumber = obj.PhoneNumber;  
                 //user.Password =BCrypt.Net.BCrypt.HashPassword(obj.Password);
                 user.gender = obj.Gender;
-                // user.IsActive = obj.IsActive;
+                user.IsActive = obj.IsActive;
                 try
                 {
                     await _db.SaveChangesAsync();
