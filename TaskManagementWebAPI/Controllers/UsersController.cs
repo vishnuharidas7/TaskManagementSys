@@ -15,16 +15,14 @@ namespace TaskManagementWebAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _user;
-        private readonly IUserApplicationService _userApplicationService;
-        private readonly ApplicationDbContext _db;
+        private readonly IUserApplicationService _userApplicationService; 
         private readonly IAppLogger<AuthController> _logger;
 
-        public UsersController(IUserRepository user, ApplicationDbContext db, 
+        public UsersController(IUserRepository user,
            IUserApplicationService userApplicationService ,IAppLogger<AuthController> logger)
         {
 
-            _user = user ?? throw new ArgumentNullException(nameof(user), "User cannot be null.");
-            _db = db ?? throw new ArgumentNullException(nameof(db), "Db cannot be null.");
+            _user = user ?? throw new ArgumentNullException(nameof(user), "User cannot be null."); 
             _userApplicationService = userApplicationService ?? throw new ArgumentNullException(nameof(userApplicationService),"User Application service cannot be null");
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
 
@@ -75,16 +73,8 @@ namespace TaskManagementWebAPI.Controllers
         [HttpGet("viewusers")]
         public async Task<ActionResult> UserList()
         { 
-                string authHeader = Request.Headers["Authorization"];
-                if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
-                {
-                    string token = authHeader.Substring("Bearer ".Length).Trim('"');
-                    Console.WriteLine("🔐 Raw Token: " + token);
-                    var handler = new JwtSecurityTokenHandler();
-                    var jwtToken = handler.ReadJwtToken(token);
-                }
 
-                var allUser = await _user.ViewUsers();
+            var allUser = await _user.ViewUsers();
                 return Ok(allUser);
              
         }
