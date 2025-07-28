@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using SendGrid.Helpers.Errors.Model;
+using SendGrid.Helpers.Mail;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -40,6 +41,81 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             _connection = connection ?? throw new ArgumentNullException(nameof(connection), "Database connection cannot be null.");
         }
 
+        public  async Task<List<Tasks>>GetTasksByTaskIdAsync(int taskId)
+        {
+            try
+            {
+                var getTasksByTaskIdAsync = await _db.Task.Where(t => t.taskId == taskId).ToListAsync();
+                return getTasksByTaskIdAsync;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex, "GetTasksByTaskIdAsync - Invalid operation while querying Tasks.");
+                throw ex.InnerException;
+            }
+            catch (DbException ex)
+            {
+                _logger.LoggError(ex, "GetTasksByTaskIdAsync - Database access error.");
+                throw ex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "GetTasksByTaskIdAsync - An unexpected error occurred.");
+                throw;
+            }
+        }
+
+        public async Task<Tasks> TaskWithIdFindAsync(int taskId)
+        {
+            try
+            {
+                var task = await _db.Task.FindAsync(taskId);
+                return task;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex, "TaskWithIdFindAsync - Invalid operation while querying Tasks.");
+                throw ex.InnerException;
+            }
+            catch (DbException ex)
+            {
+                _logger.LoggError(ex, "TaskWithIdFindAsync - Database access error.");
+                throw ex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "TaskWithIdFindAsync - An unexpected error occurred.");
+                throw;
+            }
+        }
+       
+        public async Task<Tasks> LastTaskWithPrefix(string prefix)
+        {
+            try
+            {
+                var lastTaskWithPrefix = await _db.Task
+                   .Where(t => t.referenceId.StartsWith(prefix))
+                   .OrderByDescending(t => t.referenceId)
+                   .FirstOrDefaultAsync();
+                return lastTaskWithPrefix;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex, "LastTaskWithPrefix - Invalid operation while querying Last task.");
+                throw ex.InnerException;
+            }
+            catch (DbException ex)
+            {
+                _logger.LoggError(ex, "LastTaskWithPrefix - Database access error.");
+                throw ex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "LastTaskWithPrefix - An unexpected error occurred.");
+                throw;
+            }
+
+        }
         public async Task<List<AssignUserDTO>> ViewUsers()
         {
             try
@@ -439,6 +515,32 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             catch (Exception ex)
             {
                 _logger.LoggError(ex, "Unexpected error occurred in GetTasksNotificationByAdmin.");
+                throw;
+            }
+        }
+
+        public IEnumerable<Tasks>GetAllTasksByUserId(int userId)
+        {
+            try
+            {
+                return _db.Task
+                .Where(t => t.UserId == userId)
+                .ToList();
+            }
+            catch (ArgumentNullException argEx)
+            {
+                throw;
+            }
+            catch (InvalidOperationException invOpEx)
+            {
+                throw;
+            }
+            catch (DbUpdateException dbEx)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
                 throw;
             }
         }

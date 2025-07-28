@@ -18,7 +18,6 @@ namespace TaskManagementWebAPI.Application.Services
 {
     public class TaskApplicationService : ITaskApplicationService
     {
-        private readonly ApplicationDbContext _db;
         private readonly ITaskManagementRepository _taskManagementRepository;
         private readonly IAppLogger<UserAuthRepository> _logger;
         private readonly TaskSettings _taskSettings;
@@ -27,12 +26,13 @@ namespace TaskManagementWebAPI.Application.Services
         private readonly ITaskFileParserFactory _parserFactory;
         private readonly IMaptoTasks _taskMapper;
         private readonly IConfiguration _configuration;
+        private readonly IUserRepository _userRepository;
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         public TaskApplicationService(ITaskManagementRepository taskManagementRepository, IAppLogger<UserAuthRepository> logger,
-          IOptions<TaskSettings> taskSettings, ApplicationDbContext db, IEmailContentBuilder emailContentBuilder,
-          IEmailService emailService, ITaskFileParserFactory parserFactory, IMaptoTasks taskMapper, IConfiguration configuration)
+          IOptions<TaskSettings> taskSettings,IEmailContentBuilder emailContentBuilder,
+          IEmailService emailService, ITaskFileParserFactory parserFactory,
+          IMaptoTasks taskMapper, IConfiguration configuration, IUserRepository userRepository)
         {
-            _db = db;
             _taskManagementRepository = taskManagementRepository;
             _logger = logger;
             _taskSettings = taskSettings.Value;
@@ -41,6 +41,7 @@ namespace TaskManagementWebAPI.Application.Services
             _parserFactory = parserFactory;
             _taskMapper = taskMapper;
             _configuration = configuration;
+            _userRepository = userRepository;
         }
 
         public async Task AddTaskAsync(AddTaskDTO dto)
@@ -69,16 +70,14 @@ namespace TaskManagementWebAPI.Application.Services
                         var newTaskId = await _taskManagementRepository.AddTask(task);
                         if (newTaskId != null)
                         {
-                            var user = await _db.User.FindAsync(dto.UserId);
+                            var user = await _userRepository.GetUserByIdAsync(dto.UserId);
                             if (user == null)
                             {
                                 _logger.LoggWarning("User not found for ID {UserId}", dto.UserId);
                                 return;
                             }
 
-                            var userTasks = await _db.Task
-                                                     .Where(t => t.taskId == newTaskId)
-                                                     .ToListAsync();
+                            var userTasks = await _taskManagementRepository.GetTasksByTaskIdAsync(newTaskId);
                             if (userTasks.Any())
                             {
                                 var content = _contentBuilder.BuildContent(user, userTasks);
@@ -104,12 +103,12 @@ namespace TaskManagementWebAPI.Application.Services
             catch (InvalidOperationException ex)
             {
                 _logger.LoggError(ex, "AddTask - Invalid operation for user ID {UserId}", dto.UserId);
-                throw ex.InnerException;
+                throw;
             }
             catch (DbUpdateException ex)
             {
                 _logger.LoggError(ex, "AddTask - Database update failed while saving task for user ID {UserId}", dto.UserId);
-                throw ex.InnerException;
+                throw;
             }
             catch (Exception ex)
             {
@@ -134,10 +133,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                 string searchPrefix = prefix + "-";
 
-                var lastTask = await _db.Task
-                    .Where(t => t.referenceId.StartsWith(searchPrefix))
-                    .OrderByDescending(t => t.referenceId)
-                    .FirstOrDefaultAsync();
+                var lastTask =await _taskManagementRepository.LastTaskWithPrefix(searchPrefix);
 
                 int nextNumber = _taskSettings.InitialReferenceId; // start from 12000 if no task exists
 
@@ -156,7 +152,7 @@ namespace TaskManagementWebAPI.Application.Services
             catch (InvalidOperationException ex)
             {
                 _logger.LoggError(ex, "GenerateUniqueNumericIDTaskAsync - Invalid operation while generating ID with prefix {Prefix}", prefix);
-                throw ex.InnerException;
+                throw;
             }
             catch (Exception ex)
             {
@@ -171,7 +167,7 @@ namespace TaskManagementWebAPI.Application.Services
         {
             try
             {
-                var task = await _db.Task.FindAsync(id);
+                var task = await _taskManagementRepository.TaskWithIdFindAsync(id);
                 if (task == null)
                 {
                     throw new NotFoundException($"Task with ID {id} not found.");
@@ -202,11 +198,8 @@ namespace TaskManagementWebAPI.Application.Services
                 if (obj.taskStatus == "Completed")
                 {
 
-                    var userTasks = await _db.Task
-                                             .Where(t => t.taskId == id)
-                                             .ToListAsync();
-
-                    var user = await _db.User.FindAsync(task.createdBy);
+                    var userTasks = await _taskManagementRepository.GetTasksByTaskIdAsync(id);
+                    var user = await _userRepository.GetUserByCreatedBy(task.createdBy);
 
                     if (userTasks.Any())
                     {
@@ -238,7 +231,7 @@ namespace TaskManagementWebAPI.Application.Services
                 {
                     throw new TaskFileParserException("Parsed data is empty or null.");
                 }
-                var users = await _db.User.ToListAsync();
+                var users = await _userRepository.ListAllUsers();
                 var userMap = users.ToDictionary(u => u.UserName.ToLower(), u => u.UserId);
 
                 var tasks = _taskMapper.MapToTasks(rawData, userMap, userId);
@@ -276,7 +269,7 @@ namespace TaskManagementWebAPI.Application.Services
                     var assigneduserId = entry.Key;
                     var userTasks = entry.Value;
 
-                    var user = await _db.User.FindAsync(assigneduserId);
+                    var user = await _userRepository.GetUserByIdAsync(assigneduserId);
                     //var user = await _db.User.FindAsync(entry.Key);
                     if (user == null)
                     {

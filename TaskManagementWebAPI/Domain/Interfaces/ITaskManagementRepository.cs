@@ -75,5 +75,30 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<List<NotificationDTO>> GetTasksNotificationbByAdmin();
+
+        /// <summary>
+        /// For fetching task with taskId for sending mail
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <returns></returns>
+        Task<List<Tasks>> GetTasksByTaskIdAsync(int taskId);
+        /// <summary>
+        /// For fetching Last Task
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns></returns>
+        Task<Tasks> LastTaskWithPrefix(string prefix);
+        /// <summary>
+        /// Fetch Task with Id
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <returns></returns>
+        Task<Tasks> TaskWithIdFindAsync(int taskId);
+        /// <summary>
+        /// Fetch all task by userId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        IEnumerable<Tasks> GetAllTasksByUserId(int userId);
     }
 }

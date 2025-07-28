@@ -43,7 +43,7 @@ namespace TaskManagementWebAPITest.Controller
 
 
         [Fact]
-        public async Task assignUserList_returnOk_WithListOfAllUsers()
+        public async Task AssignUserList_ReturnOk_WithListOfAllUsers()
         {
             var mockAssignUser = new List<AssignUserDTO>
             {
@@ -66,7 +66,7 @@ namespace TaskManagementWebAPITest.Controller
         }
 
         [Fact]
-        public async Task viewAllTsk_ReturnOk_WithListOfTasks()
+        public async Task ViewAllTsk_ReturnOk_WithListOfTasks()
         {
             var mockTasks = new List<ViewTasksDTO>
             {
@@ -124,8 +124,7 @@ namespace TaskManagementWebAPITest.Controller
                 userName = "amal",
             };
                  
-            _taskAppServiceMock
-                .Setup(service => service.AddTaskAsync(dto))
+            _taskAppServiceMock.Setup(service => service.AddTaskAsync(dto))
                 .Returns(Task.CompletedTask); // No exception thrown
 
             // Act

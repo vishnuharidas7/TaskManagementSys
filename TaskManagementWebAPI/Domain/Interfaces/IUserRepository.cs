@@ -69,5 +69,30 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         /// <param name="obj"></param>
         /// <returns></returns>
         Task UpdatePassword(int id, UpdatePasswordDTO obj);
+
+        /// <summary>
+        /// Get users with userId for sending mail
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<Users> GetUserByIdAsync(int userId);
+
+        /// <summary>
+        /// Fetch all users
+        /// </summary>
+        /// <returns></returns>
+        Task<List<Users>> ListAllUsers();
+        /// <summary>
+        /// Get user with created by id
+        /// </summary>
+        /// <param name="createBy"></param>
+        /// <returns></returns>
+        Task<Users> GetUserByCreatedBy(int createBy);
+
+        /// <summary>
+        /// Get all user
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<Users> GetAllUsers();
     }
 }
