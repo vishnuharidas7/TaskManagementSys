@@ -19,19 +19,16 @@ namespace TaskManagementWebAPITest.Controller
 {
     public class UsersControllerTests
     {
-        private readonly UsersController _controller;
-        private readonly Mock<IUserRepository> _mockUserRepo;
+        private readonly UsersController _controller; 
         private readonly Mock<IUserApplicationService> _mockUserAppService;
         private readonly Mock<IAppLogger<AuthController>> _mockLogger;
 
         public UsersControllerTests()
-        {
-            _mockUserRepo = new Mock<IUserRepository>();
+        { 
             _mockUserAppService = new Mock<IUserApplicationService>();
             _mockLogger = new Mock<IAppLogger<AuthController>>();
 
-            _controller = new UsersController(
-                _mockUserRepo.Object,
+            _controller = new UsersController( 
                 _mockUserAppService.Object,
                 _mockLogger.Object
             );
@@ -147,7 +144,7 @@ namespace TaskManagementWebAPITest.Controller
                 }
             };
 
-            _mockUserRepo.Setup(repo => repo.ViewUsers())
+            _mockUserAppService.Setup(repo => repo.ViewUsers())
                 .ReturnsAsync(fakeUsers);
 
 
@@ -176,7 +173,7 @@ namespace TaskManagementWebAPITest.Controller
                 Gender = "Male"
             };
 
-            _mockUserRepo
+            _mockUserAppService
                 .Setup(repo => repo.UpdateUser(userId, updateDto))
                 .Returns(Task.CompletedTask); // assuming it returns void
 
@@ -193,14 +190,14 @@ namespace TaskManagementWebAPITest.Controller
         {
             // Arrange
             int userId = 1;
-            _mockUserRepo.Setup(repo => repo.DeleteUser(userId)).Returns(Task.CompletedTask);
+            _mockUserAppService.Setup(repo => repo.DeleteUser(userId)).Returns(Task.CompletedTask);
 
             // Act
             var result = await _controller.DeleteUser(userId);
 
             // Assert
             Assert.IsType<OkResult>(result);
-            _mockUserRepo.Verify(repo => repo.DeleteUser(userId), Times.Once);
+            _mockUserAppService.Verify(repo => repo.DeleteUser(userId), Times.Once);
         }
 
         [Fact]
@@ -208,21 +205,21 @@ namespace TaskManagementWebAPITest.Controller
         {
             // Arrange
             int userId = 1;
-            var fakeUser = new ViewUserDTO
+            var fakeUser = new Users
             {
-                Id = userId,
+                UserId = userId,
                 UserName = "john",
                 Email = "john@example.com",
-                RoleId = 1,
-                RoleName = "Admin",
-                Status = true,
+                RoleID = 1,
+                //Role = "Admin",
+                IsActive = true,
                 Name = "John Doe",
                 PhoneNumber = "1234567890",
-                Gender = "Male",
+                gender = "Male",
                 Password = "hashedpassword"
             };
 
-            _mockUserRepo.Setup(repo => repo.UserListById(userId))
+            _mockUserAppService.Setup(repo => repo.GetUserByIdAsync(userId))
                          .ReturnsAsync(fakeUser);
 
             // Act
@@ -230,8 +227,8 @@ namespace TaskManagementWebAPITest.Controller
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedUser = Assert.IsType<ViewUserDTO>(okResult.Value);
-            Assert.Equal(userId, returnedUser.Id);
+            var returnedUser = Assert.IsType<Users>(okResult.Value);
+            Assert.Equal(userId, returnedUser.UserId);
             Assert.Equal("john", returnedUser.UserName);
         }
 
@@ -248,7 +245,7 @@ namespace TaskManagementWebAPITest.Controller
                 confrmNewpswd = "newPassword456"
             };
 
-            _mockUserRepo.Setup(r => r.UpdatePassword(userId, updatePasswordDto))
+            _mockUserAppService.Setup(r => r.UpdatePassword(userId, updatePasswordDto))
                          .Returns(Task.CompletedTask); // since method returns Task
 
             // Act

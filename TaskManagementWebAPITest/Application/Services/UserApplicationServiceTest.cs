@@ -27,7 +27,8 @@ namespace TaskManagementWebAPITest.Application.Services
         private readonly Mock<IUserRepository> _mockUserRepository;
         private readonly Mock<IAppLogger<UserRepository>> _mockLogger;
         private readonly Mock<IUserCreatedEmailContentBuilder> _mockEmailContentBuilder;
-        private readonly Mock<IEmailService> _mockEmailService; 
+        private readonly Mock<IEmailService> _mockEmailService;
+        private readonly Mock<ITaskManagementRepository> _mockTaskManagementRepo; 
 
         private readonly UserApplicationService _service;
 
@@ -37,14 +38,16 @@ namespace TaskManagementWebAPITest.Application.Services
             _mockUserRepository = new Mock<IUserRepository>();
             _mockLogger = new Mock<IAppLogger<UserRepository>>();
             _mockEmailContentBuilder = new Mock<IUserCreatedEmailContentBuilder>();
-            _mockEmailService = new Mock<IEmailService>(); 
+            _mockEmailService = new Mock<IEmailService>();
+            _mockTaskManagementRepo = new Mock<ITaskManagementRepository>();
 
             _service = new UserApplicationService( 
                 _mockPasswordGenerator.Object,
                 _mockUserRepository.Object,
                 _mockLogger.Object,
                 _mockEmailContentBuilder.Object,
-                _mockEmailService.Object
+                _mockEmailService.Object,
+                _mockTaskManagementRepo.Object
             );
         }
 
@@ -291,5 +294,245 @@ namespace TaskManagementWebAPITest.Application.Services
             _mockLogger.Verify(l => l.LoggWarning("ForgotPassword - Unexpected error: {Message}", "SMTP fail"), Times.Once);
         }
 
+        [Fact]
+        public async Task ViewUsers_ReturnsListOfViewUserDTO()
+        {
+            // Arrange
+            var expectedUsers = new List<ViewUserDTO>
+        {
+            new ViewUserDTO
+            {
+                Id = 1,
+                UserName = "john",
+                Email = "john@example.com",
+                Name = "John Doe",
+                RoleId = 1,
+                RoleName = "Admin",
+                Status = true,
+                PhoneNumber = "1234567890",
+                Gender = "Male"
+            },
+            new ViewUserDTO
+            {
+                Id = 2,
+                UserName = "jane",
+                Email = "jane@example.com",
+                Name = "Jane Doe",
+                RoleId = 2,
+                RoleName = "User",
+                Status = true,
+                PhoneNumber = "0987654321",
+                Gender = "Female"
+            }
+        };
+
+            _mockUserRepository
+                .Setup(repo => repo.ViewUsers())
+                .ReturnsAsync(expectedUsers);
+
+            // Act
+            var actualUsers = await _service.ViewUsers();
+
+            // Assert
+            Assert.NotNull(actualUsers);
+            Assert.Equal(2, actualUsers.Count);
+            Assert.Equal("john", actualUsers[0].UserName);
+            Assert.Equal("jane", actualUsers[1].UserName);
+        }
+
+
+        [Fact]
+        public async Task UpdateUser_ValidId_UpdatesUserAndCallsSave()
+        {
+            // Arrange
+            int userId = 1;
+            var existingUser = new Users
+            {
+                UserId = userId,
+                UserName = "oldUser",
+                Email = "old@example.com",
+                RoleID = 1,
+                Name = "Old Name",
+                PhoneNumber = "0000000000",
+                gender = "Male",
+                IsActive = false
+            };
+
+            var updateDto = new UpdateUserDTO
+            {
+                UserName = "newUser",
+                Email = "new@example.com",
+                RoleID = 2,
+                Name = "New Name",
+                PhoneNumber = "1111111111",
+                Gender = "Female",
+                IsActive = true
+            };
+
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync(existingUser);
+            _mockUserRepository.Setup(r => r.SaveAsync()).Returns(Task.CompletedTask);
+
+            // Act
+            await _service.UpdateUser(userId, updateDto);
+
+            // Assert
+            Assert.Equal(updateDto.UserName, existingUser.UserName);
+            Assert.Equal(updateDto.Email, existingUser.Email);
+            Assert.Equal(updateDto.Name, existingUser.Name);
+            Assert.Equal(updateDto.RoleID, existingUser.RoleID);
+            Assert.Equal(updateDto.PhoneNumber, existingUser.PhoneNumber);
+            Assert.Equal(updateDto.Gender, existingUser.gender);
+            Assert.Equal(updateDto.IsActive, existingUser.IsActive);
+            _mockUserRepository.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+
+        [Fact]
+        public async Task UpdateUser_UserNotFound_ThrowsNotFoundException()
+        {
+            // Arrange
+            int userId = 99;
+            var updateDto = new UpdateUserDTO
+            {
+                UserName = "any",
+                Email = "any@example.com",
+                RoleID = 1,
+                Name = "Any",
+                PhoneNumber = "123",
+                Gender = "Other",
+                IsActive = true
+            };
+
+            _mockUserRepository.Setup(repo => repo.GetUserByIdAsync(userId))
+                .ReturnsAsync((Users)null); 
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NotFoundException>(() =>
+                _service.UpdateUser(userId, updateDto));
+
+            _mockUserRepository.Verify(r => r.SaveAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateUser_GetUserThrowsException_ThrowsException()
+        {
+            // Arrange
+            int userId = 1;
+            var dto = new UpdateUserDTO(); // values don’t matter here
+
+            _mockUserRepository
+                .Setup(repo => repo.GetUserByIdAsync(userId))
+                .ThrowsAsync(new Exception("DB failure"));
+
+            // Act & Assert
+            await Assert.ThrowsAsync<Exception>(() =>
+                _service.UpdateUser(userId, dto));
+
+            _mockUserRepository.Verify(r => r.SaveAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateUser_SaveAsyncThrowsException_ThrowsException()
+        {
+            // Arrange
+            int userId = 1;
+            var user = new Users { UserId = userId };
+
+            var dto = new UpdateUserDTO
+            {
+                UserName = "Updated",
+                Email = "updated@example.com",
+                RoleID = 1,
+                Name = "Updated Name",
+                PhoneNumber = "9999999999",
+                Gender = "Female",
+                IsActive = true
+            };
+
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync(user);
+            _mockUserRepository.Setup(r => r.SaveAsync()).ThrowsAsync(new Exception("Save failed"));
+
+            // Act & Assert
+            await Assert.ThrowsAsync<Exception>(() =>
+                _service.UpdateUser(userId, dto));
+
+            _mockUserRepository.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteUser_ValidIdWithoutTasks_DeletesSuccessfully()
+        {
+            // Arrange
+            int userId = 1;
+            var user = new Users { UserId = userId };
+
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync(user);
+            _mockTaskManagementRepo.Setup(r => r.GetAllTasksByUserId(userId)).Returns(new List<Tasks>());
+            _mockUserRepository.Setup(r => r.DeleteUser(user)).Returns(Task.CompletedTask);
+
+            // Act
+            await _service.DeleteUser(userId);
+
+            // Assert
+            _mockUserRepository.Verify(r => r.DeleteUser(user), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteUser_UserNotFound_ThrowsNotFoundException()
+        {
+            // Arrange
+            int userId = 99;
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync((Users)null);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<NotFoundException>(() => _service.DeleteUser(userId));
+            _mockUserRepository.Verify(r => r.DeleteUser(It.IsAny<Users>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task DeleteUser_UserHasTasks_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            int userId = 2;
+            var user = new Users { UserId = userId };
+            var tasks = new List<Tasks> { new Tasks { taskId = 1, UserId = userId } };
+
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync(user);
+            _mockTaskManagementRepo.Setup(r => r.GetAllTasksByUserId(userId)).Returns(tasks);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _service.DeleteUser(userId));
+            _mockUserRepository.Verify(r => r.DeleteUser(It.IsAny<Users>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task DeleteUser_GetUserThrowsArgumentNullException_LogsAndRethrows()
+        {
+            // Arrange
+            int userId = 1;
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ThrowsAsync(new ArgumentNullException("id"));
+
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _service.DeleteUser(userId));
+        }
+
+
+        [Fact]
+        public async Task DeleteUser_DeleteThrowsException_ExceptionIsRethrown()
+        {
+            // Arrange
+            int userId = 3;
+            var user = new Users { UserId = userId };
+
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync(user);
+            _mockTaskManagementRepo.Setup(r => r.GetAllTasksByUserId(userId)).Returns(new List<Tasks>());
+            _mockUserRepository.Setup(r => r.DeleteUser(user)).ThrowsAsync(new Exception("Delete failed"));
+
+            // Act & Assert
+            await Assert.ThrowsAsync<Exception>(() => _service.DeleteUser(userId));
+        }
+
     }
+
 }
+
