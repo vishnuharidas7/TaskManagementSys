@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using SendGrid.Helpers.Errors.Model;
+using SendGrid.Helpers.Mail;
 using System.Data.Common;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -95,6 +96,100 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
         }
 
+        public async Task<Users> GetUserByIdAsync(int userId)
+        {
+            try
+            {
+                return await _db.User.FindAsync(userId);
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex, "GetUserByIdAsync - Invalid operation while querying users.");
+                throw ex.InnerException;
+            }
+            catch (DbException ex)
+            {
+                _logger.LoggError(ex, "GetUserByIdAsync - Database access error.");
+                throw ex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "GetUserByIdAsync - An unexpected error occurred.");
+                throw;
+            }
+        }
+
+        public async Task<Users>GetUserByCreatedBy(int createBy)
+        {
+            try
+            {
+                var user = await _db.User.FindAsync(createBy);
+                return user;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex, "GetUserByCreatedBy - Invalid operation while querying users.");
+                throw ex.InnerException;
+            }
+            catch (DbException ex)
+            {
+                _logger.LoggError(ex, "GetUserByCreatedBy - Database access error.");
+                throw ex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "GetUserByCreatedBy - An unexpected error occurred.");
+                throw;
+            }
+
+        }
+        public async Task<List<Users>> ListAllUsers()
+        {
+            try
+            {
+                var ListAllUsers = await _db.User.ToListAsync();
+                return ListAllUsers;
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LoggError(ex, "ListAllUsers - Invalid operation while querying users.");
+                throw ex.InnerException;
+            }
+            catch (DbException ex)
+            {
+                _logger.LoggError(ex, "ListAllUsers - Database access error.");
+                throw ex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggError(ex, "ListAllUsers - An unexpected error occurred.");
+                throw;
+            }
+
+        }
+        public IEnumerable<Users> GetAllUsers()
+        {
+            try
+            {
+                return _db.User.ToList();
+            }
+            catch (ArgumentNullException argEx)
+            {
+                throw;
+            }
+            catch (InvalidOperationException invEx)
+            {
+                throw;
+            }
+            catch (DbUpdateException dbEx)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public async Task<int> RegisterAsync(Users user)
         {
             try
