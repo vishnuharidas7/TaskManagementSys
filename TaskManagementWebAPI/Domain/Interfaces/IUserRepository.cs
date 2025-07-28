@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NPOI.SS.Formula.Functions;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Domain.Models;
 
@@ -61,20 +62,14 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         /// <returns></returns>
         Task UpdatePasswordAsync(Users user);
 
-        /// <summary>
-        /// For updating user details
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        Task UpdateUser(int id, UpdateUserDTO obj);
+       
 
         /// <summary>
         /// For deleting a user
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task DeleteUser(int id);
+        Task DeleteUser(Users user);
 
         /// <summary>
         /// View corresponding user details 
@@ -83,13 +78,13 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         /// <returns></returns>
         Task<ViewUserDTO?> UserListById(int id);
 
-        /// <summary>
-        /// For updating User Password by the corresponding user.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        Task UpdatePassword(int id, UpdatePasswordDTO obj);
+        ///// <summary>
+        ///// For updating User Password by the corresponding user.
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <param name="obj"></param>
+        ///// <returns></returns>
+        //Task UpdatePassword(int id, UpdatePasswordDTO obj);
 
         /// <summary>
         /// Get users with userId for sending mail
@@ -115,5 +110,11 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         /// </summary>
         /// <returns></returns>
         IEnumerable<Users> GetAllUsers();
+
+        /// <summary>
+        /// For saving data
+        /// </summary>
+        /// <returns></returns>
+        Task SaveAsync();
     }
 }

@@ -14,15 +14,15 @@ namespace TaskManagementWebAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserRepository _user;
+        //private readonly IUserRepository _user;
         private readonly IUserApplicationService _userApplicationService; 
         private readonly IAppLogger<AuthController> _logger;
 
-        public UsersController(IUserRepository user,
+        public UsersController(//IUserRepository user,
            IUserApplicationService userApplicationService ,IAppLogger<AuthController> logger)
         {
 
-            _user = user ?? throw new ArgumentNullException(nameof(user), "User cannot be null."); 
+           // _user = user ?? throw new ArgumentNullException(nameof(user), "User cannot be null."); 
             _userApplicationService = userApplicationService ?? throw new ArgumentNullException(nameof(userApplicationService),"User Application service cannot be null");
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
 
@@ -72,9 +72,9 @@ namespace TaskManagementWebAPI.Controllers
         [Authorize(Roles = "Admin,User")]
         [HttpGet("viewusers")]
         public async Task<ActionResult> UserList()
-        { 
+        {
 
-            var allUser = await _user.ViewUsers();
+            var allUser = await _userApplicationService.ViewUsers(); //_user.ViewUsers();
                 return Ok(allUser);
              
         }
@@ -93,8 +93,8 @@ namespace TaskManagementWebAPI.Controllers
         [Authorize(Roles = "Admin,User")]
         [HttpPut("updateuser/{id}")]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO obj)
-        { 
-            await _user.UpdateUser(id, obj);
+        {
+            await _userApplicationService.UpdateUser(id, obj); //_user.UpdateUser(id, obj);
                 return Ok(obj);
              
         }
@@ -111,8 +111,8 @@ namespace TaskManagementWebAPI.Controllers
         [Authorize(Roles = "Admin,User")]
         [HttpDelete("deleteUser/{id}")]
         public async Task<ActionResult> DeleteUser(int id)
-        { 
-            await _user.DeleteUser(id);
+        {
+            await _userApplicationService.DeleteUser(id); //_user.DeleteUser(id);
                 return Ok();
              
         }
@@ -130,7 +130,7 @@ namespace TaskManagementWebAPI.Controllers
         [HttpGet("viewusersByid/{id}")]
         public async Task<ActionResult> UserListById(int id)
         {
-            var userById = await _user.UserListById(id);
+            var userById = await _userApplicationService.GetUserByIdAsync(id); //_user.UserListById(id);
                 return Ok(userById);
              
         }
@@ -149,8 +149,8 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPut("updatePswd/{id}")]
         public async Task<ActionResult>UpdatePassword(int id,UpdatePasswordDTO obj)
         {
-             
-                await _user.UpdatePassword(id, obj);
+
+            await _userApplicationService.UpdatePassword(id, obj); //_user.UpdatePassword(id, obj);
                 return Ok(obj);
              
         }
