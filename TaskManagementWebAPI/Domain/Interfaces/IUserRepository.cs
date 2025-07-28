@@ -7,6 +7,27 @@ namespace TaskManagementWebAPI.Domain.Interfaces
     public interface IUserRepository
     {
         /// <summary>
+        /// For checking username already exists
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        Task<bool> CheckUserExists(string username);
+
+        /// <summary>
+        /// For checking email already exists
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        Task<bool> CheckEmailExists(string email);
+
+        /// <summary>
+        /// For checking role exists
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        Task<bool>CheckRoleExists(int role);
+
+        /// <summary>
         /// For Registering a new user
         /// </summary>
         /// <param name="dto"></param>
