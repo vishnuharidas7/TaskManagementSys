@@ -20,13 +20,12 @@ namespace TaskManagementWebAPI.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IAppLogger<UserRepository> _logger;
         private readonly IUserCreatedEmailContentBuilder _userEmailContentBuilder;
-        private readonly IEmailService _emailService;
-        private readonly ApplicationDbContext _db;
+        private readonly IEmailService _emailService; 
 
-        public UserApplicationService(ApplicationDbContext db,IRandomPasswordGenerator randomPasswordGenerator, IUserRepository userRepository, IAppLogger<UserRepository> logger,
+        public UserApplicationService(
+            IRandomPasswordGenerator randomPasswordGenerator, IUserRepository userRepository, IAppLogger<UserRepository> logger,
             IUserCreatedEmailContentBuilder userEmailContentBuilder, IEmailService emailService)
-        {
-            _db = db ?? throw new ArgumentNullException(nameof(db), "db cannot be null.");
+        { 
             _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator), "randomPasswordGenerator cannot be null.");
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository),"user repository cannot be null");
             _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
@@ -39,7 +38,8 @@ namespace TaskManagementWebAPI.Application.Services
             if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentException("Username cannot be null or empty.", nameof(username));
 
-            return await _db.User.AnyAsync(u => u.UserName.ToLower() == username.ToLower());
+            return await _userRepository.CheckUserExists(username);
+             
         }
 
         public async Task RegisterAsync(RegisterDTO dto)
@@ -49,22 +49,22 @@ namespace TaskManagementWebAPI.Application.Services
                 //Phone number validation
                 if (!IsValidPhoneNumber(dto.PhoneNumber))
                 {
-                    throw new InvalidPhoneNumberException($"Invalid phone number - {dto.PhoneNumber}"); //Custom Exception for phone number validation
+                    throw new InvalidPhoneNumberException($"Invalid phone number - {dto.PhoneNumber}"); 
                 }
                 //Email Format validation
                 if(!IsValidEmailFormat(dto.Email))
                 {
-                    throw new InvalidEmailFormatException($"Invalid email format - {dto.Email}"); //Custom exception for email format
+                    throw new InvalidEmailFormatException($"Invalid email format - {dto.Email}"); 
                 }
                 //Email already exists validation
-                var emailexists = await _db.User.AnyAsync(u => u.Email == dto.Email);
+                var emailexists = await _userRepository.CheckEmailExists(dto.Email); 
                 if (emailexists)
                 {
                     throw new DuplicateEmailException($"Email '{dto.Email}' is already registered.");
-                } 
+                }
                 //RoleId validation
-                var roleid = await _db.Role.FindAsync(dto.RoleId);
-                if (roleid == null)
+                var roleid = await _userRepository.CheckRoleExists(dto.RoleId);
+                if (!roleid)
                 { 
                     throw new InvalidRoleIdException($"Invalid RoleId - {dto.RoleId}");
                 } 
@@ -74,7 +74,7 @@ namespace TaskManagementWebAPI.Application.Services
                 {
                     throw new ArgumentException("Username cannot be null or empty.", nameof(username));
                 }
-                var checkUsernameExist = await _db.User.AnyAsync(u => u.UserName.ToLower() == username.ToLower());
+                var checkUsernameExist = await _userRepository.CheckUserExists(username); 
                 if (checkUsernameExist)
                 {
                     throw new DuplicateUsernameException($"Username {username} Already exists.");
