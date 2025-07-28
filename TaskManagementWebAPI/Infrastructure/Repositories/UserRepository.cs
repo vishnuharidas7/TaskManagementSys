@@ -33,6 +33,69 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator), "randomPasswordGenerator cannot be null.");
         }
 
+
+        public async Task<bool> CheckUserExists(string username)
+        {
+            try {
+                try
+                {
+                    return await _db.User.AnyAsync(u => u.UserName.ToLower() == username.ToLower());
+                }
+                catch (DbException ex)
+                {
+                    _logger.LoggError(ex, "CheckUserExists - Database access error.");
+                    throw ex;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("CheckUserExists validation failed");
+                throw;
+            }
+        }
+
+        public async Task<bool> CheckEmailExists(string email)
+        {
+            try
+            {
+                try
+                {
+                    return await _db.User.AnyAsync(u => u.Email == email);
+                }
+                catch (DbException ex) 
+                {
+                    _logger.LoggError(ex, "CheckEmailExists - Database access error.");
+                    throw ex;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("CheckEmailExists - Database access error.");
+                throw;
+            }
+        }
+
+        public async Task<bool> CheckRoleExists(int role)
+        {
+            try
+            {
+                try
+                {
+                    return await _db.Role.AnyAsync(u => u.RoleId == role);
+                }
+                catch (DbException ex)
+                {
+                    _logger.LoggError(ex, "CheckEmailExists - Database access error.");
+                    throw ex;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LoggWarning("CheckEmailExists - Database access error.");
+                throw;
+            }
+        }
+
         public async Task<Users> GetUserByIdAsync(int userId)
         {
             try
