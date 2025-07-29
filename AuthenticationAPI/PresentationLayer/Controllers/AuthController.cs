@@ -15,14 +15,12 @@ namespace AuthenticationAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly ApplicationDbContext _db;
         private readonly IJwtHelper _jwtHelper;
         private readonly IAppLogger<AuthController> _logger;
         private readonly IAuthRepository _authRepository;
-        public AuthController(IAuthService authService, ApplicationDbContext db, IJwtHelper jwthelper, IAppLogger<AuthController> logger, IAuthRepository authRepository)
+        public AuthController(IAuthService authService,IJwtHelper jwthelper, IAppLogger<AuthController> logger, IAuthRepository authRepository)
         {
             _authService = authService?? throw new ArgumentNullException(nameof(authService), "AuthService cannot be null.");
-            _db = db ?? throw new ArgumentNullException(nameof(db)) ?? throw new ArgumentNullException(nameof(db), "ApplicationDbContext cannot be null.");
             _jwtHelper = jwthelper ?? throw new ArgumentNullException(nameof(jwthelper), "Jwthelper cannot be null.");
             _logger = logger ?? throw new ArgumentNullException(nameof(logger),"Jwthelper cannot be null."); // Assign it
             _authRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository), "AuthRepository cannot be null.");
@@ -57,16 +55,6 @@ namespace AuthenticationAPI.Controllers
                 //_logger.LogInformation("Login successful for username: {Username}", dto.UserName);
                 return Ok(token);
             }
-            //catch (UnauthorizedAccessException ex)
-            //{
-            //    _logger.LoggWarning("Login failed due to invalid credentials.");
-            //    throw;
-            //}
-            //catch (ArgumentNullException ex)
-            //{
-            //    _logger.LoggWarning("Login failed due to null or missing data.");
-            //    throw;
-            //}
             catch (Exception ex) {
                 _logger.LoggWarning("login API failed");
                 throw;
@@ -120,16 +108,7 @@ namespace AuthenticationAPI.Controllers
 
                 });
             }
-            //catch (SecurityTokenException ex)
-            //{
-            //    _logger.LoggWarning("Security token validation failed during refresh",ex);
-            //    return BadRequest("Invalid refresh token");
-            //}
-            //catch (ArgumentException ex)
-            //{
-            //    _logger.LoggWarning("Argument exception during token refresh",ex);
-            //    return BadRequest("Invalid refresh token");
-            //}
+          
             catch (Exception ex)
             {
                 _logger.LoggWarning("Refresh API failed");
