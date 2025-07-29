@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using SendGrid.Helpers.Errors.Model;
 using SendGrid.Helpers.Mail;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -277,78 +279,78 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateUser(int id, UpdateUserDTO obj)
+        //public async Task UpdateUser(int id, UpdateUserDTO obj)
+        //{
+        //    try
+        //    {
+        //        var user = await _db.User.FindAsync(id);
+        //        if (user == null)
+        //        {
+        //            _logger.LoggWarning("UpdateUser-User not found");
+        //            throw new NotFoundException("User not found");
+        //        }
+
+        //        user.UserName = obj.UserName;
+        //        user.Email = obj.Email;
+        //        user.RoleID = obj.RoleID;
+        //        user.Name = obj.Name;
+        //        user.PhoneNumber = obj.PhoneNumber;  
+        //        //user.Password =BCrypt.Net.BCrypt.HashPassword(obj.Password);
+        //        user.gender = obj.Gender;
+        //        user.IsActive = obj.IsActive;
+        //        try
+        //        {
+        //            await _db.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException concurrencyEx)
+        //        {
+        //            _logger.LoggWarning("UpdateUser - Concurrency issue while updating user ID {UserId}: {Message}", id, concurrencyEx.Message);
+        //            throw;
+        //        }
+        //        catch (DbUpdateException dbEx)
+        //        {
+        //            _logger.LoggWarning("UpdateUser - Database error while saving changes for user ID {UserId}: {Message}", id, dbEx.Message);
+        //            throw;
+        //        }
+        //    }
+        //    catch (ArgumentNullException argNullEx)
+        //    {
+        //        _logger.LoggWarning("UpdateUser - Argument null: {Message}", argNullEx.Message);
+        //        throw;
+        //    }
+        //    catch (InvalidOperationException invEx)
+        //    {
+        //        _logger.LoggWarning("UpdateUser - Invalid operation: {Message}", invEx.Message);
+        //        throw;
+        //    }
+        //    catch (DbUpdateException dbEx)
+        //    {
+        //        _logger.LoggWarning("UpdateUser - DB update exception: {Message}", dbEx.Message);
+        //        throw;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LoggWarning("UpdateUser-Update user failed");
+        //        throw;
+        //    }
+        //}
+
+        public async Task DeleteUser(Users  user)
         {
             try
             {
-                var user = await _db.User.FindAsync(id);
-                if (user == null)
-                {
-                    _logger.LoggWarning("UpdateUser-User not found");
-                    throw new NotFoundException("User not found");
-                }
-
-                user.UserName = obj.UserName;
-                user.Email = obj.Email;
-                user.RoleID = obj.RoleID;
-                user.Name = obj.Name;
-                user.PhoneNumber = obj.PhoneNumber;  
-                //user.Password =BCrypt.Net.BCrypt.HashPassword(obj.Password);
-                user.gender = obj.Gender;
-                user.IsActive = obj.IsActive;
-                try
-                {
-                    await _db.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException concurrencyEx)
-                {
-                    _logger.LoggWarning("UpdateUser - Concurrency issue while updating user ID {UserId}: {Message}", id, concurrencyEx.Message);
-                    throw;
-                }
-                catch (DbUpdateException dbEx)
-                {
-                    _logger.LoggWarning("UpdateUser - Database error while saving changes for user ID {UserId}: {Message}", id, dbEx.Message);
-                    throw;
-                }
-            }
-            catch (ArgumentNullException argNullEx)
-            {
-                _logger.LoggWarning("UpdateUser - Argument null: {Message}", argNullEx.Message);
-                throw;
-            }
-            catch (InvalidOperationException invEx)
-            {
-                _logger.LoggWarning("UpdateUser - Invalid operation: {Message}", invEx.Message);
-                throw;
-            }
-            catch (DbUpdateException dbEx)
-            {
-                _logger.LoggWarning("UpdateUser - DB update exception: {Message}", dbEx.Message);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("UpdateUser-Update user failed");
-                throw;
-            }
-        }
-
-        public async Task DeleteUser(int id)
-        {
-            try
-            {
-                var user = await _db.User.FindAsync(id);
-                if (user == null)
-                {
-                    _logger.LoggWarning("DeleteUser-User not found");
-                    throw new NotFoundException("User not found");
-                }
-                bool hasTasks = await _db.Task.AnyAsync(t => t.UserId == id);
-                if (hasTasks)
-                {
-                    _logger.LoggWarning("DeleteUser - Cannot delete user ID {UserId}, tasks are assigned.", id);
-                    throw new InvalidOperationException("Cannot delete user. Tasks are assigned to this user.");
-                }
+                //var user = await _db.User.FindAsync(id);
+                //if (user == null)
+                //{
+                //    _logger.LoggWarning("DeleteUser-User not found");
+                //    throw new NotFoundException("User not found");
+                //}
+                //bool hasTasks = await _db.Task.AnyAsync(t => t.UserId == id);
+                //if (hasTasks)
+                //{
+                //    _logger.LoggWarning("DeleteUser - Cannot delete user ID {UserId}, tasks are assigned.", id);
+                //    throw new InvalidOperationException("Cannot delete user. Tasks are assigned to this user.");
+                //}
                 try
                 {
                     _db.User.Remove(user);
@@ -356,12 +358,12 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 }
                 catch (DbUpdateConcurrencyException concurrencyEx)
                 {
-                    _logger.LoggWarning("DeleteUser - Concurrency issue deleting user ID {UserId}: {Message}", id, concurrencyEx.Message);
+                    _logger.LoggWarning("DeleteUser - Concurrency issue deleting user ID {UserId}: {Message}", user.UserId, concurrencyEx.Message);
                     throw;
                 }
                 catch (DbUpdateException dbEx)
                 {
-                    _logger.LoggWarning("DeleteUser - Database error deleting user ID {UserId}: {Message}", id, dbEx.Message);
+                    _logger.LoggWarning("DeleteUser - Database error deleting user ID {UserId}: {Message}", user.UserId, dbEx.Message);
                     throw;
                 }
             }
@@ -439,46 +441,98 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
         }
 
-        public async Task UpdatePassword(int id, UpdatePasswordDTO obj)
+        //public async Task UpdatePassword(int id, UpdatePasswordDTO obj)
+        //{
+        //    try
+        //    {
+        //        if (obj.newpswd != obj.confrmNewpswd)
+        //        {
+        //            throw new ArgumentException("New password and confirmation do not match.");
+        //            //throw new Exception("New password and confirmation do not match.");
+        //        }
+        //        var user = await _db.User.FindAsync(id);
+        //        if (user == null)
+        //        {
+        //            _logger.LoggWarning("UpdatePassword-User not found");
+        //            throw new NotFoundException("User not found");
+        //        }
+
+        //        if (!BCrypt.Net.BCrypt.Verify(obj.curpswd,user.Password))
+        //        {
+        //            _logger.LoggWarning("Current password is incorrect");
+        //            throw new UnauthorizedAccessException("Current password is incorrect");
+        //        }
+
+        //        try
+        //        {
+        //            user.Password = BCrypt.Net.BCrypt.HashPassword(obj.confrmNewpswd);
+        //            await _db.SaveChangesAsync();
+        //        }
+        //        catch (CryptographicException cryptoEx)
+        //        {
+        //            _logger.LoggWarning("UpdatePassword - Cryptographic error while verifying password: {Message}", cryptoEx.Message);
+        //            throw;
+        //        }
+
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LoggWarning("UpdatePassword-Update password failed");
+        //        throw;
+        //    }
+        //}
+
+        public async Task SaveAsync()
         {
+            // await _db.SaveChangesAsync();
             try
             {
-                if (obj.newpswd != obj.confrmNewpswd)
-                {
-                    throw new ArgumentException("New password and confirmation do not match.");
-                    //throw new Exception("New password and confirmation do not match.");
-                }
-                var user = await _db.User.FindAsync(id);
-                if (user == null)
-                {
-                    _logger.LoggWarning("UpdatePassword-User not found");
-                    throw new NotFoundException("User not found");
-                }
-
-                if (!BCrypt.Net.BCrypt.Verify(obj.curpswd,user.Password))
-                {
-                    _logger.LoggWarning("Current password is incorrect");
-                    throw new UnauthorizedAccessException("Current password is incorrect");
-                }
-
-                try
-                {
-                    user.Password = BCrypt.Net.BCrypt.HashPassword(obj.confrmNewpswd);
-                    await _db.SaveChangesAsync();
-                }
-                catch (CryptographicException cryptoEx)
-                {
-                    _logger.LoggWarning("UpdatePassword - Cryptographic error while verifying password: {Message}", cryptoEx.Message);
-                    throw;
-                }
-
-
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                // Thrown when a concurrency conflict is detected
+                _logger.LoggWarning("SaveAsync - Concurrency conflict occurred while saving changes.");
+                throw;
+            }
+            catch (DbUpdateException ex)
+            {
+                // General EF Core error while updating the database
+                _logger.LoggWarning("SaveAsync - Database update error occurred.");
+                throw;
+            }
+            catch (ValidationException ex)
+            {
+                // If using DataAnnotations or custom validation rules
+                _logger.LoggWarning("SaveAsync - Entity validation failed.");
+                throw;
+            }
+            catch (OperationCanceledException ex)
+            {
+                // If the operation was cancelled (timeout, etc.)
+                _logger.LoggWarning("SaveAsync - Operation was cancelled.");
+                throw;
+            }
+            catch (ObjectDisposedException ex)
+            {
+                // The context was disposed before the operation
+                _logger.LoggWarning( "SaveAsync - The DbContext was already disposed.");
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Thrown for incorrect context usage
+                _logger.LoggWarning( "SaveAsync - Invalid operation during database save.");
+                throw;
             }
             catch (Exception ex)
             {
-                _logger.LoggWarning("UpdatePassword-Update password failed");
+                // Catch-all for other exceptions
+                _logger.LoggError(ex, "SaveAsync - An unexpected error occurred.");
                 throw;
             }
+
         }
     }
 }
