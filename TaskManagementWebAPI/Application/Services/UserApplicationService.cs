@@ -8,9 +8,7 @@ using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Domain.Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
-using TaskManagementWebAPI.Domain.Models;
-using TaskManagementWebAPI.Infrastructure.Persistence;
-using TaskManagementWebAPI.Infrastructure.Repositories;
+using TaskManagementWebAPI.Domain.Models; 
 
 namespace TaskManagementWebAPI.Application.Services
 {
@@ -18,13 +16,13 @@ namespace TaskManagementWebAPI.Application.Services
     {
         private readonly IRandomPasswordGenerator _randomPasswordGenerator;
         private readonly IUserRepository _userRepository;
-        private readonly IAppLogger<UserRepository> _logger;
+        private readonly IAppLogger<UserApplicationService> _logger;
         private readonly IUserCreatedEmailContentBuilder _userEmailContentBuilder;
         private readonly IEmailService _emailService;
         private readonly ITaskManagementRepository _taskManagementRepository;
 
         public UserApplicationService(
-            IRandomPasswordGenerator randomPasswordGenerator, IUserRepository userRepository, IAppLogger<UserRepository> logger,
+            IRandomPasswordGenerator randomPasswordGenerator, IUserRepository userRepository, IAppLogger<UserApplicationService> logger,
             IUserCreatedEmailContentBuilder userEmailContentBuilder, IEmailService emailService, ITaskManagementRepository taskManagementRepository )
         {
             _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator), "randomPasswordGenerator cannot be null.");

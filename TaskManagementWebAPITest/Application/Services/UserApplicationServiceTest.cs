@@ -26,7 +26,7 @@ namespace TaskManagementWebAPITest.Application.Services
     {
         private readonly Mock<IRandomPasswordGenerator> _mockPasswordGenerator;
         private readonly Mock<IUserRepository> _mockUserRepository;
-        private readonly Mock<IAppLogger<UserRepository>> _mockLogger;
+        private readonly Mock<IAppLogger<UserApplicationService>> _mockLogger;
         private readonly Mock<IUserCreatedEmailContentBuilder> _mockEmailContentBuilder;
         private readonly Mock<IEmailService> _mockEmailService;
         private readonly Mock<ITaskManagementRepository> _mockTaskManagementRepo; 
@@ -37,7 +37,7 @@ namespace TaskManagementWebAPITest.Application.Services
         {
             _mockPasswordGenerator = new Mock<IRandomPasswordGenerator>();
             _mockUserRepository = new Mock<IUserRepository>();
-            _mockLogger = new Mock<IAppLogger<UserRepository>>();
+            _mockLogger = new Mock<IAppLogger<UserApplicationService>>();
             _mockEmailContentBuilder = new Mock<IUserCreatedEmailContentBuilder>();
             _mockEmailService = new Mock<IEmailService>();
             _mockTaskManagementRepo = new Mock<ITaskManagementRepository>();

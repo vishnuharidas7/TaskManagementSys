@@ -364,3 +364,5 @@ FodyWeavers.xsd
 /TaskManagementWebAPI/Migrations
 /TMSAPP
 /TaskManagementWebAPI/Infrastructure/Repositories/TaskManagementRepository.cs
+/TaskManagementWebAPITest/coverage-report
+/coverage-report
