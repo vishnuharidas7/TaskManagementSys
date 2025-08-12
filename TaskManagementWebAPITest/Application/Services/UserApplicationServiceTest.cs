@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TaskManagementWebAPI.Application.DTOs;
@@ -49,6 +50,50 @@ namespace TaskManagementWebAPITest.Application.Services
                 _mockEmailService.Object,
                 _mockTaskManagementRepo.Object
             );
+        }
+
+        [Fact]
+        public async Task CheckUserExists_UserExists_ReturnsTrue()
+        {
+            // Arrange
+            var username = "testuser";
+            _mockUserRepository.Setup(r => r.CheckUserExists(username)).ReturnsAsync(true);
+            //var service = _service();
+
+            // Act
+            var result = await _service.CheckUserExists(username);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task CheckUserExists_UserDoesNotExist_ReturnsFalse()
+        {
+            // Arrange
+            var username = "nouser";
+            _mockUserRepository.Setup(r => r.CheckUserExists(username)).ReturnsAsync(false);
+            //var service = CreateService();
+
+            // Act
+            var result = await _service.CheckUserExists(username);
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public async Task CheckUserExists_InvalidUsername_ThrowsArgumentException(string invalidUsername)
+        {
+            // Arrange
+           // var service = CreateService();
+
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<ArgumentException>(() => _service.CheckUserExists(invalidUsername));
+            Assert.Equal("Username cannot be null or empty. (Parameter 'username')", ex.Message);
         }
 
         [Fact]
@@ -340,6 +385,13 @@ namespace TaskManagementWebAPITest.Application.Services
             Assert.Equal("jane", actualUsers[1].UserName);
         }
 
+        [Fact]
+        public async Task ViewUsers_RepositoryThrows_ThrowsException()
+        {
+            _mockUserRepository.Setup(r => r.ViewUsers()).ThrowsAsync(new Exception("DB error"));
+
+            await Assert.ThrowsAsync<Exception>(() => _service.ViewUsers());
+        }
 
         [Fact]
         public async Task UpdateUser_ValidId_UpdatesUserAndCallsSave()
@@ -387,6 +439,32 @@ namespace TaskManagementWebAPITest.Application.Services
         }
 
 
+        //[Fact]
+        //public async Task UpdateUser_UserNotFound_ThrowsNotFoundException()
+        //{
+        //    // Arrange
+        //    int userId = 99;
+        //    var updateDto = new UpdateUserDTO
+        //    {
+        //        UserName = "any",
+        //        Email = "any@example.com",
+        //        RoleID = 1,
+        //        Name = "Any",
+        //        PhoneNumber = "123",
+        //        Gender = "Other",
+        //        IsActive = true
+        //    };
+
+        //    _mockUserRepository.Setup(repo => repo.GetUserByIdAsync(userId))
+        //        .ReturnsAsync((Users)null); 
+
+        //    // Act & Assert
+        //    await Assert.ThrowsAsync<NotFoundException>(() =>
+        //        _service.UpdateUser(userId, updateDto));
+
+        //    _mockUserRepository.Verify(r => r.SaveAsync(), Times.Never);
+        //}
+
         [Fact]
         public async Task UpdateUser_UserNotFound_ThrowsNotFoundException()
         {
@@ -403,15 +481,23 @@ namespace TaskManagementWebAPITest.Application.Services
                 IsActive = true
             };
 
-            _mockUserRepository.Setup(repo => repo.GetUserByIdAsync(userId))
-                .ReturnsAsync((Users)null); 
+            _mockUserRepository
+                .Setup(repo => repo.GetUserByIdAsync(userId))
+                .ReturnsAsync((Users)null);
 
             // Act & Assert
-            await Assert.ThrowsAsync<NotFoundException>(() =>
+            var ex = await Assert.ThrowsAsync<NotFoundException>(() =>
                 _service.UpdateUser(userId, updateDto));
 
             _mockUserRepository.Verify(r => r.SaveAsync(), Times.Never);
+
+            // ✅ Add this to verify logger call
+            _mockLogger.Verify(
+                x => x.LoggWarning("UpdateUser - User not found with ID: {UserId}", userId),
+                Times.Once
+            );
         }
+
 
         [Fact]
         public async Task UpdateUser_GetUserThrowsException_ThrowsException()
@@ -458,6 +544,8 @@ namespace TaskManagementWebAPITest.Application.Services
 
             _mockUserRepository.Verify(r => r.SaveAsync(), Times.Once);
         }
+
+
 
         [Fact]
         public async Task DeleteUser_ValidIdWithoutTasks_DeletesSuccessfully()
@@ -531,6 +619,155 @@ namespace TaskManagementWebAPITest.Application.Services
             // Act & Assert
             await Assert.ThrowsAsync<Exception>(() => _service.DeleteUser(userId));
         }
+
+
+        [Fact]
+        public async Task UpdatePassword_ValidData_UpdatesPasswordAndSaves()
+        {
+            int userId = 1;
+            var dto = new UpdatePasswordDTO
+            {
+                curpswd = "oldpass",
+                newpswd = "newpass",
+                confrmNewpswd = "newpass"
+            };
+
+            var user = new Users { UserId = userId, Password = BCrypt.Net.BCrypt.HashPassword("oldpass") };
+
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync(user);
+            _mockUserRepository.Setup(r => r.SaveAsync()).Returns(Task.CompletedTask);
+
+            await _service.UpdatePassword(userId, dto);
+
+            _mockUserRepository.Verify(r => r.SaveAsync(), Times.Once);
+            Assert.True(BCrypt.Net.BCrypt.Verify("newpass", user.Password));
+        }
+
+        [Fact]
+        public async Task UpdatePassword_PasswordMismatch_ThrowsArgumentException()
+        {
+            var dto = new UpdatePasswordDTO
+            {
+                curpswd = "old",
+                newpswd = "one",
+                confrmNewpswd = "two"
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(() =>
+                _service.UpdatePassword(1, dto));
+
+            _mockUserRepository.Verify(r => r.SaveAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdatePassword_UserNotFound_ThrowsNotFoundException()
+        {
+            var dto = new UpdatePasswordDTO
+            {
+                curpswd = "pass",
+                newpswd = "pass",
+                confrmNewpswd = "pass"
+            };
+
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(1)).ReturnsAsync((Users)null);
+
+            await Assert.ThrowsAsync<NotFoundException>(() =>
+                _service.UpdatePassword(1, dto));
+
+            _mockLogger.Verify(l => l.LoggWarning("UpdatePassword-User not found"), Times.Once);
+            _mockUserRepository.Verify(r => r.SaveAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdatePassword_InvalidCurrentPassword_ThrowsUnauthorizedAccess()
+        {
+            var dto = new UpdatePasswordDTO
+            {
+                curpswd = "wrong",
+                newpswd = "new",
+                confrmNewpswd = "new"
+            };
+
+            var user = new Users
+            {
+                Password = BCrypt.Net.BCrypt.HashPassword("actual")
+            };
+
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(1)).ReturnsAsync(user);
+
+            await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+                _service.UpdatePassword(1, dto));
+
+            _mockLogger.Verify(l => l.LoggWarning("Current password is incorrect"), Times.Once);
+            _mockUserRepository.Verify(r => r.SaveAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdatePassword_CryptoErrorDuringHash_ThrowsCryptoException()
+        {
+            var dto = new UpdatePasswordDTO
+            {
+                curpswd = "correct",
+                newpswd = "new",
+                confrmNewpswd = "new"
+            };
+
+            var user = new Users
+            {
+                Password = BCrypt.Net.BCrypt.HashPassword("correct")
+            };
+
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(1)).ReturnsAsync(user);
+
+            // Simulate exception when saving
+            _mockUserRepository.Setup(r => r.SaveAsync()).ThrowsAsync(new CryptographicException("Crypto failed"));
+
+            await Assert.ThrowsAsync<CryptographicException>(() =>
+                _service.UpdatePassword(1, dto));
+
+            _mockLogger.Verify(l =>
+                l.LoggWarning("UpdatePassword - Cryptographic error while verifying password: {Message}", It.IsAny<string>()),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdatePassword_GeneralException_ThrowsExceptionAndLogs()
+        {
+            var dto = new UpdatePasswordDTO
+            {
+                curpswd = "pass",
+                newpswd = "pass",
+                confrmNewpswd = "pass"
+            };
+
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(1)).ThrowsAsync(new Exception("DB error"));
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                _service.UpdatePassword(1, dto));
+
+            _mockLogger.Verify(l => l.LoggWarning("UpdatePassword-Update password failed"), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetUserByIdAsync_ValidId_ReturnsUser()
+        {
+            var user = new Users { UserId = 1 };
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(1)).ReturnsAsync(user);
+
+            var result = await _service.GetUserByIdAsync(1);
+
+            Assert.Equal(user, result);
+        }
+
+        [Fact]
+        public async Task GetUserByIdAsync_RepoThrows_ThrowsException()
+        {
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(It.IsAny<int>()))
+                               .ThrowsAsync(new Exception("DB error"));
+
+            await Assert.ThrowsAsync<Exception>(() => _service.GetUserByIdAsync(1));
+        }
+
 
     }
 
