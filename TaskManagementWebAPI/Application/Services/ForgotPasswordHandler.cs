@@ -12,10 +12,10 @@ namespace TaskManagementWebAPI.Application.Services
     {
         private readonly IUserRepository _userRepo;
         private readonly IEmailService _emailService;
-        private readonly IAppLogger<UserRepository> _logger;
+        private readonly IAppLogger<ForgotPasswordHandler> _logger;
         private readonly IUserApplicationService _userApplicationService;
         public ForgotPasswordHandler(IUserRepository userRepo, IEmailService emailService, 
-            IAppLogger<UserRepository> logger, IUserApplicationService userApplicationService)
+            IAppLogger<ForgotPasswordHandler> logger, IUserApplicationService userApplicationService)
         {
             _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo), "UserRepo cannot be null.");
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService), "EmailService cannot be null.");

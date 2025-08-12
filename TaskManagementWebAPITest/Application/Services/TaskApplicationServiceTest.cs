@@ -17,7 +17,7 @@ namespace TaskManagementWebAPITest.Application.Services
     {
         private readonly TaskApplicationService _taskApplicationService;
         private readonly Mock<ITaskManagementRepository> _taskManagementRepositoryMock;
-        private readonly Mock<IAppLogger<UserAuthRepository>> _loggerMock;
+        private readonly Mock<IAppLogger<TaskApplicationService>> _loggerMock;
         private readonly IOptions<TaskSettings> _taskSettings;
         private readonly Mock<IEmailContentBuilder> _contentBuilderMock;
         private readonly Mock<IEmailService> _emailServiceMock;
@@ -29,7 +29,7 @@ namespace TaskManagementWebAPITest.Application.Services
         public TaskApplicationServiceTest()
         {
             _taskManagementRepositoryMock = new Mock<ITaskManagementRepository>();
-            _loggerMock = new Mock<IAppLogger<UserAuthRepository>>();
+            _loggerMock = new Mock<IAppLogger<TaskApplicationService>>();
             _taskSettings = Options.Create(new TaskSettings { IDTaskPrefix = "TMS", InitialReferenceId = 1001 });
             _emailServiceMock = new Mock<IEmailService>();
             _contentBuilderMock = new Mock<IEmailContentBuilder>();
