@@ -20,8 +20,8 @@ namespace TaskManagementWebAPI.Application.Services.FileUpload
         private readonly TaskSettings _taskSettings;
         public TaskUploadDapperRepository(IDapperConnectionFactory db,IOptions<TaskSettings>taskSettings) 
         {
-            _connectionFactory = db ?? throw new ArgumentNullException(nameof(db), "db cannot be null.");
-            _taskSettings =taskSettings.Value ?? throw new ArgumentNullException(nameof(taskSettings), "taskSettings cannot be null.");
+            _connectionFactory = db ?? throw new ArgumentNullException(nameof(db));
+            _taskSettings =taskSettings.Value ?? throw new ArgumentNullException(nameof(taskSettings));
         }
 
         

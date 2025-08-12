@@ -28,11 +28,11 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public UserRepository(ApplicationDbContext db, IAppLogger<UserRepository> logger, IUserCreatedEmailContentBuilder userEmailContentBuilder, IEmailService emailService,IRandomPasswordGenerator randomPasswordGenerator)
         {
-            _db = db ?? throw new ArgumentNullException(nameof(db), "db cannot be null.");
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
-            _userEmailContentBuilder = userEmailContentBuilder ?? throw new ArgumentNullException(nameof(userEmailContentBuilder), "userEmailContentBuilder cannot be null.");
-            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService), "emailService cannot be null.");
-            _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator), "randomPasswordGenerator cannot be null.");
+            _db = db ?? throw new ArgumentNullException(nameof(db));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _userEmailContentBuilder = userEmailContentBuilder ?? throw new ArgumentNullException(nameof(userEmailContentBuilder));
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator));
         }
 
 

@@ -13,9 +13,9 @@ namespace TaskManagementWebAPI.Application.Services.TaskStatusUpdateService
 
         public TaskStatusUpdateApplicationService(TaskDueStatusUpdateService taskStatusService, ITaskStatusUpdateServiceRepository taskRepository, IAppLogger<TaskDueStatusUpdateService> logger)
         {
-            _taskStatusService = taskStatusService ?? throw new ArgumentNullException(nameof(taskStatusService), "taskStatusService cannot be null.");
-            _taskRepository = taskRepository ?? throw new ArgumentNullException(nameof(taskRepository), "taskRepository cannot be null.");
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Context cannot be null.");
+            _taskStatusService = taskStatusService ?? throw new ArgumentNullException(nameof(taskStatusService));
+            _taskRepository = taskRepository ?? throw new ArgumentNullException(nameof(taskRepository));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void UpdateTaskStatuses()

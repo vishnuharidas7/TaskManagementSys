@@ -19,11 +19,11 @@ namespace TaskManagementWebAPI.Controllers
 
         public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger, ITaskDueStatusUpdateService taskAppService,ITaskEmailDispatcher taskEmailDispatcher, ITaskApplicationService taskControllerService)
         {
-            _task = task ?? throw new ArgumentNullException(nameof(task), "Task cannot be null.");
-            _logger =logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+            _task = task ?? throw new ArgumentNullException(nameof(task));
+            _logger =logger ?? throw new ArgumentNullException(nameof(logger));
             _taskApplicationService = taskAppService;
             _taskEmailDispatcher=taskEmailDispatcher;
-            _taskControllerService = taskControllerService ?? throw new ArgumentNullException(nameof(_taskControllerService),"TaskControlService cannot be null.");
+            _taskControllerService = taskControllerService ?? throw new ArgumentNullException(nameof(_taskControllerService));
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
 
         public GmailSmtpEmailService(IConfiguration config)
         {
-            _config = config ?? throw new ArgumentNullException(nameof(config), "config cannot be null.");
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public async Task SendEmailAsync(string to, string subject, string body)

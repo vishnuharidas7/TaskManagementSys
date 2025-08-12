@@ -12,8 +12,8 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
 
         public TaskEmailContentBuilder(IEnumerable<ITaskStatusContentBuilder> statusBuilders, ILogger<TaskEmailContentBuilder> logger)
         {
-            _statusBuilders = statusBuilders ?? throw new ArgumentNullException(nameof(statusBuilders), "statusBuilders cannot be null.");
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
+            _statusBuilders = statusBuilders ?? throw new ArgumentNullException(nameof(statusBuilders));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public string BuildContent(Users user, IEnumerable<Tasks> tasks)
