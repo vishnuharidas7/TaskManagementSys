@@ -23,8 +23,8 @@ namespace TaskManagementWebAPI.Controllers
         {
 
            // _user = user ?? throw new ArgumentNullException(nameof(user), "User cannot be null."); 
-            _userApplicationService = userApplicationService ?? throw new ArgumentNullException(nameof(userApplicationService),"User Application service cannot be null");
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+            _userApplicationService = userApplicationService ?? throw new ArgumentNullException(nameof(userApplicationService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         }
 

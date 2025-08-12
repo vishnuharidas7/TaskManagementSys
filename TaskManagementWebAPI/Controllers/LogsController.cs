@@ -12,7 +12,7 @@ namespace TaskManagementWebAPI.Controllers
         private readonly IAppLogger<LogsController> _logger;
         public LogsController(IAppLogger<LogsController> logger)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>

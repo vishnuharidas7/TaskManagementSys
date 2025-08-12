@@ -19,8 +19,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public UserAuthRepository(HttpClient httpClient, IAppLogger<UserAuthRepository> logger)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient), "httpClient cannot be null.");
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<string> LoginAsync(LoginDTO dto)

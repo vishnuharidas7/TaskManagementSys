@@ -12,7 +12,7 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
 
         public SendGridEmailService(string apiKey)
         {
-            _apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey), "apiKey cannot be null.");
+            _apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
             
         }
 

@@ -11,7 +11,7 @@ namespace TaskManagementWebAPI.Middlewares
 
         public ExceptionHandlingMiddleware(RequestDelegate next)
         {
-            _next = next ?? throw new ArgumentNullException(nameof(next), "RequestDelegate cannot be null.");
+            _next = next ?? throw new ArgumentNullException(nameof(next));
         }
       
 

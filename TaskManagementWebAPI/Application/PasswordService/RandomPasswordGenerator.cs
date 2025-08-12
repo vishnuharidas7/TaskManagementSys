@@ -9,7 +9,7 @@ namespace TaskManagementWebAPI.Application.PasswordService
         private IAppLogger<RandomPasswordGenerator> _logger;
         public RandomPasswordGenerator(IAppLogger<RandomPasswordGenerator> logger)
         {
-            _logger=logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
+            _logger=logger ?? throw new ArgumentNullException(nameof(logger));
         }
         private const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
         public string GenerateRandomPassword(int length)

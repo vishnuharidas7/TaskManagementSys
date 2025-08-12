@@ -8,7 +8,7 @@ namespace TaskManagementWebAPI.Application.Services.TaskStatusUpdateService
         private readonly IAppLogger<TaskDueStatusUpdateService> _logger;
         public TaskDueStatusUpdateService(IAppLogger<TaskDueStatusUpdateService> logger)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         public void UpdateTaskStatus(IEnumerable<Tasks> tasks)
         {

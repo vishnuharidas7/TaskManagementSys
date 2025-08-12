@@ -17,10 +17,10 @@ namespace TaskManagementWebAPI.Application.Services
         public ForgotPasswordHandler(IUserRepository userRepo, IEmailService emailService, 
             IAppLogger<ForgotPasswordHandler> logger, IUserApplicationService userApplicationService)
         {
-            _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo), "UserRepo cannot be null.");
-            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService), "EmailService cannot be null.");
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Context cannot be null.");
-            _userApplicationService = userApplicationService ?? throw new ArgumentNullException(nameof(userApplicationService), "User Application Service cannot be null");
+            _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _userApplicationService = userApplicationService ?? throw new ArgumentNullException(nameof(userApplicationService));
         }
 
         public async Task<Users?> HandleAsync(ForgotPasswordRequest request)

@@ -25,12 +25,12 @@ namespace TaskManagementWebAPI.Application.Services
             IRandomPasswordGenerator randomPasswordGenerator, IUserRepository userRepository, IAppLogger<UserApplicationService> logger,
             IUserCreatedEmailContentBuilder userEmailContentBuilder, IEmailService emailService, ITaskManagementRepository taskManagementRepository )
         {
-            _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator), "randomPasswordGenerator cannot be null.");
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository), "user repository cannot be null");
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
-            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService), "emailService cannot be null.");
-            _userEmailContentBuilder = userEmailContentBuilder ?? throw new ArgumentNullException(nameof(userEmailContentBuilder), "userEmailContentBuilder cannot be null.");
-            _taskManagementRepository = taskManagementRepository ?? throw new ArgumentNullException(nameof(taskManagementRepository), "taskManagementRepository cannot be null");
+            _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            _userEmailContentBuilder = userEmailContentBuilder ?? throw new ArgumentNullException(nameof(userEmailContentBuilder));
+            _taskManagementRepository = taskManagementRepository ?? throw new ArgumentNullException(nameof(taskManagementRepository));
         }
 
         public async Task<bool> CheckUserExists(string username)

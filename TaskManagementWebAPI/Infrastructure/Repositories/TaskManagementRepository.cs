@@ -35,10 +35,10 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         public TaskManagementRepository(ApplicationDbContext db, IAppLogger<TaskManagementRepository> logger, 
             ITaskUploadDapperRepository dapper, IDbConnection connection)
         {
-            _db = db ?? throw new ArgumentNullException(nameof(db), "ApplicationDbContext cannot be null.");
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
-            _dapper = dapper ?? throw new ArgumentNullException(nameof(dapper), "Dapper repository cannot be null.");
-            _connection = connection ?? throw new ArgumentNullException(nameof(connection), "Database connection cannot be null.");
+            _db = db ?? throw new ArgumentNullException(nameof(db));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _dapper = dapper ?? throw new ArgumentNullException(nameof(dapper));
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
 
         public  async Task<List<Tasks>>GetTasksByTaskIdAsync(int taskId)

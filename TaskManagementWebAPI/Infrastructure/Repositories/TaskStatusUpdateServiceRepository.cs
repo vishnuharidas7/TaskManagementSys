@@ -12,8 +12,8 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
 
         public TaskStatusUpdateServiceRepository(ApplicationDbContext context,IAppLogger<TaskStatusUpdateServiceRepository> logger)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context), "context cannot be null.");
-            _logger= logger ?? throw new ArgumentNullException(nameof(logger), "logger cannot be null.");
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger= logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public IEnumerable<Tasks> GetAllTasks()
