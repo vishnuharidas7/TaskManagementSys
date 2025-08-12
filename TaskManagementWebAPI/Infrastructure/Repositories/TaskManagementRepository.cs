@@ -28,11 +28,11 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
     public class TaskManagementRepository : ITaskManagementRepository
     { 
         private readonly ApplicationDbContext _db;
-        private readonly IAppLogger<UserAuthRepository> _logger;
+        private readonly IAppLogger<TaskManagementRepository> _logger;
         private readonly ITaskUploadDapperRepository _dapper;
         private readonly IDbConnection _connection; 
 
-        public TaskManagementRepository(ApplicationDbContext db, IAppLogger<UserAuthRepository> logger, 
+        public TaskManagementRepository(ApplicationDbContext db, IAppLogger<TaskManagementRepository> logger, 
             ITaskUploadDapperRepository dapper, IDbConnection connection)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db), "ApplicationDbContext cannot be null.");

@@ -19,7 +19,7 @@ namespace TaskManagementWebAPI.Application.Services
     public class TaskApplicationService : ITaskApplicationService
     {
         private readonly ITaskManagementRepository _taskManagementRepository;
-        private readonly IAppLogger<UserAuthRepository> _logger;
+        private readonly IAppLogger<TaskApplicationService> _logger;
         private readonly TaskSettings _taskSettings;
         private readonly IEmailContentBuilder _contentBuilder;
         private readonly IEmailService _emailService;
@@ -28,7 +28,7 @@ namespace TaskManagementWebAPI.Application.Services
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-        public TaskApplicationService(ITaskManagementRepository taskManagementRepository, IAppLogger<UserAuthRepository> logger,
+        public TaskApplicationService(ITaskManagementRepository taskManagementRepository, IAppLogger<TaskApplicationService> logger,
           IOptions<TaskSettings> taskSettings,IEmailContentBuilder emailContentBuilder,
           IEmailService emailService, ITaskFileParserFactory parserFactory,
           IMaptoTasks taskMapper, IConfiguration configuration, IUserRepository userRepository)
