@@ -16,10 +16,10 @@ namespace TaskManagementWebAPI.Controllers
     {
         //private readonly IUserRepository _user;
         private readonly IUserApplicationService _userApplicationService; 
-        private readonly IAppLogger<AuthController> _logger;
+        private readonly IAppLogger<UsersController> _logger;
 
         public UsersController(//IUserRepository user,
-           IUserApplicationService userApplicationService ,IAppLogger<AuthController> logger)
+           IUserApplicationService userApplicationService ,IAppLogger<UsersController> logger)
         {
 
            // _user = user ?? throw new ArgumentNullException(nameof(user), "User cannot be null."); 
@@ -150,7 +150,7 @@ namespace TaskManagementWebAPI.Controllers
         public async Task<ActionResult>UpdatePassword(int id,UpdatePasswordDTO obj)
         {
 
-            await _userApplicationService.UpdatePassword(id, obj); //_user.UpdatePassword(id, obj);
+            await _userApplicationService.UpdatePassword(id, obj);
                 return Ok(obj);
              
         }

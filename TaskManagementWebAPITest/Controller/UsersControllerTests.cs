@@ -21,12 +21,12 @@ namespace TaskManagementWebAPITest.Controller
     {
         private readonly UsersController _controller; 
         private readonly Mock<IUserApplicationService> _mockUserAppService;
-        private readonly Mock<IAppLogger<AuthController>> _mockLogger;
+        private readonly Mock<IAppLogger<UsersController>> _mockLogger;
 
         public UsersControllerTests()
         { 
             _mockUserAppService = new Mock<IUserApplicationService>();
-            _mockLogger = new Mock<IAppLogger<AuthController>>();
+            _mockLogger = new Mock<IAppLogger<UsersController>>();
 
             _controller = new UsersController( 
                 _mockUserAppService.Object,

@@ -9,9 +9,9 @@ namespace TaskManagementWebAPI.Application.Services.TaskStatusUpdateService
     {
         private readonly TaskDueStatusUpdateService _taskStatusService;
         private readonly ITaskStatusUpdateServiceRepository _taskRepository;
-        private readonly IAppLogger<TaskDueStatusUpdateService> _logger;
+        private readonly IAppLogger<TaskStatusUpdateApplicationService> _logger;
 
-        public TaskStatusUpdateApplicationService(TaskDueStatusUpdateService taskStatusService, ITaskStatusUpdateServiceRepository taskRepository, IAppLogger<TaskDueStatusUpdateService> logger)
+        public TaskStatusUpdateApplicationService(TaskDueStatusUpdateService taskStatusService, ITaskStatusUpdateServiceRepository taskRepository, IAppLogger<TaskStatusUpdateApplicationService> logger)
         {
             _taskStatusService = taskStatusService ?? throw new ArgumentNullException(nameof(taskStatusService), "taskStatusService cannot be null.");
             _taskRepository = taskRepository ?? throw new ArgumentNullException(nameof(taskRepository), "taskRepository cannot be null.");
