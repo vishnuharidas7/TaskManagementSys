@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Infrastructure.Persistence;
 
@@ -38,7 +39,8 @@ namespace TaskManagementWebAPI.Controllers
         public async Task<IActionResult> CheckUserExists(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
-                return BadRequest("Username is required.");
+                return BadRequest(ExceptionMessages.UserExceptions.UsernameRequired);
+                //return BadRequest("Username is required.");
 
             var exists = await _userApplicationService.CheckUserExists(username);
             return Ok(exists);
