@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models; 
 using TaskManagementWebAPI.Infrastructure.Persistence;
@@ -408,7 +409,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     if(userWithId ==null)
                     {
                         _logger.LoggWarning("UserListById-User not found");
-                        throw new NotFoundException("User not found");
+                        throw new NotFoundException(ExceptionMessages.UserAuthExceptions.UserNotFound);
                     }
                 }
                 catch (InvalidOperationException invOpEx)
