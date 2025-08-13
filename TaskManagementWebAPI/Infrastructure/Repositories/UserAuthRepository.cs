@@ -6,6 +6,7 @@ using SendGrid.Helpers.Errors.Model;
 using SendGrid.Helpers.Mail;
 using System.Net;
 using TaskManagementWebAPI.Application.DTOs;
+using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.Domain.Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
 using static System.Net.WebRequestMethods;
@@ -29,7 +30,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             {
                 if (dto == null)
                 {
-                    throw new ArgumentNullException(nameof(dto), "Login data (dto) cannot be null.");
+                    throw new ArgumentNullException(nameof(dto));
                 }
 
                 var requestUrl = "https://localhost:7268/api/Auth/login";
@@ -87,17 +88,17 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 }
 
                 var error = await response.Content.ReadAsStringAsync();
-                throw new TokenRefreshFailedException($"Token refresh failed: {error}");
+                throw new TokenRefreshFailedException(string.Format(ExceptionMessages.UserAuthExceptions.TokenRefreshFailed, error));
             }
             catch (HttpRequestException httpEx)
             {
                 _logger.LoggError(httpEx, "Refresh - HTTP request failed");
-                throw new AuthServiceUnavailableException("Token refresh service is unavailable.", httpEx);
+                throw new AuthServiceUnavailableException(ExceptionMessages.UserAuthExceptions.TokenRefreshServiceUnavailable, httpEx);
             }
             catch (TaskCanceledException tcEx) when (!tcEx.CancellationToken.IsCancellationRequested)
             {
                 _logger.LoggError(tcEx, "Refresh - Request timed out");
-                throw new TokenRefreshFailedException("Token refresh timed out.", tcEx);
+                throw new TokenRefreshFailedException(ExceptionMessages.UserAuthExceptions.TokenRefreshTimeout, tcEx);
             }
             catch (InvalidOperationException invOpEx)
             {
