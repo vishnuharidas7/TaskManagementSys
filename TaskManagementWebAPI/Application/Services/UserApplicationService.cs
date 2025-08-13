@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.Domain.Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models; 
@@ -36,7 +37,8 @@ namespace TaskManagementWebAPI.Application.Services
         public async Task<bool> CheckUserExists(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentException("Username cannot be null or empty.", nameof(username));
+                throw new ArgumentException(ExceptionMessages.UserExceptions.UsernameRequired);
+                //throw new ArgumentException("Username cannot be null or empty.", nameof(username));
 
             return await _userRepository.CheckUserExists(username);
 
@@ -49,35 +51,39 @@ namespace TaskManagementWebAPI.Application.Services
                 //Phone number validation
                 if (!IsValidPhoneNumber(dto.PhoneNumber))
                 {
-                    throw new InvalidPhoneNumberException($"Invalid phone number - {dto.PhoneNumber}");
+                    throw new InvalidPhoneNumberException(ExceptionMessages.Validations.InvalidPhoneNumber);
                 }
                 //Email Format validation
                 if (!IsValidEmailFormat(dto.Email))
                 {
-                    throw new InvalidEmailFormatException($"Invalid email format - {dto.Email}");
+                    throw new InvalidEmailFormatException(string.Format(ExceptionMessages.Validations.InvalidEmailFormat , dto.Email));
+                    //throw new InvalidEmailFormatException($"Invalid email format - {dto.Email}");
                 }
                 //Email already exists validation
                 var emailexists = await _userRepository.CheckEmailExists(dto.Email);
                 if (emailexists)
                 {
-                    throw new DuplicateEmailException($"Email '{dto.Email}' is already registered.");
+                    throw new DuplicateEmailException(string.Format(ExceptionMessages.Validations.DuplicateEmail, dto.Email));
+                    //throw new DuplicateEmailException($"Email '{dto.Email}' is already registered.");
                 }
                 //RoleId validation
                 var roleid = await _userRepository.CheckRoleExists(dto.RoleId);
                 if (!roleid)
                 {
-                    throw new InvalidRoleIdException($"Invalid RoleId - {dto.RoleId}");
+                    throw new InvalidRoleIdException(string.Format(ExceptionMessages.Validations.InvalidRole, dto.RoleId));
+                   // throw new InvalidRoleIdException($"Invalid RoleId - {dto.RoleId}");
                 }
                 //Username validation
                 string username = dto.UserName;
                 if (string.IsNullOrWhiteSpace(username))
                 {
-                    throw new ArgumentException("Username cannot be null or empty.", nameof(username));
+                    throw new ArgumentException(ExceptionMessages.UserExceptions.UsernameRequired);
                 }
                 var checkUsernameExist = await _userRepository.CheckUserExists(username);
                 if (checkUsernameExist)
                 {
-                    throw new DuplicateUsernameException($"Username {username} Already exists.");
+                    throw new DuplicateUsernameException(string.Format(ExceptionMessages.UserExceptions.UsernameAlreadyExists, username));
+                    //throw new DuplicateUsernameException($"Username {username} Already exists.");
                 }
 
 
@@ -134,7 +140,8 @@ namespace TaskManagementWebAPI.Application.Services
 
                 if (user == null)
                 {
-                    throw new NotFoundException("No user exists with the specified email.");
+                    throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound);
+                    //throw new NotFoundException("No user exists with the specified email.");
                 }
                 //return null;
 
@@ -197,7 +204,8 @@ namespace TaskManagementWebAPI.Application.Services
                 if (user == null)
                 {
                     _logger.LoggWarning("UpdateUser - User not found with ID: {UserId}", id);
-                    throw new NotFoundException("User not found");
+                    throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound);
+                    //throw new NotFoundException("User not found");
                 }
 
                 // Mapping DTO to entity
@@ -226,14 +234,16 @@ namespace TaskManagementWebAPI.Application.Services
                 if (user == null)
                 {
                     _logger.LoggWarning("DeleteUser-User not found");
-                    throw new NotFoundException("User not found");
+                    throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound);
+                    //throw new NotFoundException("User not found");
                 }
 
                 var usertasks = _taskManagementRepository.GetAllTasksByUserId(id);// (t => t.UserId == id);
                 if (usertasks.Any())
                 {
                     _logger.LoggWarning("DeleteUser - Cannot delete user ID {UserId}, tasks are assigned.", id);
-                    throw new InvalidOperationException("Cannot delete user. Tasks are assigned to this user.");
+                    throw new InvalidOperationException(ExceptionMessages.UserExceptions.UserCannotBeDeleted);
+                    //throw new InvalidOperationException("Cannot delete user. Tasks are assigned to this user.");
                 }
 
                 await _userRepository.DeleteUser(user);  
@@ -252,20 +262,23 @@ namespace TaskManagementWebAPI.Application.Services
             {
                 if (obj.newpswd != obj.confrmNewpswd)
                 {
-                    throw new ArgumentException("New password and confirmation do not match.");
+                    throw new ArgumentException(ExceptionMessages.UserExceptions.PasswordNotMatch);
+                    //throw new ArgumentException("New password and confirmation do not match.");
                     //throw new Exception("New password and confirmation do not match.");
                 }
                 var user = await _userRepository.GetUserByIdAsync(id); //_db.User.FindAsync(id);
                 if (user == null)
                 {
                     _logger.LoggWarning("UpdatePassword-User not found");
-                    throw new NotFoundException("User not found");
+                    throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound);
+                    //throw new NotFoundException("User not found");
                 }
 
                 if (!BCrypt.Net.BCrypt.Verify(obj.curpswd, user.Password))
                 {
                     _logger.LoggWarning("Current password is incorrect");
-                    throw new UnauthorizedAccessException("Current password is incorrect");
+                    throw new UnauthorizedAccessException(ExceptionMessages.UserExceptions.InvalidCrendentials);
+                   // throw new UnauthorizedAccessException("Current password is incorrect");
                 }
 
                 try

@@ -2,17 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using NPOI.XWPF.UserModel;
-using SendGrid.Helpers.Errors.Model;
-using System.Threading;
-using System.Threading.Tasks;
+using SendGrid.Helpers.Errors.Model; 
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.ConfigurationLayer;
 using TaskManagementWebAPI.Domain.Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
-using TaskManagementWebAPI.Domain.Models;
-using TaskManagementWebAPI.Infrastructure.Persistence;
-using TaskManagementWebAPI.Infrastructure.Repositories;
+using TaskManagementWebAPI.Domain.Models; 
 
 namespace TaskManagementWebAPI.Application.Services
 {
@@ -95,7 +92,8 @@ namespace TaskManagementWebAPI.Application.Services
 
                     if (attempts == maxAttempts)
                     {
-                        throw new Exception("Failed to add task after multiple attempts due to reference ID conflicts.");
+                        throw new Exception(ExceptionMessages.TaskExceptions.FailedTaskEntryRefIdConflict);
+                        //throw new Exception("Failed to add task after multiple attempts due to reference ID conflicts.");
                     }
                 }
                 
@@ -170,7 +168,8 @@ namespace TaskManagementWebAPI.Application.Services
                 var task = await _taskManagementRepository.TaskWithIdFindAsync(id);
                 if (task == null)
                 {
-                    throw new NotFoundException($"Task with ID {id} not found.");
+                    throw new NotFoundException(ExceptionMessages.TaskExceptions.TaskNotFound);
+                    //throw new NotFoundException($"Task with ID {id} not found.");
                 }
 
                 task.taskName = obj.taskName;
@@ -223,13 +222,15 @@ namespace TaskManagementWebAPI.Application.Services
                 var parser = _parserFactory.GetParser(file.FileName);
                 if (parser == null)
                 {
-                    throw new TaskFileParserException($"No parser found for file: {file.FileName}");
+                    throw new TaskFileParserException(ExceptionMessages.TaskExceptions.ParseNotFound);
+                    //throw new TaskFileParserException($"No parser found for file: {file.FileName}");
                 }
 
                 var rawData = await parser.ParseAsync(file);
                 if (rawData == null || !rawData.Any())
                 {
-                    throw new TaskFileParserException("Parsed data is empty or null.");
+                    throw new TaskFileParserException(ExceptionMessages.TaskExceptions.ParseEmpty);
+                    //throw new TaskFileParserException("Parsed data is empty or null.");
                 }
                 var users = await _userRepository.ListAllUsers();
                 var userMap = users.ToDictionary(u => u.UserName.ToLower(), u => u.UserId);
@@ -237,7 +238,8 @@ namespace TaskManagementWebAPI.Application.Services
                 var tasks = _taskMapper.MapToTasks(rawData, userMap, userId);
                 if (tasks == null || !tasks.Any())
                 {
-                    throw new TaskValidationException("No tasks could be mapped from the file.");
+                    throw new TaskValidationException(ExceptionMessages.TaskExceptions.CannotMapped);
+                    //throw new TaskValidationException("No tasks could be mapped from the file.");
                 }
 
                 var tomorrow = DateTime.Today.AddDays(1);
@@ -246,7 +248,8 @@ namespace TaskManagementWebAPI.Application.Services
                     .ToList();
                 if (!validTasks.Any())
                 {
-                    throw new TaskValidationException("Unable to parse the task file due to invalid format.");
+                    throw new TaskValidationException(ExceptionMessages.TaskExceptions.InvalidDateFormat);
+                    //throw new TaskValidationException("Unable to parse the task file due to invalid format.");
                 }
 
                 var useDapper = _configuration.GetValue<bool>("UseDapper:UseDapper");
