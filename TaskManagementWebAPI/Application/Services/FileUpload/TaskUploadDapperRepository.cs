@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.Common;
 using System.Net.Http;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.ConfigurationLayer;
 using TaskManagementWebAPI.Domain.Models;
 using TaskManagementWebAPI.Infrastructure.Persistence;
@@ -66,7 +67,7 @@ namespace TaskManagementWebAPI.Application.Services.FileUpload
 
                 if (!success)
                 {
-                    throw new Exception("Failed to insert tasks after multiple retries due to referenceId conflicts.");
+                    throw new Exception(ExceptionMessages.TaskExceptions.ReferenceIdConflict);
                 }
             }
             catch (DbException dbEx)

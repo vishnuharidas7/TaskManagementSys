@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq; 
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.ConfigurationLayer;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models; 
@@ -268,7 +269,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
             if (!saved)
             {
-                throw new Exception("Failed to upload tasks due to repeated referenceId conflicts.");
+                throw new Exception(ExceptionMessages.TaskExceptions.ReferenceIdConflict);
             }
         }
         private bool IsDuplicateReferenceIdException(DbUpdateException ex)
@@ -411,7 +412,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     .ToListAsync();
                 if (tasks == null)
                 {
-                    throw new NotFoundException($"Task with UserID {userId} not found.");
+                    throw new NotFoundException(string.Format(ExceptionMessages.TaskExceptions.TaskNotFoundByUserId, userId));
                 }
 
                 return tasks;

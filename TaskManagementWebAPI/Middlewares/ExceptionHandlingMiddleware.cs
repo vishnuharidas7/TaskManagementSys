@@ -1,5 +1,6 @@
 ﻿using Org.BouncyCastle.Tsp;
 using SendGrid.Helpers.Errors.Model;
+using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.Domain.Exceptions;
 
 namespace TaskManagementWebAPI.Middlewares
@@ -23,23 +24,23 @@ namespace TaskManagementWebAPI.Middlewares
             }
             catch (UnauthorizedAccessException ex)
             { 
-                await HandleExceptionAsync(context, StatusCodes.Status401Unauthorized, "Unauthorized access", ex);
+                await HandleExceptionAsync(context, StatusCodes.Status401Unauthorized,ExceptionMessages.ExceptionHandelingExceptions.UnauthorizedAccess, ex);
             }
             catch (ArgumentNullException ex)
             {
-                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, "Null Values cannot be acceptable", ex);
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest,ExceptionMessages.ExceptionHandelingExceptions.NullValuesNotAllowed, ex);
             }
             catch (HttpRequestException ex)
             { 
-                await HandleExceptionAsync(context, StatusCodes.Status503ServiceUnavailable, "External service unavailable", ex);
+                await HandleExceptionAsync(context, StatusCodes.Status503ServiceUnavailable,ExceptionMessages.ExceptionHandelingExceptions.ExternalServiceUnavailable, ex);
             }
             catch (TaskCanceledException ex)
             { 
-                await HandleExceptionAsync(context, StatusCodes.Status504GatewayTimeout, "Request timed out", ex);
+                await HandleExceptionAsync(context, StatusCodes.Status504GatewayTimeout, ExceptionMessages.ExceptionHandelingExceptions.RequestTimedOut, ex);
             }
             catch (InvalidOperationException ex)
             { 
-                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, "Invalid operation", ex);
+                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ExceptionMessages.ExceptionHandelingExceptions.InvalidOperation, ex);
             }
 
             //Custom exception for phone number validation
@@ -99,7 +100,7 @@ namespace TaskManagementWebAPI.Middlewares
 
             catch (Exception ex)
             { 
-                await HandleExceptionAsync(context, StatusCodes.Status500InternalServerError, "An unexpected error occurred", ex);
+                await HandleExceptionAsync(context, StatusCodes.Status500InternalServerError, ExceptionMessages.ExceptionHandelingExceptions.UnexpectedError, ex);
             }
         }
 
