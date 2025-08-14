@@ -17,9 +17,8 @@ namespace TaskManagementWebAPI.Application.Services
     {
         private readonly ITaskManagementRepository _taskManagementRepository;
         private readonly IAppLogger<TaskApplicationService> _logger;
-        private readonly TaskSettings _taskSettings;
-        private readonly IEmailContentBuilder _contentBuilder;
-        private readonly IEmailService _emailService;
+        private readonly TaskSettings _taskSettings; 
+        private readonly INotificationService _notificationService;
         private readonly ITaskFileParserFactory _parserFactory;
         private readonly IMaptoTasks _taskMapper;
         private readonly IConfiguration _configuration;
@@ -28,17 +27,16 @@ namespace TaskManagementWebAPI.Application.Services
         public TaskApplicationService(ITaskManagementRepository taskManagementRepository, IAppLogger<TaskApplicationService> logger,
           IOptions<TaskSettings> taskSettings,IEmailContentBuilder emailContentBuilder,
           IEmailService emailService, ITaskFileParserFactory parserFactory,
-          IMaptoTasks taskMapper, IConfiguration configuration, IUserRepository userRepository)
+          IMaptoTasks taskMapper, IConfiguration configuration, IUserRepository userRepository, INotificationService notificationService)
         {
             _taskManagementRepository = taskManagementRepository;
             _logger = logger;
-            _taskSettings = taskSettings.Value;
-            _emailService = emailService;
-            _contentBuilder = emailContentBuilder;
+            _taskSettings = taskSettings.Value; 
             _parserFactory = parserFactory;
             _taskMapper = taskMapper;
             _configuration = configuration;
             _userRepository = userRepository;
+            _notificationService = notificationService;
         }
 
         public async Task AddTaskAsync(AddTaskDTO dto)
@@ -77,8 +75,7 @@ namespace TaskManagementWebAPI.Application.Services
                             var userTasks = await _taskManagementRepository.GetTasksByTaskIdAsync(newTaskId);
                             if (userTasks.Any())
                             {
-                                var content = _contentBuilder.BuildContent(user, userTasks);
-                                await _emailService.SendEmailAsync(user.Email, "New Task Added", content);
+                                var content = _notificationService.SendNotificationAsync(user, userTasks); 
                             }
                         }
                         break;
@@ -92,8 +89,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                     if (attempts == maxAttempts)
                     {
-                        throw new Exception(ExceptionMessages.TaskExceptions.FailedTaskEntryRefIdConflict);
-                        //throw new Exception("Failed to add task after multiple attempts due to reference ID conflicts.");
+                        throw new Exception(ExceptionMessages.TaskExceptions.FailedTaskEntryRefIdConflict); 
                     }
                 }
                 
@@ -133,7 +129,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                 var lastTask =await _taskManagementRepository.LastTaskWithPrefix(searchPrefix);
 
-                int nextNumber = _taskSettings.InitialReferenceId; // start from 12000 if no task exists
+                int nextNumber = _taskSettings.InitialReferenceId;  
 
                 if (lastTask != null)
                 {
@@ -168,8 +164,7 @@ namespace TaskManagementWebAPI.Application.Services
                 var task = await _taskManagementRepository.TaskWithIdFindAsync(id);
                 if (task == null)
                 {
-                    throw new NotFoundException(ExceptionMessages.TaskExceptions.TaskNotFound);
-                    //throw new NotFoundException($"Task with ID {id} not found.");
+                    throw new NotFoundException(ExceptionMessages.TaskExceptions.TaskNotFound); 
                 }
 
                 task.taskName = obj.taskName;
@@ -185,7 +180,7 @@ namespace TaskManagementWebAPI.Application.Services
                 }
                 try
                 {
-                    await _taskManagementRepository.UpdateTask(task); //_db.SaveChangesAsync();
+                    await _taskManagementRepository.UpdateTask(task);  
                 }
                 catch (DbUpdateException dbEx)
                 {
@@ -202,8 +197,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                     if (userTasks.Any())
                     {
-                        var content = _contentBuilder.BuildContent(user, userTasks);
-                        await _emailService.SendEmailAsync(user.Email, "Task Completed", content);
+                        var content = _notificationService.SendNotificationAsync(user, userTasks); 
                     }
                 }
             }
@@ -222,15 +216,13 @@ namespace TaskManagementWebAPI.Application.Services
                 var parser = _parserFactory.GetParser(file.FileName);
                 if (parser == null)
                 {
-                    throw new TaskFileParserException(ExceptionMessages.TaskExceptions.ParseNotFound);
-                    //throw new TaskFileParserException($"No parser found for file: {file.FileName}");
+                    throw new TaskFileParserException(ExceptionMessages.TaskExceptions.ParseNotFound); 
                 }
 
                 var rawData = await parser.ParseAsync(file);
                 if (rawData == null || !rawData.Any())
                 {
-                    throw new TaskFileParserException(ExceptionMessages.TaskExceptions.ParseEmpty);
-                    //throw new TaskFileParserException("Parsed data is empty or null.");
+                    throw new TaskFileParserException(ExceptionMessages.TaskExceptions.ParseEmpty); 
                 }
                 var users = await _userRepository.ListAllUsers();
                 var userMap = users.ToDictionary(u => u.UserName.ToLower(), u => u.UserId);
@@ -238,8 +230,7 @@ namespace TaskManagementWebAPI.Application.Services
                 var tasks = _taskMapper.MapToTasks(rawData, userMap, userId);
                 if (tasks == null || !tasks.Any())
                 {
-                    throw new TaskValidationException(ExceptionMessages.TaskExceptions.CannotMapped);
-                    //throw new TaskValidationException("No tasks could be mapped from the file.");
+                    throw new TaskValidationException(ExceptionMessages.TaskExceptions.CannotMapped); 
                 }
 
                 var tomorrow = DateTime.Today.AddDays(1);
@@ -248,8 +239,7 @@ namespace TaskManagementWebAPI.Application.Services
                     .ToList();
                 if (!validTasks.Any())
                 {
-                    throw new TaskValidationException(ExceptionMessages.TaskExceptions.InvalidDateFormat);
-                    //throw new TaskValidationException("Unable to parse the task file due to invalid format.");
+                    throw new TaskValidationException(ExceptionMessages.TaskExceptions.InvalidDateFormat); 
                 }
 
                 var useDapper = _configuration.GetValue<bool>("UseDapper:UseDapper");
@@ -272,16 +262,13 @@ namespace TaskManagementWebAPI.Application.Services
                     var assigneduserId = entry.Key;
                     var userTasks = entry.Value;
 
-                    var user = await _userRepository.GetUserByIdAsync(assigneduserId);
-                    //var user = await _db.User.FindAsync(entry.Key);
+                    var user = await _userRepository.GetUserByIdAsync(assigneduserId); 
                     if (user == null)
                     {
                         _logger.LoggWarning("User not found for ID {UserId}", entry.Key);
                         continue;
                     }
-
-                    var content = _contentBuilder.BuildContent(user, entry.Value);
-                    await _emailService.SendEmailAsync(user.Email, "New Tasks Assigned to You", content);
+                    var content = _notificationService.SendNotificationAsync(user, entry.Value); 
                 }
             }
             catch (Exception ex)
