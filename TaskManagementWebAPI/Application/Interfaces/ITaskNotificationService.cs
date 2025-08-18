@@ -2,7 +2,7 @@
 
 namespace TaskManagementWebAPI.Application.Interfaces
 {
-    public interface INotificationService
+    public interface ITaskNotificationService
     {
         Task SendNotificationAsync(Users user, IEnumerable<Tasks> tasks);
     }
