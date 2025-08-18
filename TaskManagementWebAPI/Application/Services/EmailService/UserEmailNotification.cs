@@ -1,4 +1,5 @@
 ﻿using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Application.Services.EmailService
@@ -18,11 +19,11 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
             {
                 case "New":
                     var content = _userCreatedEmailContentBuilder.BuildContentforNewUser(user, userId, Password);
-                    await _emailService.SendEmailAsync(user.Email, "Welcome to Task Management System – Your Account Details", content);
+                    await _emailService.SendEmailAsync(user.Email, MailMessages.UserOnboarding.WelcomeMessage, content); // "Welcome to Task Management System – Your Account Details", content);
                     break;
                 case "Forgot":
                     var emailContent = _userCreatedEmailContentBuilder.BuildContentforPasswordReset(user, userId, Password);
-                    await _emailService.SendEmailAsync(user.Email, "Reset Password – Your Account Details", emailContent);
+                    await _emailService.SendEmailAsync(user.Email, MailMessages.UserOnboarding.WelcomeMessageReset, emailContent);// "Reset Password – Your Account Details", emailContent);
                     break;
                 default:
                     return;
