@@ -56,6 +56,7 @@ namespace TaskManagementWebAPI.Extensions
             //services.AddScoped<ITaskEmailRepository, InMemoryTaskRepository>();
             //services.AddScoped<IUserEmailRepository, InMemoryUserRepository>();
             services.AddScoped<ITaskNotificationService, TaskEmailNotification>();
+            services.AddScoped<IUserNotificationService, UserEmailNotification>();
             services.AddScoped<ITaskStatusContentBuilder, TaskCreatedContentBuilder>();
             services.AddScoped<ITaskStatusContentBuilder, TaskOnDueEmailContentBuilder>();
             services.AddScoped<ITaskStatusContentBuilder, TaskCompletedContentBuilder>();

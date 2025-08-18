@@ -14,6 +14,7 @@ using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Application.PasswordService;
 using TaskManagementWebAPI.Application.Services;
+using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.Domain.Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
 using TaskManagementWebAPI.Domain.Models;
@@ -24,35 +25,59 @@ namespace TaskManagementWebAPITest.Application.Services
 {
     public class UserApplicationServiceTest
     {
+        //    private readonly Mock<IRandomPasswordGenerator> _mockPasswordGenerator;
+        //    private readonly Mock<IUserRepository> _mockUserRepository;
+        //    private readonly Mock<IAppLogger<UserApplicationService>> _mockLogger;
+        //    private readonly Mock<IUserCreatedEmailContentBuilder> _mockEmailContentBuilder;
+        //    private readonly Mock<IEmailService> _mockEmailService;
+        //    private readonly Mock<ITaskManagementRepository> _mockTaskManagementRepo; 
+
+        //    private readonly UserApplicationService _service;
+
+        //    public UserApplicationServiceTest()
+        //    {
+        //        _mockPasswordGenerator = new Mock<IRandomPasswordGenerator>();
+        //        _mockUserRepository = new Mock<IUserRepository>();
+        //        _mockLogger = new Mock<IAppLogger<UserApplicationService>>();
+        //        _mockEmailContentBuilder = new Mock<IUserCreatedEmailContentBuilder>();
+        //        _mockEmailService = new Mock<IEmailService>();
+        //        _mockTaskManagementRepo = new Mock<ITaskManagementRepository>();
+
+        //        _service = new UserApplicationService( 
+        //            _mockPasswordGenerator.Object,
+        //            _mockUserRepository.Object,
+        //            _mockLogger.Object,
+        //            _mockEmailContentBuilder.Object,
+        //            _mockEmailService.Object,
+        //            _mockTaskManagementRepo.Object
+        //        );
+        //    }
         private readonly Mock<IRandomPasswordGenerator> _mockPasswordGenerator;
         private readonly Mock<IUserRepository> _mockUserRepository;
         private readonly Mock<IAppLogger<UserApplicationService>> _mockLogger;
-        private readonly Mock<IUserCreatedEmailContentBuilder> _mockEmailContentBuilder;
-        private readonly Mock<IEmailService> _mockEmailService;
-        private readonly Mock<ITaskManagementRepository> _mockTaskManagementRepo; 
+        private readonly Mock<ITaskManagementRepository> _mockTaskManagementRepo;
+        private readonly Mock<IUserNotificationService> _mockNotificationService;
 
         private readonly UserApplicationService _service;
 
-        public UserApplicationServiceTest()
-        {
-            _mockPasswordGenerator = new Mock<IRandomPasswordGenerator>();
-            _mockUserRepository = new Mock<IUserRepository>();
-            _mockLogger = new Mock<IAppLogger<UserApplicationService>>();
-            _mockEmailContentBuilder = new Mock<IUserCreatedEmailContentBuilder>();
-            _mockEmailService = new Mock<IEmailService>();
-            _mockTaskManagementRepo = new Mock<ITaskManagementRepository>();
+    public UserApplicationServiceTest()
+    {
+        _mockPasswordGenerator = new Mock<IRandomPasswordGenerator>();
+        _mockUserRepository = new Mock<IUserRepository>();
+        _mockLogger = new Mock<IAppLogger<UserApplicationService>>();
+        _mockTaskManagementRepo = new Mock<ITaskManagementRepository>();
+        _mockNotificationService = new Mock<IUserNotificationService>();
 
-            _service = new UserApplicationService( 
-                _mockPasswordGenerator.Object,
-                _mockUserRepository.Object,
-                _mockLogger.Object,
-                _mockEmailContentBuilder.Object,
-                _mockEmailService.Object,
-                _mockTaskManagementRepo.Object
-            );
-        }
+        _service = new UserApplicationService(
+            _mockPasswordGenerator.Object,
+            _mockUserRepository.Object,
+            _mockLogger.Object,
+            _mockTaskManagementRepo.Object,
+            _mockNotificationService.Object
+        );
+    }
 
-        [Fact]
+    [Fact]
         public async Task CheckUserExists_UserExists_ReturnsTrue()
         {
             // Arrange
@@ -88,14 +113,56 @@ namespace TaskManagementWebAPITest.Application.Services
         [InlineData("   ")]
         public async Task CheckUserExists_InvalidUsername_ThrowsArgumentException(string invalidUsername)
         {
-            // Arrange
-           // var service = CreateService();
-
             // Act & Assert
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => _service.CheckUserExists(invalidUsername));
-            Assert.Equal("Username cannot be null or empty. (Parameter 'username')", ex.Message);
-        }
 
+            Assert.Equal(ExceptionMessages.UserExceptions.UsernameRequired, ex.Message);
+        }
+        //public async Task CheckUserExists_InvalidUsername_ThrowsArgumentException(string invalidUsername)
+        //{
+        //    // Arrange
+        //   // var service = CreateService();
+
+        //    // Act & Assert
+        //    var ex = await Assert.ThrowsAsync<ArgumentException>(() => _service.CheckUserExists(invalidUsername));
+        //    Assert.Equal("Username cannot be null or empty. (Parameter 'username')", ex.Message);
+        //}
+
+        // [Fact]
+        //public async Task RegisterAsync_ShouldRegisterUser_WhenDataIsValid()
+        //{
+        //    // Arrange
+        //    var dto = new RegisterDTO
+        //    {
+        //        Name = "John",
+        //        UserName = "john123",
+        //        Email = "john@example.com",
+        //        PhoneNumber = "1234567890",
+        //        RoleId = 1,
+        //        Gender = "Male"
+        //    };
+
+        //    _mockUserRepository.Setup(r => r.CheckEmailExists(dto.Email)).ReturnsAsync(false);
+        //    _mockUserRepository.Setup(r => r.CheckRoleExists(dto.RoleId)).ReturnsAsync(true);
+        //    _mockUserRepository.Setup(r => r.CheckUserExists(dto.UserName)).ReturnsAsync(false);
+        //    _mockPasswordGenerator.Setup(p => p.GenerateRandomPassword(8)).Returns("password");
+        //    _mockUserRepository.Setup(r => r.RegisterAsync(It.IsAny<Users>())).ReturnsAsync(1);
+        //    //_mockEmailContentBuilder.Setup(e => e.BuildContentforNewUser(It.IsAny<Users>(), 1, "password"))
+        //    //                 .Returns("Email content");
+        //    //_mockEmailService.Setup(e => e.SendEmailAsync(dto.Email, It.IsAny<string>(), It.IsAny<string>()))
+        //    //                 .Returns(Task.CompletedTask);
+        //    _mockNotificationService.Setup(n => n.SendEmailAsync(It.IsAny<Users>(), 1, "password123", "New")).Returns(Task.CompletedTask);
+
+
+        //    // Act
+        //    await _service.RegisterAsync(dto);
+
+        //    // Assert
+        //    //    _mockUserRepository.Verify(r => r.RegisterAsync(It.IsAny<Users>()), Times.Once);
+        //    //    _mockEmailService.Verify(e => e.SendEmailAsync(dto.Email, It.IsAny<string>(), "Email content"), Times.Once);
+        //    //}
+        //    _mockNotificationService.Verify(n => n.SendEmailAsync(It.IsAny<Users>(), 1, "password123", "New"), Times.Once);
+        //}
         [Fact]
         public async Task RegisterAsync_ShouldRegisterUser_WhenDataIsValid()
         {
@@ -113,19 +180,16 @@ namespace TaskManagementWebAPITest.Application.Services
             _mockUserRepository.Setup(r => r.CheckEmailExists(dto.Email)).ReturnsAsync(false);
             _mockUserRepository.Setup(r => r.CheckRoleExists(dto.RoleId)).ReturnsAsync(true);
             _mockUserRepository.Setup(r => r.CheckUserExists(dto.UserName)).ReturnsAsync(false);
-            _mockPasswordGenerator.Setup(p => p.GenerateRandomPassword(8)).Returns("password");
+            _mockPasswordGenerator.Setup(p => p.GenerateRandomPassword(8)).Returns("password123");
             _mockUserRepository.Setup(r => r.RegisterAsync(It.IsAny<Users>())).ReturnsAsync(1);
-            _mockEmailContentBuilder.Setup(e => e.BuildContentforNewUser(It.IsAny<Users>(), 1, "password"))
-                             .Returns("Email content");
-            _mockEmailService.Setup(e => e.SendEmailAsync(dto.Email, It.IsAny<string>(), It.IsAny<string>()))
-                             .Returns(Task.CompletedTask);
+            _mockNotificationService.Setup(n => n.SendEmailAsync(It.IsAny<Users>(), 1, "password123", "New")).Returns(Task.CompletedTask);
 
             // Act
             await _service.RegisterAsync(dto);
 
             // Assert
             _mockUserRepository.Verify(r => r.RegisterAsync(It.IsAny<Users>()), Times.Once);
-            _mockEmailService.Verify(e => e.SendEmailAsync(dto.Email, It.IsAny<string>(), "Email content"), Times.Once);
+            _mockNotificationService.Verify(n => n.SendEmailAsync(It.IsAny<Users>(), 1, "password123", "New"), Times.Once);
         }
 
         [Fact]
@@ -258,6 +322,37 @@ namespace TaskManagementWebAPITest.Application.Services
         }
 
 
+        //[Fact]
+        //public async Task ForgotPassword_ShouldResetPasswordAndSendEmail_WhenUserExists()
+        //{
+        //    // Arrange
+        //    var user = new Users
+        //    {
+        //        UserId = 1,
+        //        Email = "test@example.com",
+        //        Password = "oldhashed"
+        //    };
+
+        //    _mockUserRepository.Setup(r => r.GetUserByEmailAsync(user.Email)).ReturnsAsync(user);
+        //    _mockPasswordGenerator.Setup(g => g.GenerateRandomPassword(8)).Returns("newpass");
+        //    _mockUserRepository.Setup(r => r.UpdatePasswordAsync(user)).Returns(Task.CompletedTask);
+        //    //_mockEmailContentBuilder.Setup(b => b.BuildContentforPasswordReset(user, user.UserId, "newpass"))
+        //    //                 .Returns("reset email content");
+        //    //_mockEmailService.Setup(e => e.SendEmailAsync(user.Email, It.IsAny<string>(), It.IsAny<string>()))
+        //    //                 .Returns(Task.CompletedTask);
+        //    _mockNotificationService.Setup(n => n.SendEmailAsync(user, user.UserId, "newPass123", "Forgot")).Returns(Task.CompletedTask);
+
+
+        //    // Act
+        //    var result = await _service.ForgotPassword(user.Email);
+
+        //    // Assert
+        //    Assert.Equal(user.Email, result?.Email);
+        //    _mockUserRepository.Verify(r => r.UpdatePasswordAsync(user), Times.Once);
+        //    //    _mockEmailService.Verify(e => e.SendEmailAsync(user.Email, It.IsAny<string>(), "reset email content"), Times.Once);
+        //    //}
+        //    _mockNotificationService.Verify(n => n.SendEmailAsync(It.IsAny<Users>(), 1, "password123", "New"), Times.Once);
+        //}
         [Fact]
         public async Task ForgotPassword_ShouldResetPasswordAndSendEmail_WhenUserExists()
         {
@@ -270,31 +365,41 @@ namespace TaskManagementWebAPITest.Application.Services
             };
 
             _mockUserRepository.Setup(r => r.GetUserByEmailAsync(user.Email)).ReturnsAsync(user);
-            _mockPasswordGenerator.Setup(g => g.GenerateRandomPassword(8)).Returns("newpass");
+            _mockPasswordGenerator.Setup(g => g.GenerateRandomPassword(8)).Returns("newpass123");
             _mockUserRepository.Setup(r => r.UpdatePasswordAsync(user)).Returns(Task.CompletedTask);
-            _mockEmailContentBuilder.Setup(b => b.BuildContentforPasswordReset(user, user.UserId, "newpass"))
-                             .Returns("reset email content");
-            _mockEmailService.Setup(e => e.SendEmailAsync(user.Email, It.IsAny<string>(), It.IsAny<string>()))
-                             .Returns(Task.CompletedTask);
+            _mockNotificationService.Setup(n => n.SendEmailAsync(user, user.UserId, "newpass123", "Forgot")).Returns(Task.CompletedTask);
 
             // Act
             var result = await _service.ForgotPassword(user.Email);
 
             // Assert
-            Assert.Equal(user.Email, result?.Email);
+            Assert.NotNull(result);
+            Assert.Equal(user.Email, result.Email);
             _mockUserRepository.Verify(r => r.UpdatePasswordAsync(user), Times.Once);
-            _mockEmailService.Verify(e => e.SendEmailAsync(user.Email, It.IsAny<string>(), "reset email content"), Times.Once);
+            _mockNotificationService.Verify(n => n.SendEmailAsync(user, user.UserId, "newpass123", "Forgot"), Times.Once);
         }
 
+        //[Fact]
+        //public async Task ForgotPassword_ShouldThrowNotFoundException_WhenUserNotFound()
+        //{
+        //    _mockUserRepository.Setup(r => r.GetUserByEmailAsync(It.IsAny<string>()))
+        //                       .ReturnsAsync((Users?)null);
+
+        //    var ex = await Assert.ThrowsAsync<NotFoundException>(() => _service.ForgotPassword("notfound@example.com"));
+
+        //    Assert.Equal("No user exists with the specified email.", ex.Message);
+        //}
         [Fact]
         public async Task ForgotPassword_ShouldThrowNotFoundException_WhenUserNotFound()
         {
+            // Arrange
             _mockUserRepository.Setup(r => r.GetUserByEmailAsync(It.IsAny<string>()))
                                .ReturnsAsync((Users?)null);
 
+            // Act & Assert
             var ex = await Assert.ThrowsAsync<NotFoundException>(() => _service.ForgotPassword("notfound@example.com"));
 
-            Assert.Equal("No user exists with the specified email.", ex.Message);
+            Assert.Equal(ExceptionMessages.UserExceptions.UserNotFound, ex.Message);
         }
 
         [Fact]
@@ -320,9 +425,30 @@ namespace TaskManagementWebAPITest.Application.Services
             _mockLogger.Verify(l => l.LoggWarning("ForgotPassword - DB error while updating password: {Message}", "DB failure"), Times.Once);
         }
 
+        //[Fact]
+        //public async Task ForgotPassword_ShouldThrow_WhenEmailSendingFails()
+        //{
+        //    var user = new Users
+        //    {
+        //        UserId = 1,
+        //        Email = "user@example.com"
+        //    };
+
+        //    _mockUserRepository.Setup(r => r.GetUserByEmailAsync(user.Email)).ReturnsAsync(user);
+        //    _mockPasswordGenerator.Setup(g => g.GenerateRandomPassword(8)).Returns("newpass");
+        //    _mockUserRepository.Setup(r => r.UpdatePasswordAsync(user)).Returns(Task.CompletedTask);
+        //    //_mockEmailContentBuilder.Setup(b => b.BuildContentforPasswordReset(user, user.UserId, "newpass")).Returns("email content");
+        //    //_mockEmailService.Setup(e => e.SendEmailAsync(user.Email, It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(new Exception("SMTP fail"));
+        //    _mockNotificationService.Setup(n => n.SendEmailAsync(user, user.UserId, "newPass123", "Forgot")).ThrowsAsync(new Exception("SMTP Fail")); //Returns(Task.CompletedTask);
+
+
+        //    var ex = await Assert.ThrowsAsync<Exception>(() => _service.ForgotPassword(user.Email));
+        //    _mockLogger.Verify(l => l.LoggWarning("ForgotPassword - Unexpected error: {Message}", "SMTP fail"), Times.Once);
+        //}
         [Fact]
         public async Task ForgotPassword_ShouldThrow_WhenEmailSendingFails()
         {
+            // Arrange
             var user = new Users
             {
                 UserId = 1,
@@ -330,13 +456,19 @@ namespace TaskManagementWebAPITest.Application.Services
             };
 
             _mockUserRepository.Setup(r => r.GetUserByEmailAsync(user.Email)).ReturnsAsync(user);
-            _mockPasswordGenerator.Setup(g => g.GenerateRandomPassword(8)).Returns("newpass");
+            _mockPasswordGenerator.Setup(g => g.GenerateRandomPassword(8)).Returns("newpass123");
             _mockUserRepository.Setup(r => r.UpdatePasswordAsync(user)).Returns(Task.CompletedTask);
-            _mockEmailContentBuilder.Setup(b => b.BuildContentforPasswordReset(user, user.UserId, "newpass")).Returns("email content");
-            _mockEmailService.Setup(e => e.SendEmailAsync(user.Email, It.IsAny<string>(), It.IsAny<string>())).ThrowsAsync(new Exception("SMTP fail"));
+            _mockNotificationService
+                .Setup(n => n.SendEmailAsync(user, user.UserId, "newpass123", "Forgot"))
+                .ThrowsAsync(new Exception("SMTP fail"));
 
+            // Act & Assert
             var ex = await Assert.ThrowsAsync<Exception>(() => _service.ForgotPassword(user.Email));
-            _mockLogger.Verify(l => l.LoggWarning("ForgotPassword - Unexpected error: {Message}", "SMTP fail"), Times.Once);
+
+            // Verify logger was called with expected message and exception message
+            _mockLogger.Verify(
+                l => l.LoggWarning("ForgotPassword - Unexpected error: {Message}", "SMTP fail"),
+                Times.Once);
         }
 
         [Fact]
