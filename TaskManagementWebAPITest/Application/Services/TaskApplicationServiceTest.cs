@@ -12,44 +12,7 @@ using TaskManagementWebAPI.Domain.Models;
 using TaskManagementWebAPI.Infrastructure.Repositories;
 
 namespace TaskManagementWebAPITest.Application.Services
-{
-    //public class TaskApplicationServiceTest
-    //{
-    //    private readonly TaskApplicationService _taskApplicationService;
-    //    private readonly Mock<ITaskManagementRepository> _taskManagementRepositoryMock;
-    //    private readonly Mock<IAppLogger<TaskApplicationService>> _loggerMock;
-    //    private readonly IOptions<TaskSettings> _taskSettings;
-    //    private readonly Mock<IEmailContentBuilder> _contentBuilderMock;
-    //    private readonly Mock<IEmailService> _emailServiceMock;
-    //    private readonly Mock<ITaskFileParserFactory> _parserFactoryMock;
-    //    private readonly Mock<IMaptoTasks> _taskMapperMock;
-    //    private readonly Mock<IConfiguration> _configurationMock;
-    //    private readonly Mock<IUserRepository> _userRepositoryMock;
-
-    //    public TaskApplicationServiceTest()
-    //    {
-    //        _taskManagementRepositoryMock = new Mock<ITaskManagementRepository>();
-    //        _loggerMock = new Mock<IAppLogger<TaskApplicationService>>();
-    //        _taskSettings = Options.Create(new TaskSettings { IDTaskPrefix = "TMS", InitialReferenceId = 1001 });
-    //        _emailServiceMock = new Mock<IEmailService>();
-    //        _contentBuilderMock = new Mock<IEmailContentBuilder>();
-    //        _parserFactoryMock = new Mock<ITaskFileParserFactory>();
-    //        _taskMapperMock = new Mock<IMaptoTasks>();
-    //        _configurationMock = new Mock<IConfiguration>();
-    //        _userRepositoryMock = new Mock<IUserRepository>();
-
-    //        _taskApplicationService = new TaskApplicationService(
-    //            _taskManagementRepositoryMock.Object,
-    //            _loggerMock.Object,
-    //            _taskSettings,
-    //            _contentBuilderMock.Object,
-    //            _emailServiceMock.Object,
-    //            _parserFactoryMock.Object,
-    //            _taskMapperMock.Object,
-    //            _configurationMock.Object,
-    //            _userRepositoryMock.Object
-    //        );
-    //    }
+{ 
     public class TaskApplicationServiceTest
     {
         private readonly TaskApplicationService _taskApplicationService;
