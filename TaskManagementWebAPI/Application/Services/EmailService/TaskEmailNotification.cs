@@ -1,4 +1,5 @@
 ﻿using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Application.Services.EmailService
@@ -33,20 +34,19 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
             switch (statusForEmail)
             {
                 case "New":
-                    await _emailService.SendEmailAsync(user.Email, "New Task Assigned", content);
+                    await _emailService.SendEmailAsync(user.Email, MailMessages.TaskAssignmentSubject, content);
                     break;
                 case "Due":
-                    await _emailService.SendEmailAsync(user.Email, "Task is on Due", content);
+                    await _emailService.SendEmailAsync(user.Email, MailMessages.TaskCompletionReminderSubject, content);
                     break;
                 case "Overdue":
-                    await _emailService.SendEmailAsync(user.Email, "Overdue Tasks", content);
+                    await _emailService.SendEmailAsync(user.Email, MailMessages.TaskCompletionReminderSubject, content);
                     break;
                 case "Completed":
-                    await _emailService.SendEmailAsync(user.Email, "Tasks Completed", content);
+                    await _emailService.SendEmailAsync(user.Email, MailMessages.TaskCompletedSubject, content);
                     break;
                 default:
-                    await _emailService.SendEmailAsync(user.Email, "Task Update", content);
-                    break;
+                    return;
             }
         }
     }

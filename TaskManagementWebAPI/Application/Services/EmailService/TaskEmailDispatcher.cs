@@ -6,29 +6,20 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
 {
     public class TaskEmailDispatcher: ITaskEmailDispatcher
     {
-        //private readonly IUserEmailRepository _userRepo;
-        //private readonly ITaskEmailRepository _taskRepo;
         private readonly IUserRepository _userRepository;
-        private readonly IEmailService _emailService;
-        private readonly IEmailContentBuilder _contentBuilder;
+        private readonly ITaskNotificationService _taskNotificationService;
         private readonly ILogger<TaskEmailDispatcher> _logger;
         private readonly ITaskManagementRepository _taskManagementRepository;
 
         public TaskEmailDispatcher(
-            //IUserEmailRepository userRepo,
-            //ITaskEmailRepository taskRepo,
             IUserRepository userRepository,
-            IEmailService emailService,
-            IEmailContentBuilder contentBuilder,
+            ITaskNotificationService taskNotificationService,
             ITaskManagementRepository taskManagementRepository,
             ILogger<TaskEmailDispatcher> logger)
         {
-           // _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
-            //_taskRepo = taskRepo ?? throw new ArgumentNullException(nameof(taskRepo));
             _userRepository = userRepository;
-            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
-            _contentBuilder = contentBuilder ?? throw new ArgumentNullException(nameof(contentBuilder));
-            _taskManagementRepository=taskManagementRepository??throw new ArgumentNullException(nameof(taskManagementRepository));
+            _taskNotificationService = taskNotificationService ?? throw new ArgumentNullException(nameof(taskNotificationService));
+            _taskManagementRepository = taskManagementRepository??throw new ArgumentNullException(nameof(taskManagementRepository));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -46,8 +37,9 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
 
                     if (tasks.Any())
                     {
-                        string content = _contentBuilder.BuildContent(user, tasks);
-                        await _emailService.SendEmailAsync(user.Email, "Task Completion Reminder — Action Required", content);
+                        //string content = _contentBuilder.BuildContent(user, tasks);
+                        //await _emailService.SendEmailAsync(user.Email, "Task Completion Reminder — Action Required", content);
+                        var content= _taskNotificationService.SendNotificationAsync(user, tasks);
 
                         _logger.LogInformation("📧 Email sent to {Email} with {TaskCount} tasks.", user.Email, tasks.Count);
                     }

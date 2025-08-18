@@ -1,6 +1,7 @@
 ﻿using LoggingLibrary.Interfaces;
 using System.Text;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Domain.Models; 
 
 namespace TaskManagementWebAPI.Application.Services.EmailService
@@ -19,12 +20,12 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
         {
             try
             {
-      
+
                 var sb = new StringBuilder();
-                sb.AppendLine("✅ Completed Tasks:");
+                sb.AppendLine(MailMessages.CompletedHeader);
 
                 foreach (var task in tasks)
-                    sb.AppendLine($" - {task.taskType} {task.taskName} (Due: {task.dueDate:MM/dd/yyyy})");
+                    sb.AppendLine(MailMessages.TaskLine(task.taskType, task.taskName, task.dueDate));
 
                 sb.AppendLine();
                 return sb.ToString();
