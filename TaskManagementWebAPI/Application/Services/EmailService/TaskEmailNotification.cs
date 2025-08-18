@@ -3,12 +3,12 @@ using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Application.Services.EmailService
 {
-    public class EmailNotification : INotificationService
+    public class TaskEmailNotification : ITaskNotificationService
     {
         private readonly IEmailService _emailService;
         private readonly IEmailContentBuilder _emailContentBuilder;
         
-        public EmailNotification(IEmailService emailService, IEmailContentBuilder emailContentBuilder)
+        public TaskEmailNotification(IEmailService emailService, IEmailContentBuilder emailContentBuilder)
         {
             _emailService = emailService;
             _emailContentBuilder = emailContentBuilder;

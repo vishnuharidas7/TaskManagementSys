@@ -18,7 +18,7 @@ namespace TaskManagementWebAPI.Application.Services
         private readonly ITaskManagementRepository _taskManagementRepository;
         private readonly IAppLogger<TaskApplicationService> _logger;
         private readonly TaskSettings _taskSettings; 
-        private readonly INotificationService _notificationService;
+        private readonly ITaskNotificationService _notificationService;
         private readonly ITaskFileParserFactory _parserFactory;
         private readonly IMaptoTasks _taskMapper;
         private readonly IConfiguration _configuration;
@@ -27,7 +27,7 @@ namespace TaskManagementWebAPI.Application.Services
         public TaskApplicationService(ITaskManagementRepository taskManagementRepository, IAppLogger<TaskApplicationService> logger,
           IOptions<TaskSettings> taskSettings,IEmailContentBuilder emailContentBuilder,
           IEmailService emailService, ITaskFileParserFactory parserFactory,
-          IMaptoTasks taskMapper, IConfiguration configuration, IUserRepository userRepository, INotificationService notificationService)
+          IMaptoTasks taskMapper, IConfiguration configuration, IUserRepository userRepository, ITaskNotificationService tasknotificationService)
         {
             _taskManagementRepository = taskManagementRepository;
             _logger = logger;
@@ -36,7 +36,7 @@ namespace TaskManagementWebAPI.Application.Services
             _taskMapper = taskMapper;
             _configuration = configuration;
             _userRepository = userRepository;
-            _notificationService = notificationService;
+            _notificationService = tasknotificationService;
         }
 
         public async Task AddTaskAsync(AddTaskDTO dto)
