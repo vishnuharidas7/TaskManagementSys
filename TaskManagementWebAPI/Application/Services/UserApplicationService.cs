@@ -17,28 +17,25 @@ namespace TaskManagementWebAPI.Application.Services
     {
         private readonly IRandomPasswordGenerator _randomPasswordGenerator;
         private readonly IUserRepository _userRepository;
-        private readonly IAppLogger<UserApplicationService> _logger;
-        private readonly IUserCreatedEmailContentBuilder _userEmailContentBuilder;
-        private readonly IEmailService _emailService;
+        private readonly IAppLogger<UserApplicationService> _logger; 
         private readonly ITaskManagementRepository _taskManagementRepository;
+        private readonly IUserNotificationService _userNotificationService;
 
         public UserApplicationService(
             IRandomPasswordGenerator randomPasswordGenerator, IUserRepository userRepository, IAppLogger<UserApplicationService> logger,
-            IUserCreatedEmailContentBuilder userEmailContentBuilder, IEmailService emailService, ITaskManagementRepository taskManagementRepository )
+            ITaskManagementRepository taskManagementRepository, IUserNotificationService userNotificationService)
         {
             _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
-            _userEmailContentBuilder = userEmailContentBuilder ?? throw new ArgumentNullException(nameof(userEmailContentBuilder));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); 
             _taskManagementRepository = taskManagementRepository ?? throw new ArgumentNullException(nameof(taskManagementRepository));
+            _userNotificationService = userNotificationService ?? throw new ArgumentNullException(nameof(userNotificationService));
         }
 
         public async Task<bool> CheckUserExists(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentException(ExceptionMessages.UserExceptions.UsernameRequired);
-                //throw new ArgumentException("Username cannot be null or empty.", nameof(username));
+                throw new ArgumentException(ExceptionMessages.UserExceptions.UsernameRequired); 
 
             return await _userRepository.CheckUserExists(username);
 
@@ -56,22 +53,19 @@ namespace TaskManagementWebAPI.Application.Services
                 //Email Format validation
                 if (!IsValidEmailFormat(dto.Email))
                 {
-                    throw new InvalidEmailFormatException(string.Format(ExceptionMessages.Validations.InvalidEmailFormat , dto.Email));
-                    //throw new InvalidEmailFormatException($"Invalid email format - {dto.Email}");
+                    throw new InvalidEmailFormatException(string.Format(ExceptionMessages.Validations.InvalidEmailFormat , dto.Email)); 
                 }
                 //Email already exists validation
                 var emailexists = await _userRepository.CheckEmailExists(dto.Email);
                 if (emailexists)
                 {
-                    throw new DuplicateEmailException(string.Format(ExceptionMessages.Validations.DuplicateEmail, dto.Email));
-                    //throw new DuplicateEmailException($"Email '{dto.Email}' is already registered.");
+                    throw new DuplicateEmailException(string.Format(ExceptionMessages.Validations.DuplicateEmail, dto.Email)); 
                 }
                 //RoleId validation
                 var roleid = await _userRepository.CheckRoleExists(dto.RoleId);
                 if (!roleid)
                 {
-                    throw new InvalidRoleIdException(string.Format(ExceptionMessages.Validations.InvalidRole, dto.RoleId));
-                   // throw new InvalidRoleIdException($"Invalid RoleId - {dto.RoleId}");
+                    throw new InvalidRoleIdException(string.Format(ExceptionMessages.Validations.InvalidRole, dto.RoleId)); 
                 }
                 //Username validation
                 string username = dto.UserName;
@@ -82,8 +76,7 @@ namespace TaskManagementWebAPI.Application.Services
                 var checkUsernameExist = await _userRepository.CheckUserExists(username);
                 if (checkUsernameExist)
                 {
-                    throw new DuplicateUsernameException(string.Format(ExceptionMessages.UserExceptions.UsernameAlreadyExists, username));
-                    //throw new DuplicateUsernameException($"Username {username} Already exists.");
+                    throw new DuplicateUsernameException(string.Format(ExceptionMessages.UserExceptions.UsernameAlreadyExists, username)); 
                 }
 
 
@@ -109,8 +102,8 @@ namespace TaskManagementWebAPI.Application.Services
 
                 var password = randomPswd;
 
-                var content = _userEmailContentBuilder.BuildContentforNewUser(user, userId, password);
-                await _emailService.SendEmailAsync(user.Email, "Welcome to Task Management System – Your Account Details", content);
+                var sendNotication = _userNotificationService.SendEmailAsync(user, userId, password, "New");
+                 
 
             }
             catch (Exception ex)
@@ -140,8 +133,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                 if (user == null)
                 {
-                    throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound);
-                    //throw new NotFoundException("No user exists with the specified email.");
+                    throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound); 
                 }
                 //return null;
 
@@ -171,10 +163,16 @@ namespace TaskManagementWebAPI.Application.Services
                     throw;
                 }
 
-                var content = _userEmailContentBuilder.BuildContentforPasswordReset(user, user.UserId, newPassword);
-                await _emailService.SendEmailAsync(user.Email, "Reset Password – Your Account Details", content);
+                try
+                { 
+                    await _userNotificationService.SendEmailAsync(user, user.UserId, newPassword, "Forgot"); 
 
-                return user;
+                    return user;
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
             }
             catch (Exception ex)
             {
@@ -204,8 +202,7 @@ namespace TaskManagementWebAPI.Application.Services
                 if (user == null)
                 {
                     _logger.LoggWarning("UpdateUser - User not found with ID: {UserId}", id);
-                    throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound);
-                    //throw new NotFoundException("User not found");
+                    throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound); 
                 }
 
                 // Mapping DTO to entity
@@ -242,8 +239,7 @@ namespace TaskManagementWebAPI.Application.Services
                 if (usertasks.Any())
                 {
                     _logger.LoggWarning("DeleteUser - Cannot delete user ID {UserId}, tasks are assigned.", id);
-                    throw new InvalidOperationException(ExceptionMessages.UserExceptions.UserCannotBeDeleted);
-                    //throw new InvalidOperationException("Cannot delete user. Tasks are assigned to this user.");
+                    throw new InvalidOperationException(ExceptionMessages.UserExceptions.UserCannotBeDeleted); 
                 }
 
                 await _userRepository.DeleteUser(user);  
@@ -262,23 +258,19 @@ namespace TaskManagementWebAPI.Application.Services
             {
                 if (obj.newpswd != obj.confrmNewpswd)
                 {
-                    throw new ArgumentException(ExceptionMessages.UserExceptions.PasswordNotMatch);
-                    //throw new ArgumentException("New password and confirmation do not match.");
-                    //throw new Exception("New password and confirmation do not match.");
+                    throw new ArgumentException(ExceptionMessages.UserExceptions.PasswordNotMatch); 
                 }
                 var user = await _userRepository.GetUserByIdAsync(id); //_db.User.FindAsync(id);
                 if (user == null)
                 {
                     _logger.LoggWarning("UpdatePassword-User not found");
-                    throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound);
-                    //throw new NotFoundException("User not found");
+                    throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound); 
                 }
 
                 if (!BCrypt.Net.BCrypt.Verify(obj.curpswd, user.Password))
                 {
                     _logger.LoggWarning("Current password is incorrect");
-                    throw new UnauthorizedAccessException(ExceptionMessages.UserExceptions.InvalidCrendentials);
-                   // throw new UnauthorizedAccessException("Current password is incorrect");
+                    throw new UnauthorizedAccessException(ExceptionMessages.UserExceptions.InvalidCrendentials); 
                 }
 
                 try

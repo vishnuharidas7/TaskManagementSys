@@ -26,12 +26,10 @@ namespace TaskManagementWebAPI.Application.Services
         public async Task<Users?> HandleAsync(ForgotPasswordRequest request)
         {
             try
-            {
-               // var user = await _userRepo.ForgotPassword(request.Email);
+            { 
                 var user = await _userApplicationService.ForgotPassword(request.Email);
                 // if (user is null) 
-                return user; // No email leaks
-                // await _emailService.SendAsync(user.Email, "Password Reset", );
+                return user; // No email leaks 
             }
 
             catch (ArgumentNullException argEx)
@@ -43,12 +41,7 @@ namespace TaskManagementWebAPI.Application.Services
             {
                 _logger.LoggError(invOpEx, "ForgotPassword - Invalid operation: {Message}", invOpEx.Message);
                 throw;
-            }
-            //catch (HttpRequestException httpEx)
-            //{
-            //    _logger.LoggError(httpEx, "ForgotPassword - Network issue occurred: {Message}", httpEx.Message);
-            //    throw new HttpRequestException("A network error occurred while processing the forgot password request.", httpEx);
-            //}
+            } 
             catch (Exception ex)
             {
                 _logger.LoggError(ex, "ForgotPassword - Unexpected error occurred");

@@ -25,8 +25,7 @@ namespace TaskManagementWebAPI.Application.Services
         private readonly IUserRepository _userRepository;
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         public TaskApplicationService(ITaskManagementRepository taskManagementRepository, IAppLogger<TaskApplicationService> logger,
-          IOptions<TaskSettings> taskSettings,IEmailContentBuilder emailContentBuilder,
-          IEmailService emailService, ITaskFileParserFactory parserFactory,
+          IOptions<TaskSettings> taskSettings,ITaskFileParserFactory parserFactory,
           IMaptoTasks taskMapper, IConfiguration configuration, IUserRepository userRepository, ITaskNotificationService tasknotificationService)
         {
             _taskManagementRepository = taskManagementRepository;
