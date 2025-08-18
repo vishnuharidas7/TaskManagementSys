@@ -55,19 +55,19 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
             {
 
                 var sb = new StringBuilder();
-                sb.AppendLine($"Hey {user.Name},\n");
+                sb.AppendLine(string.Format(MailMessages.UserOnboarding.Greeting, user.Name));
 
-                sb.AppendLine("Your account password has been reset successfully\n");
-                sb.AppendLine("Your login credentials : \n");
+                sb.AppendLine(MailMessages.UserOnboarding.WelcomeMessageReset);
+                sb.AppendLine(MailMessages.UserOnboarding.CredentialsIntro);
 
-                sb.AppendLine($"Username: {user.UserName}\n");
-                sb.AppendLine($"Email: {user.Email}\n");
-                sb.AppendLine($"password: {NewPassword}\n");
+                sb.AppendLine(string.Format(MailMessages.UserOnboarding.UsernameLine, user.UserName));
+                sb.AppendLine(string.Format(MailMessages.UserOnboarding.EmailLine, user.Email));
+                sb.AppendLine(string.Format(MailMessages.UserOnboarding.PasswordLine, NewPassword));
 
 
-                sb.AppendLine("For security reasons, please update your password once you've signed in.\n");
+                sb.AppendLine(MailMessages.UserOnboarding.PasswordReminder);
 
-                sb.AppendLine("Regards,\nTask Management System");
+                sb.AppendLine(MailMessages.Signature);
 
                 return sb.ToString();
             }
