@@ -1,6 +1,7 @@
 ﻿using LoggingLibrary.Interfaces;
 using System.Text;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Application.Services.EmailService
@@ -21,12 +22,10 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
             try
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("🆕 New Tasks Assigned:");
+                sb.AppendLine(MailMessages.NewTasksHeader);
 
                 foreach (var task in tasks)
-                    sb.AppendLine($" - Task ID: {task.referenceId} + {task.taskType} +  {task.taskName}" +
-                        $" (Due: {task.dueDate:MM/dd/yyyy}) " +
-                        $"(Priotity: {task.priority})");
+                    sb.AppendLine(MailMessages.FormatTaskLine(task.referenceId, task.taskType, task.taskName, task.dueDate, task.priority));
 
                 sb.AppendLine();
                 return sb.ToString();

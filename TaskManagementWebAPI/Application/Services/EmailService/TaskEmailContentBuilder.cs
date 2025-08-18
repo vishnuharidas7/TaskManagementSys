@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using System.Text;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Application.Services.EmailService
@@ -19,7 +20,7 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
         public string BuildContent(Users user, IEnumerable<Tasks> tasks)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Hey {user.Name},\n");
+            sb.AppendLine(string.Format(MailMessages.GreetingTemplate, user.Name));
 
             var grouped = tasks.GroupBy(t => t.taskState);
 
@@ -50,7 +51,7 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
                 }
             }
 
-            sb.AppendLine("Regards,\nTask Management System");
+            sb.AppendLine(MailMessages.Signature);
 
             return sb.ToString();
         }

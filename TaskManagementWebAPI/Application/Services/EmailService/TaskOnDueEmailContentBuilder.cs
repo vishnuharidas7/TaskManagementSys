@@ -1,6 +1,7 @@
 ﻿using LoggingLibrary.Interfaces;
 using System.Text;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Application.Services.EmailService
@@ -22,13 +23,14 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
             {
                 var sb = new StringBuilder();
 
-                sb.AppendLine("⏰ Gentle reminder, Task due dates are approaching.");
-                sb.AppendLine("\nTask details : \n");
+                sb.AppendLine(MailMessages.ReminderHeader);
+                sb.AppendLine(MailMessages.TaskDetailsLabel);
 
                 foreach (var task in tasks)
-                    sb.AppendLine($" - Task ID: {task.referenceId} {task.taskType} {task.taskName} (Due: {task.dueDate:MM/dd/yyyy})");
+                    sb.AppendLine(string.Format(MailMessages.TaskLineFormat,
+                                  task.referenceId, task.taskType, task.taskName, task.dueDate));
 
-                sb.AppendLine("\nPlease take action on these as soon as possible.");
+                sb.AppendLine(MailMessages.ReminderClosing);
                 sb.AppendLine();
 
                 return sb.ToString();
