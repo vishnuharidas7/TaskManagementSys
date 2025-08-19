@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Domain.Interfaces;
 
 namespace TaskManagementWebAPI.Application.Services.EmailService
@@ -32,7 +33,8 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
                 try
                 {
                     var tasks = _taskManagementRepository.GetAllTasksByUserId(user.UserId)
-                        .Where(t => (t.taskState == "Due" || t.taskState == "OverDue") && t.taskStatus != "Completed")
+                        //.Where(t => (t.taskState == "Due" || t.taskState == "OverDue") && t.taskStatus != "Completed")
+                        .Where(t => (t.taskState == TaskStatusEnums.Due.ToString() || t.taskState == TaskStatusEnums.OverDue.ToString()) && t.taskStatus != TaskStatusEnums.Completed.ToString())
                         .ToList();
 
                     if (tasks.Any())
