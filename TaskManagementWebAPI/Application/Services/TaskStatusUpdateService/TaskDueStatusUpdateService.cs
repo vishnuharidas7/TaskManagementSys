@@ -1,4 +1,5 @@
 ﻿using LoggingLibrary.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Application.Services.TaskStatusUpdateService
@@ -18,11 +19,11 @@ namespace TaskManagementWebAPI.Application.Services.TaskStatusUpdateService
                 try
                 {
                     var daysUntilDue = (task.dueDate - today).Days;
-                    if (daysUntilDue <= 2 && daysUntilDue >= 0 && task.taskStatus != "Completed")
+                    if (daysUntilDue <= 2 && daysUntilDue >= 0 && task.taskStatus != TaskStatusEnums.Completed.ToString()) //"Completed")
                     {
                         task.UpdateStateToDue();
                     }
-                    if (daysUntilDue < 0 && task.taskStatus != "Completed")
+                    if (daysUntilDue < 0 && task.taskStatus != TaskStatusEnums.Completed.ToString())//  "Completed")
                     {
                         task.UpdateStateToOverDue();
                     }
