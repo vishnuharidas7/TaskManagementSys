@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.Controllers;
 using TaskManagementWebAPI.Domain.Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
@@ -75,7 +76,7 @@ namespace TaskManagementWebAPITest.Controller
             var result = await _controller.CheckUserExists(input);
 
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Username is required.", badRequestResult.Value);
+            Assert.Equal(ExceptionMessages.UserExceptions.UsernameRequired, badRequestResult.Value); //("Username is required.", badRequestResult.Value);
         }
 
         /// <summary>
