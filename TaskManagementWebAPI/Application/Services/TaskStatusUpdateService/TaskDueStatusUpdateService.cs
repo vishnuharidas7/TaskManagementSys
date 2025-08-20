@@ -1,9 +1,10 @@
 ﻿using LoggingLibrary.Interfaces;
+using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Domain.Models;
 
 namespace TaskManagementWebAPI.Application.Services.TaskStatusUpdateService
 {
-    public class TaskDueStatusUpdateService
+    public class TaskDueStatusUpdateService: ITaskDueStatusUpdateInternalService
     {
         private readonly IAppLogger<TaskDueStatusUpdateService> _logger;
         public TaskDueStatusUpdateService(IAppLogger<TaskDueStatusUpdateService> logger)
@@ -29,7 +30,7 @@ namespace TaskManagementWebAPI.Application.Services.TaskStatusUpdateService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LoggError(ex, "Failed to update status for task ID {task.taskId}");
+                    _logger.LoggError(ex, $"Failed to update status for task ID {task.taskId}");
                     throw;
                 }
             }

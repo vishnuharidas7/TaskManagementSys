@@ -1,0 +1,1 @@
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\TaskManagementWebAPI\.sonarqube\out\0
