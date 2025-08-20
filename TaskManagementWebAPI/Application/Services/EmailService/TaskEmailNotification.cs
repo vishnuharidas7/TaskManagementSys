@@ -23,29 +23,29 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
             var content = _emailContentBuilder.BuildContent(user, tasks); 
 
             string statusForEmail = tasks.Select(t => t.taskState)
-                             .FirstOrDefault(s => s == TaskStatusEnums.New.ToString()) // "New")
+                             .FirstOrDefault(s => s == TaskStatusInfo.New.ToString()) // "New")
                       ?? tasks.Select(t => t.taskState)
-                              .FirstOrDefault(s => s == TaskStatusEnums.Due.ToString()) //"Due")
+                              .FirstOrDefault(s => s == TaskStatusInfo.Due.ToString()) //"Due")
                       ?? tasks.Select(t => t.taskState)
-                              .FirstOrDefault(s => s == TaskStatusEnums.OverDue.ToString()) // "Overdue")
+                              .FirstOrDefault(s => s == TaskStatusInfo.OverDue.ToString()) // "Overdue")
                       ?? tasks.Select(t => t.taskState)
-                              .FirstOrDefault(s => s == TaskStatusEnums.Completed.ToString()); // "Completed");
+                              .FirstOrDefault(s => s == TaskStatusInfo.Completed.ToString()); // "Completed");
 
-            if (!Enum.TryParse<TaskStatusEnums>(statusForEmail, true, out var parsedStatus))
+            if (!Enum.TryParse<TaskStatusInfo>(statusForEmail, true, out var parsedStatus))
                 return;
 
             switch (parsedStatus)
             {
-                case TaskStatusEnums.New:// "New":
+                case TaskStatusInfo.New:// "New":
                     await _emailService.SendEmailAsync(user.Email, MailMessages.TaskAssignmentSubject, content);
                     break;
-                case TaskStatusEnums.Due: // "Due":
+                case TaskStatusInfo.Due: // "Due":
                     await _emailService.SendEmailAsync(user.Email, MailMessages.TaskCompletionReminderSubject, content);
                     break;
-                case TaskStatusEnums.OverDue: // "Overdue":
+                case TaskStatusInfo.OverDue: // "Overdue":
                     await _emailService.SendEmailAsync(user.Email, MailMessages.TaskCompletionReminderSubject, content);
                     break;
-                case TaskStatusEnums.Completed: // "Completed":
+                case TaskStatusInfo.Completed: // "Completed":
                     await _emailService.SendEmailAsync(user.Email, MailMessages.TaskCompletedSubject, content);
                     break;
                 default:

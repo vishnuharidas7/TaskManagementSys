@@ -6,7 +6,7 @@
        : base() { }
         public AuthServiceUnavailableException(string message)
        : base(message) { }
-        public AuthServiceUnavailableException(string message, Exception innerException = null)
+        public AuthServiceUnavailableException(string message, Exception innerException)
         : base(message, innerException) { }
     }
 
@@ -16,7 +16,7 @@
 
         public TokenRefreshFailedException(string message)
             : base(message) { }
-        public TokenRefreshFailedException(string message, Exception innerException = null)
+        public TokenRefreshFailedException(string message, Exception innerException)
             : base(message, innerException) { }
     }
 
