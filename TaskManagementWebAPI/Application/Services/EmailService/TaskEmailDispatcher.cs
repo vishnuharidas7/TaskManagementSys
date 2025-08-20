@@ -34,7 +34,7 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
                 {
                     var tasks = _taskManagementRepository.GetAllTasksByUserId(user.UserId)
                         //.Where(t => (t.taskState == "Due" || t.taskState == "OverDue") && t.taskStatus != "Completed")
-                        .Where(t => (t.taskState == TaskStatusEnums.Due.ToString() || t.taskState == TaskStatusEnums.OverDue.ToString()) && t.taskStatus != TaskStatusEnums.Completed.ToString())
+                        .Where(t => (t.taskState == TaskStatusInfo.Due.ToString() || t.taskState == TaskStatusInfo.OverDue.ToString()) && t.taskStatus != TaskStatusInfo.Completed.ToString())
                         .ToList();
 
                     if (tasks.Any())

@@ -5,6 +5,6 @@ namespace TaskManagementWebAPI.Application.Interfaces
 {
     public interface IUserNotificationService
     {
-        Task SendEmailAsync(Users user, int userId, string Password, UserEnums status);
+        Task SendEmailAsync(Users user, int userId, string Password, UserStatus status);
     }
 }

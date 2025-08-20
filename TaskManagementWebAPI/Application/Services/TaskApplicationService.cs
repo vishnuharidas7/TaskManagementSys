@@ -174,7 +174,7 @@ namespace TaskManagementWebAPI.Application.Services
                 task.taskStatus = obj.taskStatus;
                 task.priority = obj.priority;
                 task.taskType = obj.taskType;
-                if (obj.taskStatus == TaskStatusEnums.Completed.ToString())// "Completed")
+                if (obj.taskStatus == TaskStatusInfo.Completed.ToString())// "Completed")
                 {
                     task.taskState = obj.taskStatus;
                 }
@@ -189,7 +189,7 @@ namespace TaskManagementWebAPI.Application.Services
                 }
 
 
-                if (obj.taskStatus == TaskStatusEnums.Completed.ToString()) //"Completed")
+                if (obj.taskStatus == TaskStatusInfo.Completed.ToString()) //"Completed")
                 {
 
                     var userTasks = await _taskManagementRepository.GetTasksByTaskIdAsync(id);
