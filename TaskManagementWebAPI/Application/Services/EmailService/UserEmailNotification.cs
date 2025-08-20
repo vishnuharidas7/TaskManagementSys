@@ -13,15 +13,15 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService)); ;
             _userCreatedEmailContentBuilder = userCreatedEmailContentBuilder ?? throw new ArgumentNullException(nameof(userCreatedEmailContentBuilder)); ;
         }
-        public async Task SendEmailAsync(Users user, int userId, string Password, string status)
+        public async Task SendEmailAsync(Users user, int userId, string Password, UserEnums status)
         {
             switch(status)
             {
-                case "New":
+                case UserEnums.New:
                     var content = _userCreatedEmailContentBuilder.BuildContentforNewUser(user, userId, Password);
                     await _emailService.SendEmailAsync(user.Email, MailMessages.UserOnboarding.WelcomeMessage, content); // "Welcome to Task Management System – Your Account Details", content);
                     break;
-                case "Forgot":
+                case UserEnums.PasswordReset:
                     var emailContent = _userCreatedEmailContentBuilder.BuildContentforPasswordReset(user, userId, Password);
                     await _emailService.SendEmailAsync(user.Email, MailMessages.UserOnboarding.WelcomeMessageReset, emailContent);// "Reset Password – Your Account Details", emailContent);
                     break;

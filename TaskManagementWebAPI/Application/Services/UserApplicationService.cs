@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.Domain.Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
@@ -102,7 +103,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                 var password = randomPswd;
 
-                var sendNotication = _userNotificationService.SendEmailAsync(user, userId, password, "New");
+                var sendNotication = _userNotificationService.SendEmailAsync(user, userId, password, UserEnums.New);
                  
 
             }
@@ -165,7 +166,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                 try
                 { 
-                    await _userNotificationService.SendEmailAsync(user, user.UserId, newPassword, "Forgot"); 
+                    await _userNotificationService.SendEmailAsync(user, user.UserId, newPassword, UserEnums.PasswordReset); 
 
                     return user;
                 }

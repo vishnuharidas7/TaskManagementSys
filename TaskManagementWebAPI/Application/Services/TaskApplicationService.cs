@@ -5,6 +5,7 @@ using NPOI.XWPF.UserModel;
 using SendGrid.Helpers.Errors.Model; 
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.ConfigurationLayer;
 using TaskManagementWebAPI.Domain.Exceptions;
@@ -173,7 +174,7 @@ namespace TaskManagementWebAPI.Application.Services
                 task.taskStatus = obj.taskStatus;
                 task.priority = obj.priority;
                 task.taskType = obj.taskType;
-                if (obj.taskStatus == "Completed")
+                if (obj.taskStatus == TaskStatusEnums.Completed.ToString())// "Completed")
                 {
                     task.taskState = obj.taskStatus;
                 }
@@ -188,7 +189,7 @@ namespace TaskManagementWebAPI.Application.Services
                 }
 
 
-                if (obj.taskStatus == "Completed")
+                if (obj.taskStatus == TaskStatusEnums.Completed.ToString()) //"Completed")
                 {
 
                     var userTasks = await _taskManagementRepository.GetTasksByTaskIdAsync(id);
