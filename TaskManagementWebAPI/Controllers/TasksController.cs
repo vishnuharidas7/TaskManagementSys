@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Domain.Interfaces;
 
 namespace TaskManagementWebAPI.Controllers
-{
-    [Route("api/[controller]")]
+{ 
+    [Route(TaskAPIEndpoints.Base)]
     [ApiController]
     public class TasksController : ControllerBase
     {
@@ -17,7 +18,9 @@ namespace TaskManagementWebAPI.Controllers
         private readonly ITaskEmailDispatcher _taskEmailDispatcher;
         private readonly ITaskDueStatusUpdateService _taskApplicationService;
 
-        public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger, ITaskDueStatusUpdateService taskAppService,ITaskEmailDispatcher taskEmailDispatcher, ITaskApplicationService taskControllerService)
+        public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger, 
+            ITaskDueStatusUpdateService taskAppService,ITaskEmailDispatcher taskEmailDispatcher, 
+            ITaskApplicationService taskControllerService)
         {
             _task = task ?? throw new ArgumentNullException(nameof(task));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -34,8 +37,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="200">Successfully fetched user list</response>
         /// <response code="403">Forbidden - user lacks permission</response>
         /// <response code="500">Internal server error</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpGet("AssignUser")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpGet(TaskAPIEndpoints.Get.AssignUser)]
         public async Task<ActionResult> assignUserList()
         {
                 var allUser = await _task.ViewUsers();
@@ -50,8 +53,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="200">Successfully fetched task list</response>
         /// <response code = "403" > Forbidden - user lacks permission</response>
         /// <response code="500">Internal server error</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpGet("ViewAllTasks")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpGet(TaskAPIEndpoints.Get.ViewAllTasks)]
         public async Task<ActionResult> viewAllTask()
         {
             var allTasks = await _task.viewAllTasks();
@@ -67,8 +70,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="400">Bad request or validation failure</response>
         /// <response code="403">Forbidden - user lacks permission</response>
         /// <response code="500">Internal server error</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpPost("AddTask")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpPost(TaskAPIEndpoints.Post.AddTask)]
         public async Task<IActionResult> AddTask(AddTaskDTO dto)
         {
                 //await _task.AddTask(dto);
@@ -87,8 +90,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="403">Forbidden - user lacks permission</response>
         /// <response code="404">User not found</response>
         /// <response code="500">Internal server error</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpPut("UpdateTask/{id}")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpPut(TaskAPIEndpoints.Put.UpdateTask)]
         public async Task<ActionResult> UpdateUserTask(int id, [FromBody] AddTaskDTO obj)
         {
             
@@ -105,8 +108,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="400">Bad request - missing file or invalid content</response>
         /// <response code="403">Forbidden - user lacks permission</response>
         /// <response code="500">Internal server error</response>
-        [Authorize(Roles = "Admin")]
-        [HttpPost("upload")]
+        [Authorize(Roles = "Admin")] 
+        [HttpPost(TaskAPIEndpoints.Post.FileUpload)]
         public async Task<IActionResult> FileUpload(int userId, IFormFile file)
         {
              if (file == null || file.Length == 0)
@@ -126,8 +129,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="403">Forbidden - user lacks permission</response>
         /// <response code="404">Task not found</response>
         /// <response code="500">Internal server error</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpDelete("deleteTask/{id}")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpDelete(TaskAPIEndpoints.Delete.DeleteTask)]
         public async Task<ActionResult> DeleteTask(int id)
         {
                 await _task.DeleteTask(id);
@@ -143,8 +146,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="400">Bad request - invalid user ID</response>
         /// <response code="403">Forbidden - user lacks permission</response>
         /// <response code="500">Internal server error</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpGet("task/{userId:int}")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpGet(TaskAPIEndpoints.Get.GetTasksByUserId)]
         public async Task<IEnumerable<ViewTasksDTO>> GetTasksByUserId(int userId)
         {
                 var userTask = await _task.GetTasksByUserId(userId);
@@ -160,8 +163,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="400">Bad request - invalid user ID</response>
         /// <response code="403">Forbidden - user lacks permission</response>
         /// <response code="500">Internal server error</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpGet("taskNotification/{userId:int}")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpGet(TaskAPIEndpoints.Get.GetTaskNotificationsByUserId)]
         public async Task<IEnumerable<NotificationDTO>> GetTasksNotificationbByUserId(int userId)
         {
             var userTask = await _task.GetTasksNotificationByUserId(userId);
@@ -175,8 +178,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="200">Successfully retrieved notifications</response>
         /// <response code="403">Forbidden - user lacks permission</response>
         /// <response code="500">Internal server error</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpGet("taskNotificationAdmin")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpGet(TaskAPIEndpoints.Get.GetTaskNotificationsByAdmin)]
         public async Task<IEnumerable<NotificationDTO>> GetTasksNotificationbByAdmin()
         {
                 var userTask = await _task.GetTasksNotificationbByAdmin();
@@ -188,8 +191,8 @@ namespace TaskManagementWebAPI.Controllers
         /// </summary>
         /// <returns>HTTP 200 OK if successful</returns>
         /// <response code="200">Task statuses updated successfully</response>
-        /// <response code="500">Internal server error</response>
-        [HttpPost("update-Taskstatuses")]
+        /// <response code="500">Internal server error</response> 
+        [HttpPost(TaskAPIEndpoints.Post.UpdateTaskStatuses)]
         public IActionResult UpdateTaskStatuses()
         {
                 _taskApplicationService.UpdateTaskStatuses();
@@ -203,8 +206,8 @@ namespace TaskManagementWebAPI.Controllers
         /// </summary>
         /// <returns>HTTP 200 OK if emails dispatched successfully</returns>
         /// <response code="200">Emails dispatched successfully</response>
-        /// <response code="500">Internal server error</response>
-        [HttpPost("send-overduetaskmail")]
+        /// <response code="500">Internal server error</response> 
+        [HttpPost(TaskAPIEndpoints.Post.SendOverdueTaskMail)]
         public IActionResult OverdueTaskEmail()
         {
                 _taskEmailDispatcher.DispatchEmailsAsync();

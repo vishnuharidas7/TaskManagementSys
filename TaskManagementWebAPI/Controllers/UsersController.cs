@@ -1,29 +1,23 @@
 ﻿using LoggingLibrary.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Mvc; 
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
-using TaskManagementWebAPI.Common.ExceptionMessages;
-using TaskManagementWebAPI.Domain.Interfaces;
-using TaskManagementWebAPI.Infrastructure.Persistence;
+using TaskManagementWebAPI.Common;
+using TaskManagementWebAPI.Common.ExceptionMessages; 
 
 namespace TaskManagementWebAPI.Controllers
-{
-    [Route("api/[controller]")]
+{ 
+    [Route(UserAPIEndpoints.Base)]
     [ApiController]
     public class UsersController : ControllerBase
-    {
-        //private readonly IUserRepository _user;
+    { 
         private readonly IUserApplicationService _userApplicationService; 
         private readonly IAppLogger<UsersController> _logger;
 
-        public UsersController(//IUserRepository user,
-           IUserApplicationService userApplicationService ,IAppLogger<UsersController> logger)
+        public UsersController(IUserApplicationService userApplicationService ,IAppLogger<UsersController> logger)
         {
-
-           // _user = user ?? throw new ArgumentNullException(nameof(user), "User cannot be null."); 
+             
             _userApplicationService = userApplicationService ?? throw new ArgumentNullException(nameof(userApplicationService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -34,13 +28,12 @@ namespace TaskManagementWebAPI.Controllers
         /// Checks if a user exists by username.
         /// </summary>
         /// <param name="username">The username to check.</param>
-        /// <returns>True if user exists, otherwise false.</returns>
-        [HttpGet("check-username")]
+        /// <returns>True if user exists, otherwise false.</returns> 
+        [HttpGet(UserAPIEndpoints.Get.CheckUsername)]
         public async Task<IActionResult> CheckUserExists(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
-                return BadRequest(ExceptionMessages.UserExceptions.UsernameRequired);
-                //return BadRequest("Username is required.");
+                return BadRequest(ExceptionMessages.UserExceptions.UsernameRequired); 
 
             var exists = await _userApplicationService.CheckUserExists(username);
             return Ok(exists);
@@ -56,7 +49,7 @@ namespace TaskManagementWebAPI.Controllers
         ///  <response code="403">Forbidden page</response>
         ///  <response code="500">Internal server error.</response>
         [Authorize(Roles = "Admin,User")]
-        [HttpPost("register")]
+        [HttpPost(UserAPIEndpoints.Post.Register)]
         public async Task<IActionResult> RegisterAsync(RegisterDTO dto)
         {  
                 await _userApplicationService.RegisterAsync(dto);
@@ -71,8 +64,8 @@ namespace TaskManagementWebAPI.Controllers
         ///  <response code="200">Fetch all the user details</response>
         ///  <response code="403">Forbidden page</response>
         ///  <response code="500">Internal server error.</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpGet("viewusers")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpGet(UserAPIEndpoints.Get.UserList)]
         public async Task<ActionResult> UserList()
         {
 
@@ -92,11 +85,11 @@ namespace TaskManagementWebAPI.Controllers
         ///  <response code="400">Bad request</response>
         ///  <response code="403">Forbidden page</response>
         ///  <response code="500">Internal server error.</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpPut("updateuser/{id}")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpPost(UserAPIEndpoints.Put.UpdateUser)]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO obj)
         {
-            await _userApplicationService.UpdateUser(id, obj); //_user.UpdateUser(id, obj);
+            await _userApplicationService.UpdateUser(id, obj);  
                 return Ok(obj);
              
         }
@@ -110,11 +103,11 @@ namespace TaskManagementWebAPI.Controllers
         ///  <response code="400">Bad request</response>
         ///  <response code="403">Forbidden page</response>
         ///  <response code="500">Internal server error.</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpDelete("deleteUser/{id}")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpDelete(UserAPIEndpoints.Delete.DeleteUser)]
         public async Task<ActionResult> DeleteUser(int id)
         {
-            await _userApplicationService.DeleteUser(id); //_user.DeleteUser(id);
+            await _userApplicationService.DeleteUser(id);  
                 return Ok();
              
         }
@@ -128,11 +121,11 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="403">Forbidden page</response>
         /// <response code="500">Internal server error.</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpGet("viewusersByid/{id}")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpGet(UserAPIEndpoints.Get.UserListById)]
         public async Task<ActionResult> UserListById(int id)
         {
-            var userById = await _userApplicationService.GetUserByIdAsync(id); //_user.UserListById(id);
+            var userById = await _userApplicationService.GetUserByIdAsync(id);  
                 return Ok(userById);
              
         }
@@ -147,8 +140,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="403">Forbidden page</response>
         /// <response code="500">Internal server error.</response>
-        [Authorize(Roles = "Admin,User")]
-        [HttpPut("updatePswd/{id}")]
+        [Authorize(Roles = "Admin,User")] 
+        [HttpPut(UserAPIEndpoints.Put.UpdatePassword)]
         public async Task<ActionResult>UpdatePassword(int id,UpdatePasswordDTO obj)
         {
 
