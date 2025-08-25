@@ -1,0 +1,5 @@
+﻿D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\FileParser\Factory\TaskFileParserFactory.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\FileParser\Implementations\CsvTaskFileParser.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\FileParser\Implementations\ExcelTaskFileParser.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\FileParser\Interfaces\ITaskFileParser.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\FileParser\Interfaces\ITaskFileParserFactory.cs

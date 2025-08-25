@@ -37,12 +37,12 @@ namespace TaskManagementWebAPI.Domain.Models
 
         public string referenceId { get; set; }
 
-        public void UpdateStateToDue()
+        public virtual void UpdateStateToDue()
         {
             taskState = "Due";
         }
 
-        public void UpdateStateToOverDue()
+        public virtual void UpdateStateToOverDue()
         {
             taskState = "OverDue";
         }
