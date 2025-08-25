@@ -23,13 +23,13 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
             var content = _emailContentBuilder.BuildContent(user, tasks); 
 
             string statusForEmail = tasks.Select(t => t.taskState)
-                             .FirstOrDefault(s => s == TaskStatusInfo.New.ToString()) // "New")
+                             .FirstOrDefault(s => s == TaskStatusInfo.New.ToString()) 
                       ?? tasks.Select(t => t.taskState)
-                              .FirstOrDefault(s => s == TaskStatusInfo.Due.ToString()) //"Due")
+                              .FirstOrDefault(s => s == TaskStatusInfo.Due.ToString()) 
                       ?? tasks.Select(t => t.taskState)
-                              .FirstOrDefault(s => s == TaskStatusInfo.OverDue.ToString()) // "Overdue")
+                              .FirstOrDefault(s => s == TaskStatusInfo.OverDue.ToString()) 
                       ?? tasks.Select(t => t.taskState)
-                              .FirstOrDefault(s => s == TaskStatusInfo.Completed.ToString()); // "Completed");
+                              .FirstOrDefault(s => s == TaskStatusInfo.Completed.ToString());
 
             if (!Enum.TryParse<TaskStatusInfo>(statusForEmail, true, out var parsedStatus))
                 return;

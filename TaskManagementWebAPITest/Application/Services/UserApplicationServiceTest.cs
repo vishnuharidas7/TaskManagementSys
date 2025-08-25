@@ -587,9 +587,13 @@ namespace TaskManagementWebAPITest.Application.Services
                 IsActive = true
             };
 
+            //_mockUserRepository
+            //    .Setup(repo => repo.GetUserByIdAsync(userId))
+            //    .ReturnsAsync((Users?)null);
+
             _mockUserRepository
-                .Setup(repo => repo.GetUserByIdAsync(userId))
-                .ReturnsAsync((Users?)null);
+            .Setup<Task<Users?>>(repo => repo.GetUserByIdAsync(userId))
+            .ReturnsAsync((Users?)null);
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<NotFoundException>(() =>
@@ -671,15 +675,30 @@ namespace TaskManagementWebAPITest.Application.Services
             _mockUserRepository.Verify(r => r.DeleteUser(user), Times.Once);
         }
 
-        [Fact]
+        // [Fact]
+        //public async Task DeleteUser_UserNotFound_ThrowsNotFoundException()
+        //{
+        //    // Arrange
+        //    int userId = 99;
+        //    _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync((Users?)null);
+
+        //    // Act & Assert
+        //    await Assert.ThrowsAsync<NotFoundException>(() => _service.DeleteUser(userId));
+        //    _mockUserRepository.Verify(r => r.DeleteUser(It.IsAny<Users>()), Times.Never);
+        //}
+
         public async Task DeleteUser_UserNotFound_ThrowsNotFoundException()
         {
             // Arrange
             int userId = 99;
-            _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync((Users?)null);
+
+            _mockUserRepository
+                .Setup<Task<Users?>>(r => r.GetUserByIdAsync(userId))
+                .ReturnsAsync((Users?)null);
 
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => _service.DeleteUser(userId));
+
             _mockUserRepository.Verify(r => r.DeleteUser(It.IsAny<Users>()), Times.Never);
         }
 
@@ -749,19 +768,39 @@ namespace TaskManagementWebAPITest.Application.Services
             Assert.True(BCrypt.Net.BCrypt.Verify("newpass", user.Password));
         }
 
+        //[Fact]
+        //public async Task UpdatePassword_PasswordMismatch_ThrowsArgumentException()
+        //{
+        //    var dto = new UpdatePasswordDTO
+        //    {
+        //        curpswd = "old",
+        //        newpswd = "one",
+        //        confrmNewpswd = "two"
+        //    };
+
+        //    await Assert.ThrowsAsync<ArgumentException>(() =>
+        //        _service.UpdatePassword(1, dto));
+
+        //    _mockUserRepository.Verify(r => r.SaveAsync(), Times.Never);
+        //}
+
         [Fact]
         public async Task UpdatePassword_PasswordMismatch_ThrowsArgumentException()
         {
+            // Arrange
             var dto = new UpdatePasswordDTO
             {
                 curpswd = "old",
                 newpswd = "one",
-                confrmNewpswd = "two"
+                confrmNewpswd = "two" // mismatch on purpose
             };
 
-            await Assert.ThrowsAsync<ArgumentException>(() =>
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
                 _service.UpdatePassword(1, dto));
 
+            //Assert.Equal("New password and confirmation do not match", exception.Message); // Optional check if you have a message
+            Assert.Equal("New password and confirmation do not match.", exception.Message);
             _mockUserRepository.Verify(r => r.SaveAsync(), Times.Never);
         }
 

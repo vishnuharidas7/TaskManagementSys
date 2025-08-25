@@ -22,10 +22,12 @@ namespace TaskManagementWebAPI.Extensions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // DbContext
+            //Register DbContext 
+
+            var connectionString = configuration.GetConnectionString("DefaultConnection"); 
             services.AddDbContext<ApplicationDbContext>(options =>
-                  options.UseMySql(configuration.GetConnectionString("DefaultConnection"),
-                  ServerVersion.AutoDetect(configuration.GetConnectionString("DefaultConnection"))));
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+ 
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITaskManagementRepository, TaskManagementRepository>();
