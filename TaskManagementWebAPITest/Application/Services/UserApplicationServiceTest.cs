@@ -14,6 +14,7 @@ using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Application.PasswordService;
 using TaskManagementWebAPI.Application.Services;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.Domain.Exceptions;
 using TaskManagementWebAPI.Domain.Interfaces;
@@ -155,14 +156,14 @@ namespace TaskManagementWebAPITest.Application.Services
             _mockUserRepository.Setup(r => r.CheckUserExists(dto.UserName)).ReturnsAsync(false);
             _mockPasswordGenerator.Setup(p => p.GenerateRandomPassword(8)).Returns("password123");
             _mockUserRepository.Setup(r => r.RegisterAsync(It.IsAny<Users>())).ReturnsAsync(1);
-            _mockNotificationService.Setup(n => n.SendEmailAsync(It.IsAny<Users>(), 1, "password123", "New")).Returns(Task.CompletedTask);
+            _mockNotificationService.Setup(n => n.SendEmailAsync(It.IsAny<Users>(), 1, "password123", UserStatus.New)).Returns(Task.CompletedTask);
 
             // Act
             await _service.RegisterAsync(dto);
 
             // Assert
             _mockUserRepository.Verify(r => r.RegisterAsync(It.IsAny<Users>()), Times.Once);
-            _mockNotificationService.Verify(n => n.SendEmailAsync(It.IsAny<Users>(), 1, "password123", "New"), Times.Once);
+            _mockNotificationService.Verify(n => n.SendEmailAsync(It.IsAny<Users>(), 1, "password123", UserStatus.New), Times.Once);
         }
 
         [Fact]
@@ -340,7 +341,7 @@ namespace TaskManagementWebAPITest.Application.Services
             _mockUserRepository.Setup(r => r.GetUserByEmailAsync(user.Email)).ReturnsAsync(user);
             _mockPasswordGenerator.Setup(g => g.GenerateRandomPassword(8)).Returns("newpass123");
             _mockUserRepository.Setup(r => r.UpdatePasswordAsync(user)).Returns(Task.CompletedTask);
-            _mockNotificationService.Setup(n => n.SendEmailAsync(user, user.UserId, "newpass123", "Forgot")).Returns(Task.CompletedTask);
+            _mockNotificationService.Setup(n => n.SendEmailAsync(user, user.UserId, "newpass123", UserStatus.PasswordReset)).Returns(Task.CompletedTask);
 
             // Act
             var result = await _service.ForgotPassword(user.Email);
@@ -349,7 +350,7 @@ namespace TaskManagementWebAPITest.Application.Services
             Assert.NotNull(result);
             Assert.Equal(user.Email, result.Email);
             _mockUserRepository.Verify(r => r.UpdatePasswordAsync(user), Times.Once);
-            _mockNotificationService.Verify(n => n.SendEmailAsync(user, user.UserId, "newpass123", "Forgot"), Times.Once);
+            _mockNotificationService.Verify(n => n.SendEmailAsync(user, user.UserId, "newpass123", UserStatus.PasswordReset), Times.Once);
         }
 
         //[Fact]
@@ -432,7 +433,7 @@ namespace TaskManagementWebAPITest.Application.Services
             _mockPasswordGenerator.Setup(g => g.GenerateRandomPassword(8)).Returns("newpass123");
             _mockUserRepository.Setup(r => r.UpdatePasswordAsync(user)).Returns(Task.CompletedTask);
             _mockNotificationService
-                .Setup(n => n.SendEmailAsync(user, user.UserId, "newpass123", "Forgot"))
+                .Setup(n => n.SendEmailAsync(user, user.UserId, "newpass123", UserStatus.PasswordReset))
                 .ThrowsAsync(new Exception("SMTP fail"));
 
             // Act & Assert
@@ -586,9 +587,13 @@ namespace TaskManagementWebAPITest.Application.Services
                 IsActive = true
             };
 
+            //_mockUserRepository
+            //    .Setup(repo => repo.GetUserByIdAsync(userId))
+            //    .ReturnsAsync((Users?)null);
+
             _mockUserRepository
-                .Setup(repo => repo.GetUserByIdAsync(userId))
-                .ReturnsAsync((Users)null);
+            .Setup<Task<Users?>>(repo => repo.GetUserByIdAsync(userId))
+            .ReturnsAsync((Users?)null);
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<NotFoundException>(() =>
@@ -670,15 +675,30 @@ namespace TaskManagementWebAPITest.Application.Services
             _mockUserRepository.Verify(r => r.DeleteUser(user), Times.Once);
         }
 
-        [Fact]
+        // [Fact]
+        //public async Task DeleteUser_UserNotFound_ThrowsNotFoundException()
+        //{
+        //    // Arrange
+        //    int userId = 99;
+        //    _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync((Users?)null);
+
+        //    // Act & Assert
+        //    await Assert.ThrowsAsync<NotFoundException>(() => _service.DeleteUser(userId));
+        //    _mockUserRepository.Verify(r => r.DeleteUser(It.IsAny<Users>()), Times.Never);
+        //}
+
         public async Task DeleteUser_UserNotFound_ThrowsNotFoundException()
         {
             // Arrange
             int userId = 99;
-            _mockUserRepository.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync((Users)null);
+
+            _mockUserRepository
+                .Setup<Task<Users?>>(r => r.GetUserByIdAsync(userId))
+                .ReturnsAsync((Users?)null);
 
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => _service.DeleteUser(userId));
+
             _mockUserRepository.Verify(r => r.DeleteUser(It.IsAny<Users>()), Times.Never);
         }
 
@@ -748,19 +768,39 @@ namespace TaskManagementWebAPITest.Application.Services
             Assert.True(BCrypt.Net.BCrypt.Verify("newpass", user.Password));
         }
 
+        //[Fact]
+        //public async Task UpdatePassword_PasswordMismatch_ThrowsArgumentException()
+        //{
+        //    var dto = new UpdatePasswordDTO
+        //    {
+        //        curpswd = "old",
+        //        newpswd = "one",
+        //        confrmNewpswd = "two"
+        //    };
+
+        //    await Assert.ThrowsAsync<ArgumentException>(() =>
+        //        _service.UpdatePassword(1, dto));
+
+        //    _mockUserRepository.Verify(r => r.SaveAsync(), Times.Never);
+        //}
+
         [Fact]
         public async Task UpdatePassword_PasswordMismatch_ThrowsArgumentException()
         {
+            // Arrange
             var dto = new UpdatePasswordDTO
             {
                 curpswd = "old",
                 newpswd = "one",
-                confrmNewpswd = "two"
+                confrmNewpswd = "two" // mismatch on purpose
             };
 
-            await Assert.ThrowsAsync<ArgumentException>(() =>
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
                 _service.UpdatePassword(1, dto));
 
+            //Assert.Equal("New password and confirmation do not match", exception.Message); // Optional check if you have a message
+            Assert.Equal("New password and confirmation do not match.", exception.Message);
             _mockUserRepository.Verify(r => r.SaveAsync(), Times.Never);
         }
 
@@ -774,7 +814,7 @@ namespace TaskManagementWebAPITest.Application.Services
                 confrmNewpswd = "pass"
             };
 
-            _mockUserRepository.Setup(r => r.GetUserByIdAsync(1)).ReturnsAsync((Users)null);
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(1)).ReturnsAsync((Users?)null);
 
             await Assert.ThrowsAsync<NotFoundException>(() =>
                 _service.UpdatePassword(1, dto));

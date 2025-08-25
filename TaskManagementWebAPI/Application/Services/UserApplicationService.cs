@@ -103,7 +103,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                 var password = randomPswd;
 
-                var sendNotication = _userNotificationService.SendEmailAsync(user, userId, password, UserEnums.New);
+                var sendNotication = _userNotificationService.SendEmailAsync(user, userId, password, UserStatus.New);
                  
 
             }
@@ -117,13 +117,14 @@ namespace TaskManagementWebAPI.Application.Services
         //Added for phone number validation
         private bool IsValidPhoneNumber(string phone)
         {
-            return Regex.IsMatch(phone, @"^\d{10}$"); // Example: valid 10-digit number
+            // return Regex.IsMatch(phone, @"^\d{10}$"); // Example: valid 10-digit number
+            return Regex.IsMatch(phone, @"^\d{10}$", RegexOptions.None, TimeSpan.FromMilliseconds(250));
         }
 
         //Added for email format validation
         private bool IsValidEmailFormat(string email)
         {
-            return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+            return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.None, TimeSpan.FromMilliseconds(250));
         }
 
         public async Task<Users?> ForgotPassword(string email)
@@ -166,7 +167,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                 try
                 { 
-                    await _userNotificationService.SendEmailAsync(user, user.UserId, newPassword, UserEnums.PasswordReset); 
+                    await _userNotificationService.SendEmailAsync(user, user.UserId, newPassword, UserStatus.PasswordReset); 
 
                     return user;
                 }

@@ -3,7 +3,7 @@
     /// <summary>
     /// Used for user functionality
     /// </summary>
-    public enum UserEnums
+    public enum UserStatus
     {
         New, 
         PasswordReset
@@ -12,7 +12,7 @@
     /// <summary>
     /// Used for task status
     /// </summary>
-    public enum TaskStatusEnums
+    public enum TaskStatusInfo
     {
         New,
         Completed,
