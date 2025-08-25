@@ -1,4 +1,6 @@
 ﻿D:\sample\TaskManagement-Project\TaskManagementWebAPITest\Application\Services\TaskApplicationServiceTest.cs
+D:\sample\TaskManagement-Project\TaskManagementWebAPITest\Application\Services\TaskDueStatusUpdateServiceTest.cs
+D:\sample\TaskManagement-Project\TaskManagementWebAPITest\Application\Services\TaskStatusUpdateApplicationServiceTest.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPITest\Application\Services\UserApplicationServiceTest.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPITest\Controller\AuthControllerTest.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPITest\Controller\LogControllerTest.cs
