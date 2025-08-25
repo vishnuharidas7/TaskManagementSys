@@ -12,7 +12,7 @@ namespace TaskManagementWebAPI.Application.Services.FileUpload
 
         public DapperConnectionFactory(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException(nameof(configuration), "configuration cannot be null.");
+            _connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public IDbConnection CreateConnection()

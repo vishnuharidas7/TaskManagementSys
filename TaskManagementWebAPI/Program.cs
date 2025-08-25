@@ -2,9 +2,12 @@ using log4net;
 using log4net.Config;
 using LoggingLibrary.Config;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System.Configuration;
 using System.Reflection;
 using TaskManagementWebAPI.Extensions;
+using TaskManagementWebAPI.Infrastructure.Persistence;
 using TaskManagementWebAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,10 +15,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Configuration.AddEnvironmentVariables();
+
 builder.Services.AddSwaggerDocumentation();
 builder.Services.AddCorsPolicy();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddApplicationServices(builder.Configuration);
+
 
 builder.WebHost.ConfigureKestrel(options =>
 {

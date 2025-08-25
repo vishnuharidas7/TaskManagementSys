@@ -14,6 +14,11 @@ namespace TaskManagementWebAPI.Application.PasswordService
         private const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
         public string GenerateRandomPassword(int length)
         {
+            if (length <= 0)
+            {
+                _logger.LoggError(new ArgumentOutOfRangeException(nameof(length)), "Invalid password length requested: {Length}", length);
+                throw new ArgumentOutOfRangeException(nameof(length), "Password length must be greater than zero.");
+            }
             try
             {
                 var random = new Random();

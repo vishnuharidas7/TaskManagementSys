@@ -5,6 +5,7 @@ using NPOI.XWPF.UserModel;
 using SendGrid.Helpers.Errors.Model; 
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Application.PasswordService;
 using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Common.ExceptionMessages;
 using TaskManagementWebAPI.ConfigurationLayer;
@@ -27,16 +28,16 @@ namespace TaskManagementWebAPI.Application.Services
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         public TaskApplicationService(ITaskManagementRepository taskManagementRepository, IAppLogger<TaskApplicationService> logger,
           IOptions<TaskSettings> taskSettings,ITaskFileParserFactory parserFactory,
-          IMaptoTasks taskMapper, IConfiguration configuration, IUserRepository userRepository, ITaskNotificationService tasknotificationService)
+        IMaptoTasks taskMapper, IConfiguration configuration, IUserRepository userRepository, ITaskNotificationService tasknotificationService)
         {
-            _taskManagementRepository = taskManagementRepository;
-            _logger = logger;
-            _taskSettings = taskSettings.Value; 
-            _parserFactory = parserFactory;
-            _taskMapper = taskMapper;
-            _configuration = configuration;
-            _userRepository = userRepository;
-            _notificationService = tasknotificationService;
+            _taskManagementRepository = taskManagementRepository ?? throw new ArgumentNullException(nameof(taskManagementRepository)); 
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); 
+            _taskSettings = taskSettings.Value ?? throw new ArgumentNullException(nameof(taskSettings.Value)); ;
+            _parserFactory = parserFactory ?? throw new ArgumentNullException(nameof(parserFactory)); 
+            _taskMapper = taskMapper ?? throw new ArgumentNullException(nameof(taskMapper)); 
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration)); 
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository)); 
+            _notificationService = tasknotificationService ?? throw new ArgumentNullException(nameof(tasknotificationService)); 
         }
 
         public async Task AddTaskAsync(AddTaskDTO dto)

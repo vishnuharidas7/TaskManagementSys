@@ -20,10 +20,10 @@ namespace TaskManagementWebAPI.Controllers
         public TasksController(ITaskManagementRepository task, IAppLogger<TasksController> logger, ITaskDueStatusUpdateService taskAppService,ITaskEmailDispatcher taskEmailDispatcher, ITaskApplicationService taskControllerService)
         {
             _task = task ?? throw new ArgumentNullException(nameof(task));
-            _logger =logger ?? throw new ArgumentNullException(nameof(logger));
-            _taskApplicationService = taskAppService;
-            _taskEmailDispatcher=taskEmailDispatcher;
-            _taskControllerService = taskControllerService ?? throw new ArgumentNullException(nameof(_taskControllerService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _taskApplicationService = taskAppService ?? throw new ArgumentNullException(nameof(taskAppService)); 
+            _taskEmailDispatcher = taskEmailDispatcher ?? throw new ArgumentNullException(nameof(taskEmailDispatcher));
+            _taskControllerService = taskControllerService ?? throw new ArgumentNullException(nameof(taskControllerService));
         }
 
         /// <summary>
