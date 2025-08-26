@@ -6,29 +6,29 @@
 
         public static class Get
         {
-            public const string AssignUser = Base + "/AssignUser";
-            public const string ViewAllTasks = Base + "/ViewAllTasks";
-            public const string GetTasksByUserId = Base + "/task/{userId:int}";
-            public const string GetTaskNotificationsByUserId = Base + "/taskNotification/{userId:int}";
-            public const string GetTaskNotificationsByAdmin = Base + "/taskNotificationAdmin";
+            public const string AssignUser = "/AssignUser";
+            public const string ViewAllTasks = "/ViewAllTasks";
+            public const string GetTasksByUserId = "/task/{userId:int}";
+            public const string GetTaskNotificationsByUserId = "/taskNotification/{userId:int}";
+            public const string GetTaskNotificationsByAdmin = "/taskNotificationAdmin";
         }
 
         public static class Post
         {
-            public const string AddTask = Base + "/AddTask";
-            public const string FileUpload = Base + "/upload";
-            public const string UpdateTaskStatuses = Base + "/update-Taskstatuses";
-            public const string SendOverdueTaskMail = Base + "/send-overduetaskmail";
+            public const string AddTask = "/AddTask";
+            public const string FileUpload = "/upload";
+            public const string UpdateTaskStatuses = "/update-Taskstatuses";
+            public const string SendOverdueTaskMail = "/send-overduetaskmail";
         }
 
         public static class Put
         {
-            public const string UpdateTask = Base + "/UpdateTask/{id}";  
+            public const string UpdateTask = "/UpdateTask/{id}";  
         }
 
         public static class Delete
         {
-            public const string DeleteTask = Base + "/deleteTask/{id}";
+            public const string DeleteTask = "/deleteTask/{id}";
         }
     }
 }

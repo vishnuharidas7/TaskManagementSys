@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementWebAPI.Application.DTOs;
 using TaskManagementWebAPI.Application.Interfaces;
+using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Domain.Interfaces;
 
 namespace TaskManagementWebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
+    [Route(AuthAPIEndpoints.Base)]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -31,7 +33,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="401">Unauthorized – Invalid credentials.</response>
         /// <response code="500">Internal server error.</response>
-        [HttpPost("loginAuth")]
+        // [HttpPost("loginAuth")]
+        [HttpPost(AuthAPIEndpoints.Post.Login)]
         public async Task<IActionResult> ExternalLogin([FromBody] LoginDTO dto)
         {
               var token = await _user.LoginAsync(dto);
@@ -43,7 +46,8 @@ namespace TaskManagementWebAPI.Controllers
         /// </summary>
         /// <param name="tokens"></param>
         /// <returns>Returns New Tokens</returns>
-        [HttpPost("refresh")]
+        //[HttpPost("refresh")]
+        [HttpPost(AuthAPIEndpoints.Post.Refresh)]
         public async Task<IActionResult> Refresh([FromBody] TokenResponseDTO tokens)
         {
               var token = await _user.Refresh(tokens);
@@ -58,7 +62,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="200">Password updated successfully.</response>
         /// <response code="400">Bad request</response>
         /// <response code="500">Internal server error.</response>
-        [HttpPost("forgot-password")]
+        //[HttpPost("forgot-password")]
+        [HttpPost(AuthAPIEndpoints.Post.ForgotPassword)]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
                 var user = await _forgotPasswordHandler.HandleAsync(request);
