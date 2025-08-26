@@ -17,11 +17,13 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
     {
         private readonly HttpClient _httpClient;
         private readonly IAppLogger<UserAuthRepository> _logger;
+        private readonly IConfiguration _config;
 
-        public UserAuthRepository(HttpClient httpClient, IAppLogger<UserAuthRepository> logger)
+        public UserAuthRepository(HttpClient httpClient, IAppLogger<UserAuthRepository> logger, IConfiguration config)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public async Task<string> LoginAsync(LoginDTO dto)
@@ -33,7 +35,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                     throw new ArgumentNullException(nameof(dto));
                 }
 
-                var requestUrl = "https://localhost:7268/api/Auth/login";
+                var requestUrl = _config.GetSection("AuthAPI:BaseLoginURL").Value; 
                 HttpResponseMessage response;
 
                 try
@@ -42,8 +44,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 }
                 catch (Exception ex)
                 {
-                    _logger.LoggError(ex, "LoginAsync - HTTP request failed");
-                    //throw new Exception("Login service is unavailable.", ex);
+                    _logger.LoggError(ex, "LoginAsync - HTTP request failed"); 
                     throw new AuthServiceUnavailableException("Login service is unavailable.", ex);
                 }
 
@@ -79,7 +80,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
         {
             try
             {
-                var requestUrl = "https://localhost:7268/api/Auth/refresh";
+                var requestUrl = _config.GetSection("AuthAPI:BaseRefreshURL").Value; 
                 var response = await _httpClient.PostAsJsonAsync(requestUrl, dto);
 
                 if (response.IsSuccessStatusCode)
