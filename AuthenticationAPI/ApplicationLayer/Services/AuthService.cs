@@ -12,22 +12,20 @@ using System.Text;
 namespace AuthenticationAPI.Services
 {
     public class AuthService : IAuthService
-    {
-        private readonly ApplicationDbContext _db;
+    { 
         private readonly IJwtHelper _jwtHelper;
         private readonly IConfiguration _config;
         private readonly IAppLogger<AuthService> _logger;
         private readonly IAuthRepository _authRepository;
-        public AuthService(ApplicationDbContext db, IConfiguration config, IJwtHelper jwthelper, IAppLogger<AuthService> logger, IAuthRepository authRepository)
-        {
-            _db = db ?? throw new ArgumentNullException(nameof(db));
+        public AuthService(IConfiguration config, IJwtHelper jwthelper, IAppLogger<AuthService> logger, IAuthRepository authRepository)
+        { 
             _jwtHelper = jwthelper ?? throw new ArgumentNullException(nameof(jwthelper));
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _authRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository));
 
         }
-        public async Task<Object> LoginAsync(LoginDTO dto)
+        public async Task<Object?> LoginAsync(LoginDTO dto)
         { 
                 var user = await _authRepository.GetActiveUserAsync(dto);
 
@@ -55,7 +53,7 @@ namespace AuthenticationAPI.Services
                     ValidateAudience = false,
                     ValidateIssuer = false,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:SecretKey"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:SecretKey"]!)),
                     ValidateLifetime = false  
              };       
 

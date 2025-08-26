@@ -50,6 +50,8 @@ D:\sample\TaskManagement-Project\TaskManagementWebAPI\Common\CommonEnums.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\Common\ExcelHeaders.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\Common\ExceptionMessages\ExceptionMessages.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\Common\MailMessages.cs
+D:\sample\TaskManagement-Project\TaskManagementWebAPI\Common\TaskAPIEndpoints.cs
+D:\sample\TaskManagement-Project\TaskManagementWebAPI\Common\UserAPIEndpoints.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\ConfigurationLayer\TaskSettings.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\Controllers\AuthController.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\Controllers\LogsController.cs
