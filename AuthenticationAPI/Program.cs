@@ -73,10 +73,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//      options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-//        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
-
 // Register custom services
 builder.Services.AddScoped<IAuthService, AuthService>();
 
