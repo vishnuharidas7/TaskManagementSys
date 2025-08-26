@@ -7,9 +7,9 @@
 
         public static class Post
         {
-            public const string Login = "/LoginAuth";
-            public const string Refresh =  "/refresh";
-            public const string ForgotPassword = "/forgot-password";
+            public const string Login = "LoginAuth";
+            public const string Refresh =  "refresh";
+            public const string ForgotPassword = "forgot-password";
         }
 
         
