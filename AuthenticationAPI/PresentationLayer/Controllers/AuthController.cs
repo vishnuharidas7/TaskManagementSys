@@ -1,4 +1,5 @@
 ﻿using AuthenticationAPI.ApplicationLayer.DTOs;
+using AuthenticationAPI.Common;
 using AuthenticationAPI.InfrastructureLayer.Data;
 using AuthenticationAPI.InfrastructureLayer.Helpers;
 using AuthenticationAPI.Repositories;
@@ -10,7 +11,7 @@ using System.Security.Claims;
 
 namespace AuthenticationAPI.Controllers
 {
-    [Route("api/[Controller]")]
+    [Route(AuthAPIEndpoints.Base)]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -20,10 +21,10 @@ namespace AuthenticationAPI.Controllers
         private readonly IAuthRepository _authRepository;
         public AuthController(IAuthService authService,IJwtHelper jwthelper, IAppLogger<AuthController> logger, IAuthRepository authRepository)
         {
-            _authService = authService?? throw new ArgumentNullException(nameof(authService), "AuthService cannot be null.");
-            _jwtHelper = jwthelper ?? throw new ArgumentNullException(nameof(jwthelper), "Jwthelper cannot be null.");
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger),"Jwthelper cannot be null."); // Assign it
-            _authRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository), "AuthRepository cannot be null.");
+            _authService = authService?? throw new ArgumentNullException(nameof(authService));
+            _jwtHelper = jwthelper ?? throw new ArgumentNullException(nameof(jwthelper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); // Assign it
+            _authRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository));
         }
 
 
@@ -36,7 +37,7 @@ namespace AuthenticationAPI.Controllers
         /// <response code="400">Invalid input or null data</response>
         /// <response code="401">Unauthorized - invalid credentials</response>
         /// <response code="500">Internal server error</response>
-        [HttpPost("login")]
+        [HttpPost(AuthAPIEndpoints.Post.Login)]
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
         {
             try
@@ -73,7 +74,7 @@ namespace AuthenticationAPI.Controllers
         /// <response code="401">Unauthorized - refresh token expired or tampered</response>
         /// <response code="500">Internal server error</response>
 
-        [HttpPost("refresh")]
+        [HttpPost(AuthAPIEndpoints.Post.Refresh)]
         [ProducesResponseType(typeof(object), 200)]
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 401)]
