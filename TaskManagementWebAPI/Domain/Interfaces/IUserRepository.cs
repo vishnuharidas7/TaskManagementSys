@@ -91,7 +91,7 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<Users> GetUserByIdAsync(int userId);
+        Task<Users?> GetUserByIdAsync(int userId);
 
         /// <summary>
         /// Fetch all users

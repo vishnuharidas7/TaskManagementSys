@@ -99,7 +99,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
         }
 
-        public async Task<Users> GetUserByIdAsync(int userId)
+        public async Task<Users?> GetUserByIdAsync(int userId)
         {
             try
             {

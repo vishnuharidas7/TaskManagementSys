@@ -587,13 +587,13 @@ namespace TaskManagementWebAPITest.Application.Services
                 IsActive = true
             };
 
-            //_mockUserRepository
-            //    .Setup(repo => repo.GetUserByIdAsync(userId))
-            //    .ReturnsAsync((Users?)null);
-
             _mockUserRepository
-            .Setup<Task<Users?>>(repo => repo.GetUserByIdAsync(userId))
-            .ReturnsAsync((Users?)null);
+                .Setup(repo => repo.GetUserByIdAsync(userId))
+                .ReturnsAsync((Users?)null);
+
+            //_mockUserRepository
+            //.Setup<Task<Users?>>(repo => repo.GetUserByIdAsync(userId))
+            //.ReturnsAsync((Users?)null);
 
             // Act & Assert
             var ex = await Assert.ThrowsAsync<NotFoundException>(() =>
@@ -691,10 +691,13 @@ namespace TaskManagementWebAPITest.Application.Services
         {
             // Arrange
             int userId = 99;
-
             _mockUserRepository
-                .Setup<Task<Users?>>(r => r.GetUserByIdAsync(userId))
-                .ReturnsAsync((Users?)null);
+            .Setup(r => r.GetUserByIdAsync(userId))
+            .ReturnsAsync((Users?)null);
+
+            //_mockUserRepository
+            //    .Setup<Task<Users?>>(r => r.GetUserByIdAsync(userId))
+            //    .ReturnsAsync((Users?)null);
 
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => _service.DeleteUser(userId));

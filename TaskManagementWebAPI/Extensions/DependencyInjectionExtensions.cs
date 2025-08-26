@@ -49,7 +49,6 @@ namespace TaskManagementWebAPI.Extensions
 
             // Task status
             services.AddScoped<ITaskStatusUpdateServiceRepository, TaskStatusUpdateServiceRepository>();
-            //services.AddScoped<TaskDueStatusUpdateService>();
             services.AddScoped<ITaskDueStatusUpdateService, TaskStatusUpdateApplicationService>();
             services.AddScoped<ITaskDueStatusUpdateInternalService, TaskDueStatusUpdateService>();
             //  services.AddHostedService<TaskStatusUpdateService>();

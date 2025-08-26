@@ -103,7 +103,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                 var password = randomPswd;
 
-                var sendNotication = _userNotificationService.SendEmailAsync(user, userId, password, UserStatus.New);
+                await _userNotificationService.SendEmailAsync(user, userId, password, UserStatus.New);
                  
 
             }
