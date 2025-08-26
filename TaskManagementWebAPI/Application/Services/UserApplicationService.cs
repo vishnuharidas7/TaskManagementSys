@@ -130,7 +130,7 @@ namespace TaskManagementWebAPI.Application.Services
         public async Task<Users?> ForgotPassword(string email)
         {
             try
-            {
+                {
                 var user = await _userRepository.GetUserByEmailAsync(email);
 
                 if (user == null)
