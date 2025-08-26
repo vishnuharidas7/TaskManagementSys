@@ -817,7 +817,9 @@ namespace TaskManagementWebAPITest.Application.Services
                 confrmNewpswd = "pass"
             };
 
-            _mockUserRepository.Setup(r => r.GetUserByIdAsync(1)).ReturnsAsync((Users?)null);
+            //_mockUserRepository.Setup(r => r.GetUserByIdAsync(1)).ReturnsAsync((Users?)null);
+           // _mockUserRepository.Setup(r => r.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync((Users?)null);
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(It.IsAny<int>())).ReturnsAsync((Users?)null!);
 
             await Assert.ThrowsAsync<NotFoundException>(() =>
                 _service.UpdatePassword(1, dto));

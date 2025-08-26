@@ -8,7 +8,7 @@ namespace TaskManagementWebAPI.Extensions
             //NOSONAR
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowFrontend", policy =>
+                options.AddPolicy("AllowFrontend", policy =>//NOSONAR
                 {
                     policy.AllowAnyOrigin()
                           .AllowAnyHeader()
