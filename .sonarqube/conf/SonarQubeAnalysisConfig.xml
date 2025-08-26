@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AnalysisConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonarsource.com/msbuild/integration/2015/1">
-  <SonarConfigDir>D:\sample\TaskManagement-Project\.sonarqube\conf</SonarConfigDir>
-  <SonarOutputDir>D:\sample\TaskManagement-Project\.sonarqube\out</SonarOutputDir>
-  <SonarBinDir>D:\sample\TaskManagement-Project\.sonarqube\bin</SonarBinDir>
-  <SonarScannerWorkingDirectory>D:\sample\TaskManagement-Project</SonarScannerWorkingDirectory>
-  <JavaExePath>C:\Users\vishnu.haridas\.sonar\cache\11a61a94d383e755b08b4e5890a13d148bc9f95b7149cbbeec62efb8c75a4a67\OpenJDK17U-jre_x64_windows_hotspot_17.0.13_11.zip_extracted\jdk-17.0.13+11-jre/bin/java.exe</JavaExePath>
+  <SonarConfigDir>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\conf</SonarConfigDir>
+  <SonarOutputDir>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\out</SonarOutputDir>
+  <SonarBinDir>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\bin</SonarBinDir>
+  <SonarScannerWorkingDirectory>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys</SonarScannerWorkingDirectory>
+  <JavaExePath>C:\Users\goutham.r\.sonar\cache\11a61a94d383e755b08b4e5890a13d148bc9f95b7149cbbeec62efb8c75a4a67\OpenJDK17U-jre_x64_windows_hotspot_17.0.13_11.zip_extracted\jdk-17.0.13+11-jre/bin/java.exe</JavaExePath>
   <ScanAllAnalysis>true</ScanAllAnalysis>
   <HasBeginStepCommandLineCredentials>true</HasBeginStepCommandLineCredentials>
   <HasBeginStepCommandLineTruststorePassword>false</HasBeginStepCommandLineTruststorePassword>
   <SonarQubeHostUrl>http://localhost:9000</SonarQubeHostUrl>
   <SonarQubeVersion>25.8.0.112029</SonarQubeVersion>
-  <SonarProjectKey>TaskManagementSystem</SonarProjectKey>
+  <SonarProjectKey>AnalysisTaskManagmenetWebAPI</SonarProjectKey>
   <AdditionalConfig>
     <ConfigSetting Id="BuildUri" />
     <ConfigSetting Id="TfsUri" />
     <ConfigSetting Id="VsCoverageConverterToolPath" />
     <ConfigSetting Id="UnchangedFilesPath" />
-    <ConfigSetting Id="sonar.pullrequest.cache.basepath" Value="D:\sample\TaskManagement-Project" />
-    <ConfigSetting Id="settings.file.path" Value="C:\Users\vishnu.haridas\.dotnet\tools\.store\dotnet-sonarscanner\10.3.0\dotnet-sonarscanner\10.3.0\tools\netcoreapp3.1\any\SonarQube.Analysis.xml" />
+    <ConfigSetting Id="sonar.pullrequest.cache.basepath" Value="D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys" />
+    <ConfigSetting Id="settings.file.path" Value="C:\Users\goutham.r\.dotnet\tools\.store\dotnet-sonarscanner\10.3.0\dotnet-sonarscanner\10.3.0\tools\netcoreapp3.1\any\SonarQube.Analysis.xml" />
   </AdditionalConfig>
   <ServerSettings>
     <Property Name="sonar.cs.ignoreHeaderComments">true</Property>
@@ -143,8 +143,8 @@
     <Property Name="sonaranalyzer-vbnet.pluginKey">vbnet</Property>
     <Property Name="sonar.java.jvmframeworkconfig.activate">true</Property>
     <Property Name="sonar.updatecenter.url">https://downloads.sonarsource.com/sonarqube/update/update-center.properties</Property>
-    <Property Name="sonar.core.id">147B411E-AZjGca5h2iDKm-sSPtKY</Property>
-    <Property Name="sonar.core.startTime">21-08-2025 17:48:54</Property>
+    <Property Name="sonar.core.id">147B411E-AZjGiAH8908sZI50I9vW</Property>
+    <Property Name="sonar.core.startTime">25-08-2025 13:15:11</Property>
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">http://localhost:9000</Property>
@@ -153,34 +153,34 @@
   <AnalyzersSettings>
     <AnalyzerSettings>
       <Language>cs</Language>
-      <RulesetPath>D:\sample\TaskManagement-Project\.sonarqube\conf\Sonar-cs.ruleset</RulesetPath>
-      <DeactivatedRulesetPath>D:\sample\TaskManagement-Project\.sonarqube\conf\Sonar-cs-none.ruleset</DeactivatedRulesetPath>
+      <RulesetPath>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\conf\Sonar-cs.ruleset</RulesetPath>
+      <DeactivatedRulesetPath>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\conf\Sonar-cs-none.ruleset</DeactivatedRulesetPath>
       <AnalyzerPlugins>
         <AnalyzerPlugin Key="csharp" Version="10.15.0.120848" StaticResourceName="SonarAnalyzer-csharp-10.15.0.120848.zip">
           <AssemblyPaths>
-            <Path>C:\Users\vishnu.haridas\AppData\Local\Temp\.sonarqube\resources\0\SonarAnalyzer.CSharp.dll</Path>
-            <Path>C:\Users\vishnu.haridas\AppData\Local\Temp\.sonarqube\resources\0\THIRD-PARTY-NOTICES.txt</Path>
+            <Path>C:\Users\goutham.r\AppData\Local\Temp\.sonarqube\resources\0\SonarAnalyzer.CSharp.dll</Path>
+            <Path>C:\Users\goutham.r\AppData\Local\Temp\.sonarqube\resources\0\THIRD-PARTY-NOTICES.txt</Path>
           </AssemblyPaths>
         </AnalyzerPlugin>
       </AnalyzerPlugins>
       <AdditionalFilePaths>
-        <Path>D:\sample\TaskManagement-Project\.sonarqube\conf\cs\SonarLint.xml</Path>
+        <Path>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\conf\cs\SonarLint.xml</Path>
       </AdditionalFilePaths>
     </AnalyzerSettings>
     <AnalyzerSettings>
       <Language>vbnet</Language>
-      <RulesetPath>D:\sample\TaskManagement-Project\.sonarqube\conf\Sonar-vbnet.ruleset</RulesetPath>
-      <DeactivatedRulesetPath>D:\sample\TaskManagement-Project\.sonarqube\conf\Sonar-vbnet-none.ruleset</DeactivatedRulesetPath>
+      <RulesetPath>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\conf\Sonar-vbnet.ruleset</RulesetPath>
+      <DeactivatedRulesetPath>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\conf\Sonar-vbnet-none.ruleset</DeactivatedRulesetPath>
       <AnalyzerPlugins>
         <AnalyzerPlugin Key="vbnet" Version="10.15.0.120848" StaticResourceName="SonarAnalyzer-vbnet-10.15.0.120848.zip">
           <AssemblyPaths>
-            <Path>C:\Users\vishnu.haridas\AppData\Local\Temp\.sonarqube\resources\1\SonarAnalyzer.VisualBasic.dll</Path>
-            <Path>C:\Users\vishnu.haridas\AppData\Local\Temp\.sonarqube\resources\1\THIRD-PARTY-NOTICES.txt</Path>
+            <Path>C:\Users\goutham.r\AppData\Local\Temp\.sonarqube\resources\1\SonarAnalyzer.VisualBasic.dll</Path>
+            <Path>C:\Users\goutham.r\AppData\Local\Temp\.sonarqube\resources\1\THIRD-PARTY-NOTICES.txt</Path>
           </AssemblyPaths>
         </AnalyzerPlugin>
       </AnalyzerPlugins>
       <AdditionalFilePaths>
-        <Path>D:\sample\TaskManagement-Project\.sonarqube\conf\vbnet\SonarLint.xml</Path>
+        <Path>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\conf\vbnet\SonarLint.xml</Path>
       </AdditionalFilePaths>
     </AnalyzerSettings>
   </AnalyzersSettings>

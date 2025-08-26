@@ -32,7 +32,7 @@ namespace TaskManagementWebAPI.Application.Services
         {
             _taskManagementRepository = taskManagementRepository ?? throw new ArgumentNullException(nameof(taskManagementRepository)); 
             _logger = logger ?? throw new ArgumentNullException(nameof(logger)); 
-            _taskSettings = taskSettings.Value ?? throw new ArgumentNullException(nameof(taskSettings.Value)); ;
+            _taskSettings = taskSettings?.Value ?? throw new ArgumentNullException(nameof(taskSettings));
             _parserFactory = parserFactory ?? throw new ArgumentNullException(nameof(parserFactory)); 
             _taskMapper = taskMapper ?? throw new ArgumentNullException(nameof(taskMapper)); 
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration)); 

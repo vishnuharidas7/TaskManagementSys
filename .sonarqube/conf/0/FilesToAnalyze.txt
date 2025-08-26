@@ -1,7 +1,7 @@
-﻿D:\sample\TaskManagement-Project\LoggingLibrary\AppLoggerFactory.cs
-D:\sample\TaskManagement-Project\LoggingLibrary\Class1.cs
-D:\sample\TaskManagement-Project\LoggingLibrary\Config\LoggerConfigurator.cs
-D:\sample\TaskManagement-Project\LoggingLibrary\Implementations\Log4NetLogger.cs
-D:\sample\TaskManagement-Project\LoggingLibrary\Implementations\SerilogLogger.cs
-D:\sample\TaskManagement-Project\LoggingLibrary\Interfaces\IAppLogger.cs
-D:\sample\TaskManagement-Project\LoggingLibrary\Config\log4net.config
+﻿D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\LoggingLibrary\AppLoggerFactory.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\LoggingLibrary\Class1.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\LoggingLibrary\Config\LoggerConfigurator.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\LoggingLibrary\Implementations\Log4NetLogger.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\LoggingLibrary\Implementations\SerilogLogger.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\LoggingLibrary\Interfaces\IAppLogger.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\LoggingLibrary\Config\log4net.config

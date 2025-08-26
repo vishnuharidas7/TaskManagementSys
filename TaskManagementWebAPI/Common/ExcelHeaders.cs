@@ -1,6 +1,6 @@
 ﻿namespace TaskManagementWebAPI.Common
 {
-    public class ExcelHeaders
+    public static class ExcelHeaders
     {
         public const string AssignedTo = "AssignedTo";
         public const string TaskType = "TaskType";
