@@ -6,25 +6,25 @@
 
         public static class Get
         {
-            public const string CheckUsername = Base + "/check-username";
-            public const string UserList = Base + "/viewusers";
-            public const string UserListById = Base + "/viewusersByid/{id}";
+            public const string CheckUsername = "/check-username";
+            public const string UserList = "/viewusers";
+            public const string UserListById = "/viewusersByid/{id}";
         }
 
         public static class Post
         {
-            public const string Register = Base + "/register";
+            public const string Register = "/register";
         }
 
         public static class Put
         {
-            public const string UpdateUser = Base + "/updateuser/{id}";
-            public const string UpdatePassword = Base + "/updatePswd/{id}";
+            public const string UpdateUser = "/updateuser/{id}";
+            public const string UpdatePassword = "/updatePswd/{id}";
         }
 
         public static class Delete
         {
-            public const string DeleteUser = Base + "/deleteUser/{id}";
+            public const string DeleteUser = "/deleteUser/{id}";
         }
 
     }
