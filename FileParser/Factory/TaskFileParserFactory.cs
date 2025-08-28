@@ -30,6 +30,7 @@ namespace FileParser.Factory
             }
             catch (InvalidOperationException ex)
             {
+                _logger.LoggError(ex, "An invalid operation occurred");
                 throw;
             }
         }

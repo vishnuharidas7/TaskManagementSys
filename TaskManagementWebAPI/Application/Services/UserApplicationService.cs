@@ -96,7 +96,9 @@ namespace TaskManagementWebAPI.Application.Services
                     CreatedDate = DateTime.UtcNow,
                     IsActive = true,
                     RefreshToken = "",
-                    RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7)
+                    RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
+
+                    Role = new Roles { RoleId = dto.RoleId, RoleName = string.Empty } 
                 };
 
                 var userId = await _userRepository.RegisterAsync(user);

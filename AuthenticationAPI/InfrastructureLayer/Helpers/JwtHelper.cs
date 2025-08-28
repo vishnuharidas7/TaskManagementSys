@@ -17,15 +17,14 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
 
         public JwtHelper(IOptions<JwtSettings> jwtSettings, IAppLogger<JwtHelper> logger)
         {
-            _jwtSettings = jwtSettings.Value??throw new ArgumentNullException(nameof(jwtSettings.Value),"JwtHelper cannot be null.");
-            _logger = logger??throw new ArgumentNullException(nameof(logger), "Logger cannot be null");
+            _jwtSettings = jwtSettings.Value??throw new ArgumentNullException(nameof(jwtSettings.Value));
+            _logger = logger??throw new ArgumentNullException(nameof(logger));
         }
 
         public string GenerateAccessToken(Users User)
         {
             try
-            {
-                // _logger.LogInformation("Started generating Access Token for UserId: {UserId}, Username: {Username}", User.UserId, User.UserName);
+            { 
                 string roleName = User.Role?.RoleId switch
                 {
                     1 => "Admin",
@@ -33,10 +32,8 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
                     _ => "Unknown"
                 };
                 if (roleName == "Unknown")
-                {
-                    // _logger.LogWarning("Role ID for user {UserId} not recognized: {RoleId}", User.UserId, User.Role?.RoleId);
-                }
-                // _logger.LogInformation("User role resolved: {Role}", roleName);
+                { 
+                } 
                 var authClaims = new List<Claim>
             {
             new Claim(ClaimTypes.Name, User.UserName),
@@ -53,12 +50,11 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
                     signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
                 );
 
-                var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-                // _logger.LogInformation("Access Token successfully generated for UserId: {UserId}", User.UserId);
+                var accessToken = new JwtSecurityTokenHandler().WriteToken(token); 
                 return accessToken;
             }
             catch (Exception ex) {
-                _logger.LoggWarning("GenerateAccessToken failed");
+                _logger.LoggError(ex,"GenerateAccessToken failed");
                 throw;
             }
            
@@ -69,8 +65,7 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
         public string GenerateRefreshToken(Users user)
         {
             try
-            {
-                //_logger.LogInformation("Started generating Refresh Token for UserId: {UserId}, Username: {Username}", user.UserId, user.UserName);
+            { 
                 var claims = new List<Claim>
             {
              new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
@@ -92,7 +87,7 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
             }
            catch(Exception ex)
             {
-                _logger.LoggWarning("GenerateRefreshToken failed");
+                _logger.LoggError(ex,"GenerateRefreshToken failed");
                 throw;
             }
         }
