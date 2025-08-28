@@ -13,26 +13,26 @@ namespace TaskManagementWebAPI.Domain.Models
 
 
         [ForeignKey("RoleID")]
-        public Roles Role { get; set; }
+        public Roles? Role { get; set; }
 
         [Required, MaxLength(100)]
-        public string Name { get; set; }
-
-
-        [Required, MaxLength(100)]
-        public string UserName { get; set; }
+        public string? Name { get; set; }
 
 
         [Required, MaxLength(100)]
-        public string Password { get; set; }
+        public string? UserName { get; set; }
+
+
+        [Required, MaxLength(100)]
+        public string? Password { get; set; }
 
 
         [Required, MaxLength(100)]
 
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [Required, MaxLength(10)]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 

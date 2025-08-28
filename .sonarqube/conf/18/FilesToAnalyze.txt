@@ -1,0 +1,14 @@
+﻿D:\sample\TaskManagement-Project\AuthenticationAPITest\Controller\AuthControllerTest.cs
+C:\Users\vishnu.haridas\.nuget\packages\microsoft.net.test.sdk\17.8.0\build\netcoreapp3.1\Microsoft.NET.Test.Sdk.Program.cs
+C:\Users\vishnu.haridas\.nuget\packages\microsoft.testplatform.testhost\17.8.0\build\netcoreapp3.1\x64\testhost.exe
+C:\Users\vishnu.haridas\.nuget\packages\microsoft.testplatform.testhost\17.8.0\build\netcoreapp3.1\x64\testhost.dll
+C:\Users\vishnu.haridas\.nuget\packages\xunit.runner.visualstudio\2.5.3\build\net6.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+C:\Users\vishnu.haridas\.nuget\packages\xunit.runner.visualstudio\2.5.3\build\net6.0\xunit.runner.reporters.netcoreapp10.dll
+C:\Users\vishnu.haridas\.nuget\packages\xunit.runner.visualstudio\2.5.3\build\net6.0\xunit.runner.utility.netcoreapp10.dll
+D:\sample\TaskManagement-Project\AuthenticationAPITest\TestResults\4166ac00-d049-4eb0-8070-6eb75da96d17\coverage.cobertura.xml
+D:\sample\TaskManagement-Project\AuthenticationAPITest\TestResults\600ff4e4-3a6f-4740-a4f4-229a3efb5bb4\coverage.cobertura.xml
+D:\sample\TaskManagement-Project\AuthenticationAPITest\TestResults\8633bb0a-051d-43e4-8048-b7452088db7c\coverage.cobertura.xml
+D:\sample\TaskManagement-Project\AuthenticationAPITest\TestResults\86b904f5-bea9-4526-a7c5-7d47b9716bdd\coverage.cobertura.xml
+D:\sample\TaskManagement-Project\AuthenticationAPITest\TestResults\96e3f45d-4923-41e1-ba67-245878209195\coverage.cobertura.xml
+D:\sample\TaskManagement-Project\AuthenticationAPITest\TestResults\a6fde602-8164-4b48-8a3b-030cfc66b25d\coverage.cobertura.xml
+D:\sample\TaskManagement-Project\AuthenticationAPITest\TestResults\c4983d35-92db-4e32-a40a-dd06cc110c23\coverage.cobertura.xml
