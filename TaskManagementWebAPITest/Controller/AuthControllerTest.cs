@@ -20,17 +20,14 @@ namespace TaskManagementWebAPITest.Controller
     public class AuthControllerTest
     {
         private readonly AuthController _authController;
-        private readonly Mock<IUserAuthRepository> _userAuthRepoMock;
-        private readonly Mock<IAppLogger<AuthController>> _loggerMock;
+        private readonly Mock<IUserAuthRepository> _userAuthRepoMock; 
         private readonly Mock<IForgotPasswordHandler> _forgotPasswordHandlerMock;
         public AuthControllerTest() {
-            _userAuthRepoMock = new Mock<IUserAuthRepository>();
-            _loggerMock = new Mock<IAppLogger<AuthController>>();
+            _userAuthRepoMock = new Mock<IUserAuthRepository>(); 
             _forgotPasswordHandlerMock = new Mock<IForgotPasswordHandler>();
             _authController = new AuthController(
                 
-               _userAuthRepoMock.Object,
-               _loggerMock.Object,
+               _userAuthRepoMock.Object, 
                _forgotPasswordHandlerMock.Object);
         }
 

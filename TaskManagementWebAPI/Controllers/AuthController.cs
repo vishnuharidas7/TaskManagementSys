@@ -14,13 +14,11 @@ namespace TaskManagementWebAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IUserAuthRepository _user;
-        private readonly IAppLogger<AuthController> _logger;
+        private readonly IUserAuthRepository _user; 
         private readonly IForgotPasswordHandler _forgotPasswordHandler;
-        public AuthController(IUserAuthRepository user, IAppLogger<AuthController> logger, IForgotPasswordHandler forgotPasswordHandler)
+        public AuthController(IUserAuthRepository user, IForgotPasswordHandler forgotPasswordHandler)
         {
-            _user = user ?? throw new ArgumentNullException(nameof(user));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _user = user ?? throw new ArgumentNullException(nameof(user)); 
             _forgotPasswordHandler = forgotPasswordHandler ?? throw new ArgumentNullException(nameof(forgotPasswordHandler));
         }
 

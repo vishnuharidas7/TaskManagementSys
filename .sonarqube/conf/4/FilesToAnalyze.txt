@@ -46,6 +46,7 @@ D:\sample\TaskManagement-Project\TaskManagementWebAPI\Application\Services\TaskA
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\Application\Services\TaskStatusUpdateService\TaskDueStatusUpdateService.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\Application\Services\TaskStatusUpdateService\TaskStatusUpdateApplicationService.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\Application\Services\UserApplicationService.cs
+D:\sample\TaskManagement-Project\TaskManagementWebAPI\Common\AuthAPIEndpoints.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\Common\CommonEnums.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\Common\ExcelHeaders.cs
 D:\sample\TaskManagement-Project\TaskManagementWebAPI\Common\ExceptionMessages\ExceptionMessages.cs
