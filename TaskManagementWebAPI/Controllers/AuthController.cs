@@ -16,7 +16,7 @@ namespace TaskManagementWebAPI.Controllers
     {
         private readonly IUserAuthRepository _user;
         private readonly IForgotPasswordHandler _forgotPasswordHandler;
-        public AuthController(IUserAuthRepository user, IAppLogger<AuthController> logger, IForgotPasswordHandler forgotPasswordHandler)
+        public AuthController(IUserAuthRepository user, IForgotPasswordHandler forgotPasswordHandler)
         {
             _user = user ?? throw new ArgumentNullException(nameof(user));
             _forgotPasswordHandler = forgotPasswordHandler ?? throw new ArgumentNullException(nameof(forgotPasswordHandler));

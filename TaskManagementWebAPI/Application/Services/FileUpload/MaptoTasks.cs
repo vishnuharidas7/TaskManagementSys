@@ -25,8 +25,7 @@ namespace TaskManagementWebAPI.Application.Services.FileUpload
                     {
                         taskType = row.TryGetValue(ExcelHeaders.TaskType, out var tt) ? tt?.ToString() ?? "" : "",
                         taskName = row.TryGetValue(ExcelHeaders.TaskName, out var tn) ? tn?.ToString() ?? "" : "",
-                        UserId = userId,
-                        //dueDate = row.TryGetValue(ExcelHeaders.DueDate, out var dd) && DateTime.TryParse(dd?.ToString(), out var dt) ? dt : DateTime.MinValue,
+                        UserId = userId, 
                         dueDate = row.TryGetValue(ExcelHeaders.DueDate, out var dd) && DateTime.TryParse(dd?.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt)? dt: DateTime.MinValue,
                         taskDescription = row.TryGetValue(ExcelHeaders.Description, out var desc) ? desc?.ToString() ?? "" : "",
                         priority = row.TryGetValue(ExcelHeaders.Priority, out var prio) ? prio?.ToString() ?? "" : "",
