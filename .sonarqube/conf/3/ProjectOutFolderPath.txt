@@ -1,1 +1,1 @@
-D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\out\3
+D:\sample\TaskManagement-Project\.sonarqube\out\3

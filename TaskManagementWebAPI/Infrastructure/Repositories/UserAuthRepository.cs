@@ -76,12 +76,12 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             }
         }
 
-        public async Task<string> Refresh(TokenResponseDTO dto)
+        public async Task<string> Refresh(TokenResponseDTO tokens)
         {
             try
             {
                 var requestUrl = _config.GetSection("AuthAPI:BaseRefreshURL").Value; 
-                var response = await _httpClient.PostAsJsonAsync(requestUrl, dto);
+                var response = await _httpClient.PostAsJsonAsync(requestUrl, tokens);
 
                 if (response.IsSuccessStatusCode)
                 {
