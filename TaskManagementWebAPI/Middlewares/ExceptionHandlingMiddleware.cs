@@ -16,94 +16,129 @@ namespace TaskManagementWebAPI.Middlewares
         }
       
 
+        //public async Task Invoke(HttpContext context)
+        //{
+        //    try
+        //    {
+        //        await _next(context);
+        //    }
+        //    catch (UnauthorizedAccessException ex)
+        //    { 
+        //        await HandleExceptionAsync(context, StatusCodes.Status401Unauthorized,ExceptionMessages.ExceptionHandelingExceptions.UnauthorizedAccess, ex);
+        //    }
+        //    catch (ArgumentNullException ex)
+        //    {
+        //        await HandleExceptionAsync(context, StatusCodes.Status400BadRequest,ExceptionMessages.ExceptionHandelingExceptions.NullValuesNotAllowed, ex);
+        //    }
+        //    catch (HttpRequestException ex)
+        //    { 
+        //        await HandleExceptionAsync(context, StatusCodes.Status503ServiceUnavailable,ExceptionMessages.ExceptionHandelingExceptions.ExternalServiceUnavailable, ex);
+        //    }
+        //    catch (TaskCanceledException ex)
+        //    { 
+        //        await HandleExceptionAsync(context, StatusCodes.Status504GatewayTimeout, ExceptionMessages.ExceptionHandelingExceptions.RequestTimedOut, ex);
+        //    }
+        //    catch (InvalidOperationException ex)
+        //    { 
+        //        await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ExceptionMessages.ExceptionHandelingExceptions.InvalidOperation, ex);
+        //    }
+
+        //    //Custom exception for phone number validation
+        //    catch (InvalidPhoneNumberException ex)
+        //    {
+        //        await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
+        //    }
+
+        //    //Custom exception for Email format validation
+        //    catch (InvalidEmailFormatException ex)
+        //    {
+        //        await HandleExceptionAsync(context,StatusCodes.Status400BadRequest, ex.Message,ex);
+        //    }
+
+        //    //Custom exception for RoleId validation
+        //    catch (InvalidRoleIdException ex)
+        //    {
+        //        await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex); 
+        //    } 
+
+        //    catch (NotFoundException ex)
+        //    {
+        //        await HandleExceptionAsync(context, StatusCodes.Status404NotFound, ex.Message, ex);
+        //    }
+        //    //Custom exception
+        //    catch (TaskValidationException ex)
+        //    {
+        //        await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
+        //    }
+        //    //Custom exception
+        //    catch (TaskFileParserException ex)
+        //    {
+        //        await HandleExceptionAsync(context, StatusCodes.Status422UnprocessableEntity, ex.Message, ex);
+        //    }
+        //    //Custom exception
+        //    catch (AuthServiceUnavailableException ex)
+        //    {
+        //        await HandleExceptionAsync(context, StatusCodes.Status503ServiceUnavailable, ex.Message, ex);
+        //    }
+        //    //Custom exception
+        //    catch (TokenRefreshFailedException ex)
+        //    {
+        //        await HandleExceptionAsync(context, StatusCodes.Status504GatewayTimeout, ex.Message, ex);
+        //    }
+
+        //    //Custom exception for email validation
+        //    catch (DuplicateEmailException ex)
+        //    {
+        //        await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
+        //    }
+
+        //    //Custom exception for username validation
+        //    catch (DuplicateUsernameException ex)
+        //    {
+        //        await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
+        //    }
+
+        //    catch (Exception ex)
+        //    { 
+        //        await HandleExceptionAsync(context, StatusCodes.Status500InternalServerError, ExceptionMessages.ExceptionHandelingExceptions.UnexpectedError, ex);
+        //    }
+        //}
+
         public async Task Invoke(HttpContext context)
         {
             try
             {
                 await _next(context);
             }
-            catch (UnauthorizedAccessException ex)
-            { 
-                await HandleExceptionAsync(context, StatusCodes.Status401Unauthorized,ExceptionMessages.ExceptionHandelingExceptions.UnauthorizedAccess, ex);
-            }
-            catch (ArgumentNullException ex)
-            {
-                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest,ExceptionMessages.ExceptionHandelingExceptions.NullValuesNotAllowed, ex);
-            }
-            catch (HttpRequestException ex)
-            { 
-                await HandleExceptionAsync(context, StatusCodes.Status503ServiceUnavailable,ExceptionMessages.ExceptionHandelingExceptions.ExternalServiceUnavailable, ex);
-            }
-            catch (TaskCanceledException ex)
-            { 
-                await HandleExceptionAsync(context, StatusCodes.Status504GatewayTimeout, ExceptionMessages.ExceptionHandelingExceptions.RequestTimedOut, ex);
-            }
-            catch (InvalidOperationException ex)
-            { 
-                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ExceptionMessages.ExceptionHandelingExceptions.InvalidOperation, ex);
-            }
-
-            //Custom exception for phone number validation
-            catch (InvalidPhoneNumberException ex)
-            {
-                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
-            }
-
-            //Custom exception for Email format validation
-            catch (InvalidEmailFormatException ex)
-            {
-                await HandleExceptionAsync(context,StatusCodes.Status400BadRequest, ex.Message,ex);
-            }
-
-            //Custom exception for RoleId validation
-            catch (InvalidRoleIdException ex)
-            {
-                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex); 
-            } 
-
-            catch (NotFoundException ex)
-            {
-                await HandleExceptionAsync(context, StatusCodes.Status404NotFound, ex.Message, ex);
-            }
-            //Custom exception
-            catch (TaskValidationException ex)
-            {
-                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
-            }
-            //Custom exception
-            catch (TaskFileParserException ex)
-            {
-                await HandleExceptionAsync(context, StatusCodes.Status422UnprocessableEntity, ex.Message, ex);
-            }
-            //Custom exception
-            catch (AuthServiceUnavailableException ex)
-            {
-                await HandleExceptionAsync(context, StatusCodes.Status503ServiceUnavailable, ex.Message, ex);
-            }
-            //Custom exception
-            catch (TokenRefreshFailedException ex)
-            {
-                await HandleExceptionAsync(context, StatusCodes.Status504GatewayTimeout, ex.Message, ex);
-            }
-
-            //Custom exception for email validation
-            catch (DuplicateEmailException ex)
-            {
-                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
-            }
-
-            //Custom exception for username validation
-            catch (DuplicateUsernameException ex)
-            {
-                await HandleExceptionAsync(context, StatusCodes.Status400BadRequest, ex.Message, ex);
-            }
-
             catch (Exception ex)
-            { 
-                await HandleExceptionAsync(context, StatusCodes.Status500InternalServerError, ExceptionMessages.ExceptionHandelingExceptions.UnexpectedError, ex);
+            {
+                var (statusCode, message) = GetExceptionDetails(ex);
+                await HandleExceptionAsync(context, statusCode, message, ex);
             }
         }
 
+        private(int status,string messages) GetExceptionDetails(Exception ex)
+        {
+            return ex switch
+            {
+                UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, ExceptionMessages.ExceptionHandelingExceptions.UnauthorizedAccess),
+                ArgumentNullException => (StatusCodes.Status400BadRequest, ExceptionMessages.ExceptionHandelingExceptions.NullValuesNotAllowed),
+                HttpRequestException => (StatusCodes.Status503ServiceUnavailable, ExceptionMessages.ExceptionHandelingExceptions.ExternalServiceUnavailable),
+                TaskCanceledException => (StatusCodes.Status504GatewayTimeout, ExceptionMessages.ExceptionHandelingExceptions.RequestTimedOut),
+                InvalidOperationException => (StatusCodes.Status400BadRequest, ExceptionMessages.ExceptionHandelingExceptions.InvalidOperation),
+                InvalidPhoneNumberException or
+                InvalidEmailFormatException or
+                InvalidRoleIdException or
+                TaskValidationException or
+                DuplicateEmailException or
+                DuplicateUsernameException => (StatusCodes.Status400BadRequest, ex.Message),
+                NotFoundException => (StatusCodes.Status404NotFound, ex.Message),
+                TaskFileParserException => (StatusCodes.Status422UnprocessableEntity, ex.Message),
+                AuthServiceUnavailableException => (StatusCodes.Status503ServiceUnavailable, ex.Message),
+                TokenRefreshFailedException => (StatusCodes.Status504GatewayTimeout, ex.Message),
+                _ => (StatusCodes.Status500InternalServerError, ExceptionMessages.ExceptionHandelingExceptions.UnexpectedError)
+            };
+        }
         private static async Task HandleExceptionAsync(HttpContext context, int statusCode, string message, Exception ex)
         {
             context.Response.StatusCode = statusCode;
