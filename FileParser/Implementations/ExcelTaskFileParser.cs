@@ -45,7 +45,7 @@ namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
                     var rowDict = new Dictionary<string, object>();
                     for (int col = 0; col < headers.Count; col++)
                     {
-                        var cellValue = currentRow.GetCell(col)?.ToString();
+                        var cellValue = currentRow.GetCell(col)?.ToString() ?? "";
                         rowDict[headers[col]] = cellValue;
                     }
 
@@ -54,17 +54,17 @@ namespace TaskManagementWebAPI.Infrastructure.Services.FileUpload
 
                 return data;
             }
-            catch (InvalidDataException ex)
+            catch (InvalidDataException)
             {
               
                 throw;
             }
-            catch (IOException ex)
+            catch (IOException)
             {
               
                 throw;
             } 
-            catch (Exception ex)
+            catch (Exception)
             {
                
                 throw;

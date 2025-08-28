@@ -90,6 +90,9 @@ builder.Services.AddSingleton(typeof(Log4NetLogger<>));
 builder.Services.AddSingleton(typeof(IAppLogger<>), typeof(AppLoggerFactory<>));
 
 // Add JWT authentication
+var secretKey = builder.Configuration["JwtSettings:SecretKey"]
+    ?? throw new InvalidOperationException("JWT SecretKey is not configured.");
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -131,6 +134,9 @@ if (loggigProvider == "Serilog")
 if(loggigProvider == "Log4Net")
 {
     // Load log4net config
+    var entryAssembly = Assembly.GetEntryAssembly()
+    ?? throw new InvalidOperationException("Entry assembly is null. Cannot configure log4net.");
+
     var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
     var log4netConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "log4net.config");
     XmlConfigurator.Configure(logRepository, new FileInfo(log4netConfigPath));

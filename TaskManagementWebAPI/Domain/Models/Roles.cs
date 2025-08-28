@@ -8,10 +8,10 @@ namespace TaskManagementWebAPI.Domain.Models
         public int RoleId { get; set; }
 
         [Required, MaxLength(100)]
-        public string RoleName { get; set; }
+        public required string RoleName { get; set; }
 
         //Navigation property
-        public ICollection<Users> User { get; set; }
+        public ICollection<Users> User { get; set; } = new List<Users>();
 
     }
 }

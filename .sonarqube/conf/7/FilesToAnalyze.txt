@@ -1,0 +1,5 @@
+﻿D:\sample\TaskManagement-Project\FileParser\Factory\TaskFileParserFactory.cs
+D:\sample\TaskManagement-Project\FileParser\Implementations\CsvTaskFileParser.cs
+D:\sample\TaskManagement-Project\FileParser\Implementations\ExcelTaskFileParser.cs
+D:\sample\TaskManagement-Project\FileParser\Interfaces\ITaskFileParser.cs
+D:\sample\TaskManagement-Project\FileParser\Interfaces\ITaskFileParserFactory.cs

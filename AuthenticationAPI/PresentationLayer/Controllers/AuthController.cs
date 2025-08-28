@@ -39,9 +39,7 @@ namespace AuthenticationAPI.Controllers
         /// <response code="500">Internal server error</response>
         [HttpPost(AuthAPIEndpoints.Post.Login)]
         public async Task<IActionResult> Login([FromBody] LoginDTO dto)
-        {
-            try
-            {
+        { 
                _logger.LoggInformation("AuthController-Login end point called");
                 _logger.LoggInformation("Login attempt for username: {Username} at {Time}", dto.UserName, DateTime.UtcNow);
 
@@ -52,14 +50,9 @@ namespace AuthenticationAPI.Controllers
                     _logger.LoggWarning("Login failed for username: {Username}", dto.UserName);
                     return Unauthorized("Invalid username or password");
                 }
-
-                //_logger.LogInformation("Login successful for username: {Username}", dto.UserName);
+                 
                 return Ok(token);
-            }
-            catch (Exception ex) {
-                _logger.LoggWarning("login API failed");
-                throw;
-            }
+            
            
         }
 
@@ -80,27 +73,22 @@ namespace AuthenticationAPI.Controllers
         [ProducesResponseType(typeof(string), 401)]
         [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> Refresh([FromBody] TokenResponseDTO tokens)
-        {
-            try
-            {
-
-               // _logger.LogInformation("Attempting to validate and extract principals from refresh token");
+        { 
+                 
                 var principal = _authService.GetPrincipalFromExpiredToken(tokens.RefreshToken);
                 var useridClaim = principal?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
                 int userid = 0;
                 if (!string.IsNullOrEmpty(useridClaim))
                 {
                     userid = int.Parse(useridClaim);
-                }
-                //var user = _db.User.SingleOrDefault(u => u.UserId == userid);
+                } 
 
                 var user = await _authRepository.GetUserAsync(userid);
                 if (user == null)
                 {
                     _logger.LoggWarning("Checking DB-Invalid refresh token");
                     return BadRequest("Invalid refresh token");
-                }
-               // _logger.LogInformation("Refresh token generated");
+                } 
                 var newAccessToken = _jwtHelper.GenerateAccessToken(user);
 
                 return Ok(new
@@ -108,13 +96,7 @@ namespace AuthenticationAPI.Controllers
                     AccessToken = newAccessToken,
 
                 });
-            }
-          
-            catch (Exception ex)
-            {
-                _logger.LoggWarning("Refresh API failed");
-                throw;
-            }
+           
            
         }
     }
