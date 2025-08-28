@@ -19,7 +19,7 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
             {
                 case UserStatus.New:
                     var content = _userCreatedEmailContentBuilder.BuildContentforNewUser(user, userId, Password);
-                    await _emailService.SendEmailAsync(user.Email, MailMessages.UserOnboarding.WelcomeMessages, content); // "Welcome to Task Management System – Your Account Details", content);
+                    await _emailService.SendEmailAsync(user.Email, MailMessages.UserOnboarding.UserWelcomeMessage, content); // "Welcome to Task Management System – Your Account Details", content);
                     break;
                 case UserStatus.PasswordReset:
                     var emailContent = _userCreatedEmailContentBuilder.BuildContentforPasswordReset(user, userId, Password);
