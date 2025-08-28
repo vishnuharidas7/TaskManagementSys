@@ -12,7 +12,6 @@ namespace Scheduler.Service
 {
     public class TaskStatusUpdateWorker: BackgroundService
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly IAppLogger<TaskStatusUpdateWorker> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly TaskStatusUpdateWorkerSettings _settings;
@@ -23,7 +22,6 @@ namespace Scheduler.Service
             IAppLogger<TaskStatusUpdateWorker> logger,
             IOptions<TaskStatusUpdateWorkerSettings> settings)
         {
-            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _settings = settings?.Value ?? throw new ArgumentNullException(nameof(settings));

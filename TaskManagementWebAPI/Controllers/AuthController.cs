@@ -15,12 +15,10 @@ namespace TaskManagementWebAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserAuthRepository _user;
-        private readonly IAppLogger<AuthController> _logger;
         private readonly IForgotPasswordHandler _forgotPasswordHandler;
         public AuthController(IUserAuthRepository user, IAppLogger<AuthController> logger, IForgotPasswordHandler forgotPasswordHandler)
         {
             _user = user ?? throw new ArgumentNullException(nameof(user));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _forgotPasswordHandler = forgotPasswordHandler ?? throw new ArgumentNullException(nameof(forgotPasswordHandler));
         }
 

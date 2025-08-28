@@ -17,12 +17,12 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public string BuildContent(Users user, IEnumerable<Tasks> tasks)
+        public string BuildContent(Users user, IEnumerable<Tasks> task)
         {
             var sb = new StringBuilder();
             sb.AppendLine(string.Format(MailMessages.GreetingTemplate, user.Name));
 
-            var grouped = tasks.GroupBy(t => t.taskState);
+            var grouped = task.GroupBy(t => t.taskState);
 
             foreach (var group in grouped)
             {

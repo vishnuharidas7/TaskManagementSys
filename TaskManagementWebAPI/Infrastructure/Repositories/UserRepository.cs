@@ -23,17 +23,10 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
     {
         private readonly ApplicationDbContext _db;
         private readonly IAppLogger<UserRepository> _logger;
-        private readonly IUserCreatedEmailContentBuilder _userEmailContentBuilder;
-        private readonly IEmailService _emailService;
-        private readonly IRandomPasswordGenerator _randomPasswordGenerator;
-
         public UserRepository(ApplicationDbContext db, IAppLogger<UserRepository> logger, IUserCreatedEmailContentBuilder userEmailContentBuilder, IEmailService emailService,IRandomPasswordGenerator randomPasswordGenerator)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _userEmailContentBuilder = userEmailContentBuilder ?? throw new ArgumentNullException(nameof(userEmailContentBuilder));
-            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
-            _randomPasswordGenerator = randomPasswordGenerator ?? throw new ArgumentNullException(nameof(randomPasswordGenerator));
         }
 
 

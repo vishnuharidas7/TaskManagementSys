@@ -33,7 +33,7 @@
         public static class UserOnboarding
         {
             public const string Greeting = "Hey {0},\n";
-            public const string WelcomeMessage = "Welcome to Task Management System! Your account has been created successfully";
+            public const string WelcomeMessages = "Welcome to Task Management System! Your account has been created successfully";
             public const string WelcomeMessageReset = "Your account password has been reset successfully";
             public const string CredentialsIntro = "Your login credentials : \n";
             public const string UsernameLine = "Username: {0}\n";

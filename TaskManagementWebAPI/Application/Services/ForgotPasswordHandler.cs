@@ -10,15 +10,11 @@ namespace TaskManagementWebAPI.Application.Services
 {
     public class ForgotPasswordHandler : IForgotPasswordHandler
     {
-        private readonly IUserRepository _userRepo;
-        private readonly IEmailService _emailService;
         private readonly IAppLogger<ForgotPasswordHandler> _logger;
         private readonly IUserApplicationService _userApplicationService;
         public ForgotPasswordHandler(IUserRepository userRepo, IEmailService emailService, 
             IAppLogger<ForgotPasswordHandler> logger, IUserApplicationService userApplicationService)
         {
-            _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
-            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _userApplicationService = userApplicationService ?? throw new ArgumentNullException(nameof(userApplicationService));
         }
