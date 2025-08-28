@@ -11,7 +11,6 @@ namespace Scheduler.Services.EmailServices
 {
     public class TaskCompletionReminderWorker : BackgroundService
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly IAppLogger<TaskCompletionReminderWorker> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly TaskCompletionReminderWorkerSettings _settings;
@@ -22,7 +21,6 @@ namespace Scheduler.Services.EmailServices
             IAppLogger<TaskCompletionReminderWorker> logger,
             IOptions<TaskCompletionReminderWorkerSettings> settings)
         {
-            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _settings = settings?.Value ?? throw new ArgumentNullException(nameof(settings));

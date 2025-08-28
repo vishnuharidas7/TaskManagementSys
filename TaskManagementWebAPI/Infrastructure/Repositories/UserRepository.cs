@@ -22,12 +22,11 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _db;
-        private readonly IAppLogger<UserRepository> _logger; 
-
-        public UserRepository(ApplicationDbContext db, IAppLogger<UserRepository> logger)
+        private readonly IAppLogger<UserRepository> _logger;
+        public UserRepository(ApplicationDbContext db, IAppLogger<UserRepository> logger, IUserCreatedEmailContentBuilder userEmailContentBuilder, IEmailService emailService,IRandomPasswordGenerator randomPasswordGenerator)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); 
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
 

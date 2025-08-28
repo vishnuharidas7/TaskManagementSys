@@ -116,7 +116,7 @@ namespace TaskManagementWebAPI.Application.Services.FileUpload
         }
 
 
-        public async Task<Users> GetUserByIdAsync(int userId, IDbTransaction? transaction=null)
+        public async Task<Users> GetUserByIdAsync(int userId, IDbTransaction? transaction)
         {
             try
             {
