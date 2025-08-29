@@ -1,6 +1,6 @@
 ﻿namespace AuthenticationAPI.ApplicationLayer.DTOs
 {
-    public class TokenResponseDTO
+    public class TokenResponseDto
     { 
         public required string RefreshToken { get; set; }
     }

@@ -1,6 +1,0 @@
-﻿D:\sample\TaskManagement-Project\LoggingLibrary\AppLoggerFactory.cs
-D:\sample\TaskManagement-Project\LoggingLibrary\Config\LoggerConfigurator.cs
-D:\sample\TaskManagement-Project\LoggingLibrary\Implementations\Log4NetLogger.cs
-D:\sample\TaskManagement-Project\LoggingLibrary\Implementations\SerilogLogger.cs
-D:\sample\TaskManagement-Project\LoggingLibrary\Interfaces\IAppLogger.cs
-D:\sample\TaskManagement-Project\LoggingLibrary\Config\log4net.config

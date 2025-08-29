@@ -25,7 +25,7 @@ namespace AuthenticationAPI.Services
             _authRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository));
 
         }
-        public async Task<Object?> LoginAsync(LoginDTO dto)
+        public async Task<Object?> LoginAsync(LoginDto dto)
         { 
                 var user = await _authRepository.GetActiveUserAsync(dto);
 

@@ -10,7 +10,7 @@ namespace AuthenticationAPI.Repositories
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        Task<Users?> GetActiveUserAsync(LoginDTO dto);
+        Task<Users?> GetActiveUserAsync(LoginDto dto);
 
         /// <summary>
         /// For fetching active user for refresh token

@@ -19,7 +19,6 @@ using System.Reflection;
 using System.Text;
 
 
-var congifuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,7 +55,7 @@ builder.Services.AddSwaggerGen(options =>
                             Id = JwtBearerDefaults.AuthenticationScheme
                         }
                     },
-                    new string[] {}
+                   Array.Empty<string>() //new List<string>() // new string[] {}
                 }
                 });
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -105,11 +104,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
             ValidAudience = builder.Configuration["JwtSettings:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]))
+                Encoding.UTF8.GetBytes(secretKey))
         };
     });
 
-//NOSONAR
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
@@ -137,7 +136,7 @@ if(loggigProvider == "Log4Net")
     var entryAssembly = Assembly.GetEntryAssembly()
     ?? throw new InvalidOperationException("Entry assembly is null. Cannot configure log4net.");
 
-    var logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+    var logRepository = LogManager.GetRepository(entryAssembly);
     var log4netConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "log4net.config");
     XmlConfigurator.Configure(logRepository, new FileInfo(log4netConfigPath));
     Console.WriteLine($"Log4Net config exists? {File.Exists(log4netConfigPath)}");
