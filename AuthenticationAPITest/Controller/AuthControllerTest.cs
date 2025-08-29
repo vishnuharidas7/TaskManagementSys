@@ -43,7 +43,7 @@ namespace AuthenticationAPITest.Controller
         public async Task Login_ReturnsOk_Token()
         {
             //arrange
-            var dto = new LoginDTO {UserName="amal",Password="amal" };
+            var dto = new LoginDto {UserName="amal",Password="amal" };
             var expectedToken = "Return-Successful-Token";
 
             _authServiceMock.Setup(res=>res.LoginAsync(dto)).ReturnsAsync(expectedToken);
@@ -61,7 +61,7 @@ namespace AuthenticationAPITest.Controller
         public async Task Login_ReturnsUnauthorized_WhenTokenIsNull()
         {
             // Arrange
-            var dto = new LoginDTO { UserName = "amal", Password = "amal" };
+            var dto = new LoginDto { UserName = "amal", Password = "amal" };
             _authServiceMock.Setup(s => s.LoginAsync(dto)).ReturnsAsync((string)null);
 
             // Act
@@ -75,7 +75,7 @@ namespace AuthenticationAPITest.Controller
         public async Task Login_ThrowsException_AndIsCaught()
         {
             // Arrange
-            var dto = new LoginDTO { UserName = "amal", Password = "amal" };
+            var dto = new LoginDto { UserName = "amal", Password = "amal" };
             _authServiceMock.Setup(s => s.LoginAsync(dto)).ThrowsAsync(new Exception("Service failed"));
 
             // Act & Assert
@@ -87,7 +87,7 @@ namespace AuthenticationAPITest.Controller
         public async Task Refresh_ReturnOk_WithNewAccessToken()
         {
             //arrange
-            var tokens = new TokenResponseDTO { RefreshToken = "Old-Refresh-Token" };
+            var tokens = new TokenResponseDto { RefreshToken = "Old-Refresh-Token" };
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "123") };
             var identity = new ClaimsIdentity(claims, "test");
             var principal= new ClaimsPrincipal(identity);
@@ -112,7 +112,7 @@ namespace AuthenticationAPITest.Controller
         public async Task Refresh_ReturnsBadRequest_WhenUserNotFound()
         {
             // Arrange
-            var tokens = new TokenResponseDTO { RefreshToken = "invalid-token" };
+            var tokens = new TokenResponseDto { RefreshToken = "invalid-token" };
             var claims = new List<Claim> {
             new Claim(ClaimTypes.NameIdentifier, "999")
              };
@@ -137,7 +137,7 @@ namespace AuthenticationAPITest.Controller
         public async Task Refresh_ThrowsException_OnUnexpectedFailure()
         {
             // Arrange
-            var tokens = new TokenResponseDTO { RefreshToken = "any" };
+            var tokens = new TokenResponseDto { RefreshToken = "any" };
             _authServiceMock.Setup(s => s.GetPrincipalFromExpiredToken(tokens.RefreshToken))
                 .Throws(new Exception("Unexpected failure"));
 

@@ -1,1 +1,0 @@
-D:\sample\TaskManagement-Project\.sonarqube\out\17

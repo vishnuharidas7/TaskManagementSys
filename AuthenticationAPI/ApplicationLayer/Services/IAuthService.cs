@@ -10,7 +10,7 @@ namespace AuthenticationAPI.Services
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        Task<Object> LoginAsync(LoginDTO dto);
+        Task<Object> LoginAsync(LoginDto dto);
         /// <summary>
         /// Extract the user's identity(claims) from an expired JWT token
         /// </summary>

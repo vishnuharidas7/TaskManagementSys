@@ -17,7 +17,7 @@ namespace AuthenticationAPI.Repositories
             _logger = logger??throw new ArgumentNullException(nameof(logger), "Logger cannot be null.");
         }
 
-        public async Task<Users?> GetActiveUserAsync(LoginDTO dto)
+        public async Task<Users?> GetActiveUserAsync(LoginDto dto)
         {
             try
             {

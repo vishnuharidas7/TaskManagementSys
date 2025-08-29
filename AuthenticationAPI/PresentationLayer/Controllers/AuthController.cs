@@ -38,7 +38,7 @@ namespace AuthenticationAPI.Controllers
         /// <response code="401">Unauthorized - invalid credentials</response>
         /// <response code="500">Internal server error</response>
         [HttpPost(AuthAPIEndpoints.Post.Login)]
-        public async Task<IActionResult> Login([FromBody] LoginDTO dto)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         { 
                _logger.LoggInformation("AuthController-Login end point called");
                 _logger.LoggInformation("Login attempt for username: {Username} at {Time}", dto.UserName, DateTime.UtcNow);
@@ -72,7 +72,7 @@ namespace AuthenticationAPI.Controllers
         [ProducesResponseType(typeof(string), 400)]
         [ProducesResponseType(typeof(string), 401)]
         [ProducesResponseType(typeof(string), 500)]
-        public async Task<IActionResult> Refresh([FromBody] TokenResponseDTO tokens)
+        public async Task<IActionResult> Refresh([FromBody] TokenResponseDto tokens)
         { 
                  
                 var principal = _authService.GetPrincipalFromExpiredToken(tokens.RefreshToken);
