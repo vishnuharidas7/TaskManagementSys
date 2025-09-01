@@ -22,9 +22,17 @@ jobs:
           git reset --hard
           git clean -fdx
 
-      - name: Delete Git lock files (just in case)
-        run: |
-          Remove-Item -Path .git\refs\remotes\origin\*.lock -Force -ErrorAction SilentlyContinue
+    - name: Delete stale Git lock files
+  shell: pwsh
+  run: |
+    $lockFiles = Get-ChildItem -Path ".git/refs/remotes/origin" -Filter "*.lock" -ErrorAction SilentlyContinue
+    if ($lockFiles) {
+      $lockFiles | Remove-Item -Force
+      Write-Host "Removed stale Git lock files."
+    } else {
+      Write-Host "No Git lock files found."
+    }
+
 
       - name: Check Git version
         run: git --version
