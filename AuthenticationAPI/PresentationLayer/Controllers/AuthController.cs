@@ -23,7 +23,7 @@ namespace AuthenticationAPI.Controllers
         {
             _authService = authService?? throw new ArgumentNullException(nameof(authService));
             _jwtHelper = jwthelper ?? throw new ArgumentNullException(nameof(jwthelper));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); // Assign it
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); 
             _authRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository));
         }
 
