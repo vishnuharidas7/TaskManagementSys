@@ -22,15 +22,15 @@ jobs:
           git reset --hard
           git clean -fdx
 
-      - name: Delete stale Git lock files
+      - name: Remove Git remote ref folder (to avoid .lock conflicts)
         shell: pwsh
         run: |
-          $lockFiles = Get-ChildItem -Path ".git/refs/remotes/origin" -Filter "*.lock" -ErrorAction SilentlyContinue
-          if ($lockFiles) {
-            $lockFiles | Remove-Item -Force
-            Write-Host "Removed stale Git lock files."
+          $originPath = ".git/refs/remotes/origin"
+          if (Test-Path $originPath) {
+            Remove-Item -Recurse -Force $originPath
+            Write-Host "Deleted .git/refs/remotes/origin to remove stale remote refs and lock files."
           } else {
-            Write-Host "No Git lock files found."
+            Write-Host "No .git/refs/remotes/origin directory found — nothing to delete."
           }
 
       - name: Check Git version
