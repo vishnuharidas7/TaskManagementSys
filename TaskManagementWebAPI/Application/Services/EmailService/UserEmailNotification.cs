@@ -1,4 +1,5 @@
-﻿using TaskManagementWebAPI.Application.Interfaces;
+﻿using LoggingLibrary.Interfaces;
+using TaskManagementWebAPI.Application.Interfaces;
 using TaskManagementWebAPI.Common;
 using TaskManagementWebAPI.Domain.Models;
 
@@ -8,14 +9,22 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
     {
         private readonly IEmailService _emailService;
         private readonly IUserCreatedEmailContentBuilder _userCreatedEmailContentBuilder;
-        public UserEmailNotification(IEmailService emailService, IUserCreatedEmailContentBuilder userCreatedEmailContentBuilder)
+        private readonly IAppLogger<UserEmailNotification> _logger;
+        public UserEmailNotification(IEmailService emailService, IUserCreatedEmailContentBuilder userCreatedEmailContentBuilder, IAppLogger<UserEmailNotification> logger)
         {
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService)); ;
-            _userCreatedEmailContentBuilder = userCreatedEmailContentBuilder ?? throw new ArgumentNullException(nameof(userCreatedEmailContentBuilder)); ;
+            _userCreatedEmailContentBuilder = userCreatedEmailContentBuilder ?? throw new ArgumentNullException(nameof(userCreatedEmailContentBuilder));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         public async Task SendEmailAsync(Users user, int userId, string Password, UserStatus status)
         {
-            switch(status)
+            if (string.IsNullOrWhiteSpace(user.Email))
+            {
+                _logger.LoggWarning("Email address is missing for user with ID: {UserId}", userId);
+                return;
+            }
+
+            switch (status)
             {
                 case UserStatus.New:
                     var content = _userCreatedEmailContentBuilder.BuildContentforNewUser(user, userId, Password);

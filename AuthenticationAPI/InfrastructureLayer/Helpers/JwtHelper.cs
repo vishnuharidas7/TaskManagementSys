@@ -32,7 +32,9 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
                     _ => "Unknown"
                 };
                 if (roleName == "Unknown")
-                { 
+                {
+                    _logger.LoggWarning($"Unknown role for user {User.UserName} (ID: {User.UserId})");
+                    throw new UnauthorizedAccessException("User role is not recognized.");
                 } 
                 var authClaims = new List<Claim>
             {
