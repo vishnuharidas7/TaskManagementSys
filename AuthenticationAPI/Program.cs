@@ -55,7 +55,7 @@ builder.Services.AddSwaggerGen(options =>
                             Id = JwtBearerDefaults.AuthenticationScheme
                         }
                     },
-                   Array.Empty<string>() //new List<string>() // new string[] {}
+                   Array.Empty<string>()
                 }
                 });
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

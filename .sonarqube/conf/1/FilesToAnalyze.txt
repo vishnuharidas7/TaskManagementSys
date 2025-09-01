@@ -1,5 +1,5 @@
-﻿D:\sample\TaskManagement-Project\FileParser\Factory\TaskFileParserFactory.cs
-D:\sample\TaskManagement-Project\FileParser\Implementations\CsvTaskFileParser.cs
-D:\sample\TaskManagement-Project\FileParser\Implementations\ExcelTaskFileParser.cs
-D:\sample\TaskManagement-Project\FileParser\Interfaces\ITaskFileParser.cs
-D:\sample\TaskManagement-Project\FileParser\Interfaces\ITaskFileParserFactory.cs
+﻿D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\FileParser\Factory\TaskFileParserFactory.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\FileParser\Implementations\CsvTaskFileParser.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\FileParser\Implementations\ExcelTaskFileParser.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\FileParser\Interfaces\ITaskFileParser.cs
+D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\FileParser\Interfaces\ITaskFileParserFactory.cs

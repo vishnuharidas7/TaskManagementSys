@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SonarProjectConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonarsource.com/msbuild/analyzer/2021/1">
-  <AnalysisConfigPath>D:\sample\TaskManagement-Project\.sonarqube\conf\SonarQubeAnalysisConfig.xml</AnalysisConfigPath>
-  <ProjectPath>D:\sample\TaskManagement-Project\AuthenticationAPITest\AuthenticationAPITest.csproj</ProjectPath>
-  <FilesToAnalyzePath>D:\sample\TaskManagement-Project\.sonarqube\conf\5\FilesToAnalyze.txt</FilesToAnalyzePath>
-  <OutPath>D:\sample\TaskManagement-Project\.sonarqube\out\5</OutPath>
+  <AnalysisConfigPath>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\conf\SonarQubeAnalysisConfig.xml</AnalysisConfigPath>
+  <ProjectPath>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\AuthenticationAPITest\AuthenticationAPITest.csproj</ProjectPath>
+  <FilesToAnalyzePath>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\conf\5\FilesToAnalyze.txt</FilesToAnalyzePath>
+  <OutPath>D:\TaskManagement-Collab\Back-End-Latest1\TaskManagementSys\.sonarqube\out\5</OutPath>
   <ProjectType>Test</ProjectType>
   <TargetFramework>net8.0</TargetFramework>
 </SonarProjectConfig>
