@@ -62,7 +62,7 @@ jobs:
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
             /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
 
-          dotnet build
+          dotnet build TaskManagementSys.sln --no-incremental --verbosity normal
 
           .\.sonar\scanner\dotnet-sonarscanner end `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
