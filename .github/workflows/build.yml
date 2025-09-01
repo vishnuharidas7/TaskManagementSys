@@ -11,31 +11,21 @@ jobs:
     runs-on: windows-latest
 
     steps:
+      # Cleanup step BEFORE checkout to remove stale .git refs
+      - name: Clean workspace before checkout
+        run: |
+          if (Test-Path $env:GITHUB_WORKSPACE) {
+            Remove-Item -Recurse -Force -Path "$env:GITHUB_WORKSPACE\*"
+          }
+
+      # Fresh checkout after cleaning everything
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           clean: true
           ref: ${{ github.ref }}
 
-      - name: Reset and clean Git repository
-        run: |
-          git reset --hard
-          git clean -fdx
-
-      - name: Remove Git remote ref folder (to avoid .lock conflicts)
-        shell: pwsh
-        run: |
-          $originPath = ".git/refs/remotes/origin"
-          if (Test-Path $originPath) {
-            Remove-Item -Recurse -Force $originPath
-            Write-Host "Deleted .git/refs/remotes/origin to remove stale remote refs and lock files."
-          } else {
-            Write-Host "No .git/refs/remotes/origin directory found — nothing to delete."
-          }
-
-      - name: Check Git version
-        run: git --version
-
+      # You can keep the rest of your workflow unchanged
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
