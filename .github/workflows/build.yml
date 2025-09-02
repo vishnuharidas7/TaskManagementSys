@@ -1,39 +1,67 @@
-name: Build
+name: Build and Analyze (.NET 8 + SonarQube)
 
 on:
   push:
     branches:
       - master
 
-
 jobs:
   build:
-    name: Build and analyze
-    runs-on: ubuntu-latest
-    
+    name: Build and analyze with SonarQube
+    runs-on: windows-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 17
+          fetch-depth: 0  # Required for full SonarQube analysis
+
+      - name: Set up .NET 8 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Set up JDK 17 (Required for SonarScanner)
         uses: actions/setup-java@v4
         with:
-          java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
+          java-version: '17'
+          distribution: 'zulu'
+
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
-          path: ~/.sonar/cache
+          path: ~\sonar\cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
+
+      - name: Cache SonarQube scanner
+        id: cache-sonar-scanner
         uses: actions/cache@v4
         with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f -Dsonar.projectName='TaskManagementSys'
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarScanner for .NET
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path .\.sonar\scanner
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+
+      - name: Begin SonarQube analysis
+        shell: powershell
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner begin `
+            /k:"vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f" `
+            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" `
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+      - name: Build the solution
+        run: dotnet build --no-incremental --configuration Release
+
+      - name: End SonarQube analysis
+        shell: powershell
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner end `
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
