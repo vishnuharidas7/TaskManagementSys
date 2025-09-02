@@ -1,4 +1,4 @@
-name: Build and SonarQube Analysis
+name: Build
 
 on:
   push:
