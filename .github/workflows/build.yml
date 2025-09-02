@@ -41,6 +41,6 @@ jobs:
       - name: Build and analyze
         shell: cmd
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f" /d:sonar.token="sqp_cb86926034fda44c54cd370269e948b973201256" /d:sonar.host.url="http://localhost:9000"
           dotnet build
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
