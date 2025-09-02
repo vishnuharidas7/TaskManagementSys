@@ -57,4 +57,25 @@ jobs:
           .\.sonar\scanner\dotnet-sonarscanner begin `
             /k:"vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f" `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.host.url="${{ sec
+            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" `
+            /d:sonar.verbose=true
+
+      - name: Check Sonar config file exists
+        shell: powershell
+        run: |
+          if (Test-Path ".sonarqube\conf\SonarQubeAnalysisConfig.xml") {
+            Write-Host "✅ SonarQube config file found."
+          } else {
+            Write-Error "❌ SonarQube config file NOT found."
+            exit 1
+          }
+
+      - name: Build the project
+        shell: powershell
+        run: dotnet build TaskManagementWebAPI.sln --no-incremental --verbosity normal
+
+      - name: End SonarQube analysis
+        shell: powershell
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner end `
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
