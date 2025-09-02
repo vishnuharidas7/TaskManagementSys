@@ -11,27 +11,28 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # Cleanup step BEFORE checkout to remove stale .git refs
+      # 🧹 Clean workspace BEFORE checkout
       - name: Clean workspace before checkout
         run: |
           if (Test-Path $env:GITHUB_WORKSPACE) {
             Remove-Item -Recurse -Force -Path "$env:GITHUB_WORKSPACE\*"
           }
 
-      # Fresh checkout after cleaning everything
+      # 📦 Checkout code
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           clean: true
           ref: ${{ github.ref }}
 
-      # You can keep the rest of your workflow unchanged
+      # ☕ Set up Java (SonarQube requires it)
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'zulu'
 
+      # 📦 Cache SonarQube packages
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
@@ -39,6 +40,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
+      # 🧰 Cache SonarQube scanner
       - name: Cache SonarQube scanner
         id: cache-sonar-scanner
         uses: actions/cache@v4
@@ -47,22 +49,48 @@ jobs:
           key: ${{ runner.os }}-sonar-scanner
           restore-keys: ${{ runner.os }}-sonar-scanner
 
+      # 🛠️ Install SonarQube scanner if not cached
       - name: Install SonarQube scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         shell: powershell
         run: |
-          New-Item -Path .\.sonar\scanner -ItemType Directory
+          New-Item -Path .\.sonar\scanner -ItemType Directory -Force
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
 
-      - name: Build and analyze
+      # 🚀 Begin SonarQube analysis
+      - name: Begin SonarQube analysis
+        working-directory: TaskManagementSys
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin `
+          ..\.sonar\scanner\dotnet-sonarscanner begin `
             /k:"vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f" `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
+            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" `
+            /d:sonar.verbose=true
 
+      # 🧪 (Optional) Check if config file exists
+      - name: Check SonarQube config file exists
+        working-directory: TaskManagementSys
+        shell: powershell
+        run: |
+          if (Test-Path ".sonarqube\conf\SonarQubeAnalysisConfig.xml") {
+            Write-Host "✅ SonarQube config file found."
+          } else {
+            Write-Error "❌ SonarQube config file NOT found."
+            exit 1
+          }
+
+      # 🛠️ Build the project
+      - name: Build the project
+        working-directory: TaskManagementSys
+        shell: powershell
+        run: |
           dotnet build TaskManagementSys.sln --no-incremental --verbosity normal
 
-          .\.sonar\scanner\dotnet-sonarscanner end `
+      # ✅ End SonarQube analysis
+      - name: End SonarQube analysis
+        working-directory: TaskManagementSys
+        shell: powershell
+        run: |
+          ..\.sonar\scanner\dotnet-sonarscanner end `
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
