@@ -25,7 +25,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet sonarscanner begin `
-            /k:"your-project-key" `
+            /k:"vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f" `
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" `
             /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" `
 
