@@ -30,6 +30,7 @@ namespace TaskManagementWebAPI.Middlewares
             }
         }
 
+        //GetExceptions
         private(int status,string messages) GetExceptionDetails(Exception ex)
         {
             return ex switch
