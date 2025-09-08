@@ -29,8 +29,8 @@ namespace TaskManagementWebAPI.Middlewares
                 await HandleExceptionAsync(context, statusCode, message, ex);
             }
         }
-
-        private(int status,string messages) GetExceptionDetails(Exception ex)
+        //Added jsut for checking switch expression
+        private (int status,string messages) GetExceptionDetails(Exception ex)
         {
             return ex switch
             {
