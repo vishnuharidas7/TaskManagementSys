@@ -29,7 +29,10 @@ namespace TaskManagementWebAPI.Middlewares
                 await HandleExceptionAsync(context, statusCode, message, ex);
             }
         }
-        //Added jsut for checking switch expression
+        
+
+        //For sonar test
+
         private (int status,string messages) GetExceptionDetails(Exception ex)
         {
             return ex switch
