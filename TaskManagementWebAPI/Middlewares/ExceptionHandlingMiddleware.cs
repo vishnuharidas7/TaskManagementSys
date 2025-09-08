@@ -30,8 +30,6 @@ namespace TaskManagementWebAPI.Middlewares
             }
         }
 
-        //Add comment
-        //add twooo
         private(int status,string messages) GetExceptionDetails(Exception ex)
         {
             return ex switch
