@@ -37,13 +37,7 @@ jobs:
         shell: cmd
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-        
-
-      - name: Enable script execution in PowerShell
-        shell: cmd
-        run: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
-        
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner   
 
       - name: Install dotnet-coverage tool
         shell: cmd
