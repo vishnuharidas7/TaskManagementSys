@@ -1,15 +1,16 @@
 name: Build
- 
+
 on:
   push:
     branches:
       - master
- 
- 
+
+
 jobs:
   build:
     name: Build and analyze
     runs-on: self-hosted
+    
     steps:
       - uses: actions/checkout@v4
         with:
