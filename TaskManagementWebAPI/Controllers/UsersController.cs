@@ -69,7 +69,7 @@ namespace TaskManagementWebAPI.Controllers
         public async Task<ActionResult> UserList()
         {
 
-            var allUser = await _userApplicationService.ViewUsers(); //_user.ViewUsers();
+            var allUser = await _userApplicationService.ViewUsers();
                 return Ok(allUser);
              
         }

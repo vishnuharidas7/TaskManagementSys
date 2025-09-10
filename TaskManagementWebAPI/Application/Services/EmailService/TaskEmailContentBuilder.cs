@@ -47,7 +47,7 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "❌ Unexpected error building email section for taskState: {TaskState}", group.Key);
-                    throw new Exception($"Unexpected error in TaskEmailContentBuilder for taskState '{group.Key}'", ex);
+                    throw new InvalidOperationException($"Unexpected error in TaskEmailContentBuilder for taskState '{group.Key}'", ex);
                 }
             }
 

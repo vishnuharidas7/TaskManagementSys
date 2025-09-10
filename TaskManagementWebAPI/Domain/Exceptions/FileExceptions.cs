@@ -14,12 +14,4 @@ namespace TaskManagementWebAPI.Domain.Exceptions
         public TaskValidationException(string message) : base(message) { }
         public TaskValidationException(string message, Exception innerException) : base(message, innerException) { }
     }
-
-    //public class UnsupportedFileFormatException : Exception
-    //{
-    //    public UnsupportedFileFormatException() { }
-    //    public UnsupportedFileFormatException(string message) : base(message) { }
-
-    //    public UnsupportedFileFormatException(string message, Exception inner) : base(message, inner) { }
-    //}
 }

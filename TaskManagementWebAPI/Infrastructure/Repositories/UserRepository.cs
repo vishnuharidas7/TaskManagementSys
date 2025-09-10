@@ -40,7 +40,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 catch (DbException ex)
                 {
                     _logger.LoggError(ex, "CheckUserExists - Database access error.");
-                    throw ex;
+                    throw;
                 }
             }
             catch (Exception ex)
@@ -61,7 +61,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 catch (DbException ex) 
                 {
                     _logger.LoggError(ex, "CheckEmailExists - Database access error.");
-                    throw ex;
+                    throw;
                 }
             }
             catch (Exception ex)
@@ -82,7 +82,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                 catch (DbException ex)
                 {
                     _logger.LoggError(ex, "CheckEmailExists - Database access error.");
-                    throw ex;
+                    throw;
                 }
             }
             catch (Exception ex)
@@ -237,7 +237,7 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             catch (InvalidOperationException ex)
             {
                 _logger.LoggWarning("ViewUsers - Invalid operation: {Message}", ex.Message);
-                throw ex;
+                throw;
             }
             catch (DbUpdateException dbEx)
             {
@@ -247,12 +247,12 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
             catch (TaskCanceledException tcEx)
             {
                 _logger.LoggWarning("ViewUsers - Task was cancelled or timed out: {Message}", tcEx.Message);
-                throw tcEx;
+                throw;
             }
             catch (SqlException sqlEx)
             {
                 _logger.LoggWarning("ViewUsers - SQL error: {Message}", sqlEx.Message);
-                throw sqlEx;
+                throw;
             }
             catch (Exception ex)
             {

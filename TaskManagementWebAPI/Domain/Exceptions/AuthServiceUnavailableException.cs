@@ -19,23 +19,4 @@
         public TokenRefreshFailedException(string message, Exception innerException)
             : base(message, innerException) { }
     }
-
-
-
-    //public class AuthUnauthorizedException : Exception
-    //{
-    //    public AuthUnauthorizedException(string message) : base(message) { }
-    //}
-
-    //public class AuthBadRequestException : Exception
-    //{
-    //    public AuthBadRequestException(string message) : base(message) { }
-    //}
-
-    //public class AuthInternalException : Exception
-    //{
-    //    public AuthInternalException(string message) : base(message) { }
-    //}
-
-
 }
