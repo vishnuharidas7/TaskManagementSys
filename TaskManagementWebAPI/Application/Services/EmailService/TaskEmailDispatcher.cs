@@ -39,7 +39,6 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
 
                     if (tasks.Any())
                     {
-                        //string content = _contentBuilder.BuildContent(user, tasks);
                         //await _emailService.SendEmailAsync(user.Email, "Task Completion Reminder — Action Required", content);
                         var content= _taskNotificationService.SendNotificationAsync(user, tasks);
 
@@ -49,17 +48,18 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
                 catch (InvalidOperationException ex)
                 {
                     _logger.LogError(ex, "❌ Invalid operation for user {UserId} ({Email})", user.UserId, user.Email);
-                    throw;
+                    throw new InvalidOperationException($"Error while processing user {user.UserId} ({user.Email}) in {nameof(TaskEmailContentBuilder)}.",ex);
                 }
                 catch (HttpRequestException ex)
                 {
                     _logger.LogError(ex, "❌ Network error while sending email to {UserId} ({Email})", user.UserId, user.Email);
-                    throw;
+                    throw new HttpRequestException($"Failed to send email due to network error for user {user.UserId} ({user.Email}).",ex);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "❌ Unexpected error while sending email to user {UserId} ({Email})", user.UserId, user.Email);
-                    throw;
+                    throw new Exception($"Unexpected error while sending email to user {user.UserId} ({user.Email})", ex);
+
                 }
             }
         }

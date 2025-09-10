@@ -42,12 +42,12 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
                 catch (InvalidOperationException ex)
                 {
                     _logger.LogError(ex, "❌ Invalid operation while building email section for taskState: {TaskState}", group.Key);
-                    throw;
+                    throw new InvalidOperationException( $"Failed to build content for taskState '{group.Key}' in {nameof(TaskEmailContentBuilder)}.",ex);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "❌ Unexpected error building email section for taskState: {TaskState}", group.Key);
-                    throw;
+                    throw new Exception($"Unexpected error in TaskEmailContentBuilder for taskState '{group.Key}'", ex);
                 }
             }
 

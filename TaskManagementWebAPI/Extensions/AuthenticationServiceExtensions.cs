@@ -8,6 +8,11 @@ namespace TaskManagementWebAPI.Extensions
     {
         public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
+            var secretkey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+            if (string.IsNullOrWhiteSpace(secretkey))
+            {
+                throw new Exception("JWT_SECRET_KEY environment variable is not set.");
+            }
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -20,7 +25,7 @@ namespace TaskManagementWebAPI.Extensions
                         ValidIssuer = configuration["JwtSettings:Issuer"],
                         ValidAudience = configuration["JwtSettings:Audience"],
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]))
+                            Encoding.UTF8.GetBytes(secretkey))
                     };
                 });
 

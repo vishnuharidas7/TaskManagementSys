@@ -152,7 +152,7 @@ namespace TaskManagementWebAPITest.Application.Services
             };
 
             _mockUserRepository.Setup(r => r.CheckEmailExists(dto.Email)).ReturnsAsync(false);
-            _mockUserRepository.Setup(r => r.CheckRoleExists(dto.RoleId)).ReturnsAsync(true);
+            _mockUserRepository.Setup(r => r.CheckRoleExists(dto.RoleId.Value)).ReturnsAsync(true);
             _mockUserRepository.Setup(r => r.CheckUserExists(dto.UserName)).ReturnsAsync(false);
             _mockPasswordGenerator.Setup(p => p.GenerateRandomPassword(8)).Returns("password123");
             _mockUserRepository.Setup(r => r.RegisterAsync(It.IsAny<Users>())).ReturnsAsync(1);
@@ -231,7 +231,7 @@ namespace TaskManagementWebAPITest.Application.Services
             };
 
             _mockUserRepository.Setup(r => r.CheckEmailExists(dto.Email)).ReturnsAsync(false);
-            _mockUserRepository.Setup(r => r.CheckRoleExists(dto.RoleId)).ReturnsAsync(false);
+            _mockUserRepository.Setup(r => r.CheckRoleExists(dto.RoleId.Value)).ReturnsAsync(false);
 
             await Assert.ThrowsAsync<InvalidRoleIdException>(() => _service.RegisterAsync(dto));
         }
@@ -250,7 +250,7 @@ namespace TaskManagementWebAPITest.Application.Services
             };
 
             _mockUserRepository.Setup(r => r.CheckEmailExists(dto.Email)).ReturnsAsync(false);
-            _mockUserRepository.Setup(r => r.CheckRoleExists(dto.RoleId)).ReturnsAsync(true);
+            _mockUserRepository.Setup(r => r.CheckRoleExists(dto.RoleId.Value)).ReturnsAsync(true);
 
             var ex = await Assert.ThrowsAsync<ArgumentException>(() => _service.RegisterAsync(dto));
             Assert.Contains("Username cannot be null or empty", ex.Message);
@@ -270,7 +270,7 @@ namespace TaskManagementWebAPITest.Application.Services
             };
 
             _mockUserRepository.Setup(r => r.CheckEmailExists(dto.Email)).ReturnsAsync(false);
-            _mockUserRepository.Setup(r => r.CheckRoleExists(dto.RoleId)).ReturnsAsync(true);
+            _mockUserRepository.Setup(r => r.CheckRoleExists(dto.RoleId.Value)).ReturnsAsync(true);
             _mockUserRepository.Setup(r => r.CheckUserExists(dto.UserName)).ReturnsAsync(true);
 
             await Assert.ThrowsAsync<DuplicateUsernameException>(() => _service.RegisterAsync(dto));

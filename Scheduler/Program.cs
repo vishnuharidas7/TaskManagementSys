@@ -22,7 +22,6 @@ var loggingProvider = configuration["Logging:LoggingProvider"];
 if (loggingProvider == "Serilog")
 {
     LoggerConfigurator.ConfigureLogging(); // Custom Serilog configuration
-   //Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(configuration).CreateLogger();
 }
 else if (loggingProvider == "Log4Net")
 {

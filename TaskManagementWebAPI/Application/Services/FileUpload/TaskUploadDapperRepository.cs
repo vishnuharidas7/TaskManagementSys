@@ -17,7 +17,6 @@ namespace TaskManagementWebAPI.Application.Services.FileUpload
     public class TaskUploadDapperRepository : ITaskUploadDapperRepository
     {
         private readonly IDapperConnectionFactory _connectionFactory;
-      //  private readonly ApplicationDbContext _db;
         private readonly TaskSettings _taskSettings;
         public TaskUploadDapperRepository(IDapperConnectionFactory db,IOptions<TaskSettings>taskSettings) 
         {
@@ -67,7 +66,7 @@ namespace TaskManagementWebAPI.Application.Services.FileUpload
 
                 if (!success)
                 {
-                    throw new Exception(ExceptionMessages.TaskExceptions.ReferenceIdConflict);
+                    throw new InvalidOperationException(ExceptionMessages.TaskExceptions.ReferenceIdConflict);
                 }
             }
             catch (DbException dbEx)

@@ -4,7 +4,6 @@ namespace TaskManagementWebAPI.Domain.Interfaces
 {
     public interface ITaskFileParser
     {
-        // Task<List<Tasks>> ParseAsync(IFormFile file);
         /// <summary>
         /// For parsing data from uploaded file
         /// </summary>

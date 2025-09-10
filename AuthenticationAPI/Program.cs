@@ -89,7 +89,7 @@ builder.Services.AddSingleton(typeof(Log4NetLogger<>));
 builder.Services.AddSingleton(typeof(IAppLogger<>), typeof(AppLoggerFactory<>));
 
 // Add JWT authentication
-var secretKey = builder.Configuration["JwtSettings:SecretKey"]
+var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY")
     ?? throw new InvalidOperationException("JWT SecretKey is not configured.");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

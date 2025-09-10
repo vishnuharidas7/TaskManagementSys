@@ -47,13 +47,19 @@ namespace AuthenticationAPI.Services
         }
 
         public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
-        { 
+        {
+            var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+            if (string.IsNullOrWhiteSpace(secretKey))
+            {
+                throw new Exception("JWT_SECRET_KEY environment variable is not set.");
+            }
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var tokenValidationParameters = new TokenValidationParameters
             {
                     ValidateAudience = false,
                     ValidateIssuer = false,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:SecretKey"]!)),
+                    IssuerSigningKey = signingKey,
                     ValidateLifetime = false  
              };       
 
