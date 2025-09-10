@@ -34,28 +34,29 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar-scanner
       - name: Install SonarQube scanner
         if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        shell: powershell
+        shell: cmd
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
         
 
       - name: Enable script execution in PowerShell
-        shell: powershell
+        shell: cmd
         run: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
         
 
       - name: Install dotnet-coverage tool
-        shell: powershell
+        shell: cmd
         run: dotnet tool install --global dotnet-coverage
-       
+        
 
       - name: Add .NET tools to PATH
+        shell: cmd
         run: echo "$env:USERPROFILE\.dotnet\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        shell: powershell        
+                
           
       - name: Build and analyze
-        shell: powershell
+        shell: cmd
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
           dotnet build --no-incremental
