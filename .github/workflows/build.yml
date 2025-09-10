@@ -1,16 +1,15 @@
 name: Build
-
+ 
 on:
   push:
     branches:
       - master
-
-
+ 
+ 
 jobs:
   build:
     name: Build and analyze
     runs-on: self-hosted
-    
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,10 +37,16 @@ jobs:
         shell: cmd
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner   
+
+      - name: Install dotnet-coverage tool
+        shell: cmd
+        run: dotnet tool install --global dotnet-coverage            
+          
       - name: Build and analyze
         shell: cmd
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
-          dotnet build
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+          dotnet build --no-incremental
+          dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml"
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}
