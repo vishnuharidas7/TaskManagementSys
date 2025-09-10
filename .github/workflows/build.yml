@@ -40,7 +40,13 @@ jobs:
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
           
       - name: Install dotnet-coverage tool
-        run: dotnet tool install --global dotnet-coverage  
+        run: dotnet tool install --global dotnet-coverage
+        shell: bash
+
+      - name: Add .NET tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+        shell: bash
+ 
         
       - name: Build and analyze
         shell: cmd
