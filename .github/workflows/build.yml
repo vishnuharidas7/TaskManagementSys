@@ -1,16 +1,15 @@
 name: Build
-
+ 
 on:
   push:
     branches:
       - master
-
-
+ 
+ 
 jobs:
   build:
     name: Build and analyze
     runs-on: self-hosted
-    
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,6 +41,7 @@ jobs:
       - name: Build and analyze
         shell: cmd
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
-          dotnet build
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"vishnuharidas7_TaskManagementSys_ac59f6e3-b85b-4ba6-9467-f88980d4626f" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+          dotnet build --no-incremental
+          dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml"
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}
