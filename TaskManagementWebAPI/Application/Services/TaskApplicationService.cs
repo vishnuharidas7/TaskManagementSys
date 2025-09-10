@@ -59,7 +59,7 @@ namespace TaskManagementWebAPI.Application.Services
 
                         if (newTaskId != null)
                         {
-                            await NotifyUserIfTaskExistsAsync(dto.UserId, newTaskId);
+                            await NotifyUserIfTaskExistsAsync(dto.UserId ?? throw new ArgumentNullException(nameof(dto.UserId), "UserId is required"), newTaskId);
                         }
 
                         break; // success
@@ -105,10 +105,10 @@ namespace TaskManagementWebAPI.Application.Services
             {
                 taskName = dto.taskName,
                 taskDescription = dto.taskDescription,
-                UserId = dto.UserId,
-                dueDate = dto.dueDate,
+                UserId = dto.UserId ?? throw new ArgumentNullException(nameof(dto.UserId), "UserId is required"),
+                dueDate = dto.dueDate ?? throw new ArgumentNullException(nameof(dto.dueDate), "DueDate is required"),
                 priority = dto.priority,
-                createdBy = dto.createdBy,
+                createdBy = dto.createdBy ?? throw new ArgumentNullException(nameof(dto.createdBy), "CreatedBy is required"),
                 taskType = dto.taskType,
                 referenceId = referenceId
             };
@@ -187,8 +187,8 @@ namespace TaskManagementWebAPI.Application.Services
                 }
 
                 task.taskName = obj.taskName;
-                task.UserId = obj.UserId;
-                task.dueDate = obj.dueDate;
+                task.UserId = obj.UserId ?? throw new ArgumentNullException(nameof(obj.UserId), "UserId is required");
+                task.dueDate = obj.dueDate ?? throw new ArgumentNullException(nameof(obj.dueDate), "UserId is required");
                 task.taskDescription = obj.taskDescription;
                 task.taskStatus = obj.taskStatus;
                 task.priority = obj.priority;

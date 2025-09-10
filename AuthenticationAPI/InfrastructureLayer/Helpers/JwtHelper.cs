@@ -42,8 +42,13 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
             new Claim(ClaimTypes.NameIdentifier, User.UserId.ToString()),
             new Claim(ClaimTypes.Role, roleName)
             };
-
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+                var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+                if (string.IsNullOrWhiteSpace(secretKey))
+                {
+                    _logger.LoggWarning("JWT_SECRET_KEY environment variable is missing.");
+                    throw new SecurityTokenException("JWT secret key not configured.");
+                }
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));//Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
                 var token = new JwtSecurityToken(
                     issuer: _jwtSettings.Issuer,
                     audience: _jwtSettings.Audience,
@@ -73,8 +78,13 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
              new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
              new Claim("TokenType", "RefreshToken")
             };
-
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+                var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+                if (string.IsNullOrWhiteSpace(secretKey))
+                {
+                    _logger.LoggWarning("JWT_SECRET_KEY environment variable is missing.");
+                    throw new SecurityTokenException("JWT secret key not configured.");
+                }
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
                 var token = new JwtSecurityToken(
                     issuer: _jwtSettings.Issuer,
                     audience: _jwtSettings.Audience,

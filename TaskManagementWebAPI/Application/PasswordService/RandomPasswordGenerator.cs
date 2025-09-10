@@ -6,7 +6,7 @@ namespace TaskManagementWebAPI.Application.PasswordService
 {
     public class RandomPasswordGenerator: IRandomPasswordGenerator
     {
-        private IAppLogger<RandomPasswordGenerator> _logger;
+        private readonly IAppLogger<RandomPasswordGenerator> _logger;
         public RandomPasswordGenerator(IAppLogger<RandomPasswordGenerator> logger)
         {
             _logger=logger ?? throw new ArgumentNullException(nameof(logger));

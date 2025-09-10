@@ -8,8 +8,6 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
 {
     public class UserCreatedEmailContentBuilder : IUserCreatedEmailContentBuilder
     {
-        //private readonly IEnumerable<ITaskStatusContentBuilder> _userBuilders;
-
         //public UserRegisterEmailContentBuilder(IEnumerable<ITaskStatusContentBuilder> userBuilders)
         //{
         //    _userBuilders = userBuilders;

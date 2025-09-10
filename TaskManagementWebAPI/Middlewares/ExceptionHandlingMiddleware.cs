@@ -31,7 +31,7 @@ namespace TaskManagementWebAPI.Middlewares
         }
         
 
-        //For sonar test
+        //For sonar test updated
 
         private (int status,string messages) GetExceptionDetails(Exception ex)
         {

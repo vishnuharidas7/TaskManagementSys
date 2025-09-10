@@ -34,8 +34,6 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
 
                 var mailMessage = new MailMessage(fromEmail, to, subject, body);
                 await smtpClient.SendMailAsync(mailMessage);
-
-                //throw new NotImplementedException("Service not implemented at the moment...");
             }
 
             catch (FormatException ex)

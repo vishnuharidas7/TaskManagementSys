@@ -83,7 +83,7 @@ namespace TaskManagementWebAPITest.Application.Services
 
             _taskManagementRepositoryMock.Setup(r => r.LastTaskWithPrefix(It.IsAny<string>())).ReturnsAsync((Tasks)null);
             _taskManagementRepositoryMock.Setup(r => r.AddTask(It.IsAny<Tasks>())).ReturnsAsync(task.taskId);
-            _userRepositoryMock.Setup(r => r.GetUserByIdAsync(dto.UserId)).ReturnsAsync(new Users {Email  = "test@gmail.com" });
+            _userRepositoryMock.Setup(r => r.GetUserByIdAsync(dto.UserId.Value)).ReturnsAsync(new Users {Email  = "test@gmail.com" });
             _taskManagementRepositoryMock.Setup(r => r.GetTasksByTaskIdAsync(task.taskId)).ReturnsAsync(new List<Tasks> { task });
             //_contentBuilderMock.Setup(c => c.BuildContent(It.IsAny<Users>(), It.IsAny<IEnumerable<Tasks>>())).Returns("Email Content");
             _notificationServiceMock.Setup(s => s.SendNotificationAsync(It.IsAny<Users>(), It.IsAny<IEnumerable<Tasks>>()))
@@ -108,7 +108,7 @@ namespace TaskManagementWebAPITest.Application.Services
 
             _taskManagementRepositoryMock.Setup(r => r.LastTaskWithPrefix(It.IsAny<string>())).ReturnsAsync((Tasks)null);
             _taskManagementRepositoryMock.Setup(r => r.AddTask(It.IsAny<Tasks>())).ReturnsAsync(task.taskId);
-            _userRepositoryMock.Setup(r => r.GetUserByIdAsync(dto.UserId)).ReturnsAsync((Users)null);
+            _userRepositoryMock.Setup(r => r.GetUserByIdAsync(dto.UserId.Value)).ReturnsAsync((Users)null);
 
             //act
             await _taskApplicationService.AddTaskAsync(dto);
@@ -134,7 +134,7 @@ namespace TaskManagementWebAPITest.Application.Services
                     return Task.FromResult(task.taskId);
                 });
 
-            _userRepositoryMock.Setup(r => r.GetUserByIdAsync(dto.UserId)).ReturnsAsync(new Users { Email = "test@gmail.com"});
+            _userRepositoryMock.Setup(r => r.GetUserByIdAsync(dto.UserId.Value)).ReturnsAsync(new Users { Email = "test@gmail.com"});
             _taskManagementRepositoryMock.Setup(r => r.GetTasksByTaskIdAsync(task.taskId)).ReturnsAsync(new List<Tasks> { task });
             //_contentBuilderMock.Setup(c => c.BuildContent(It.IsAny<Users>(), It.IsAny<IEnumerable<Tasks>>())).Returns("Email");
             _notificationServiceMock.Setup(n => n.SendNotificationAsync(It.IsAny<Users>(), It.IsAny<IEnumerable<Tasks>>())).Returns(Task.CompletedTask);

@@ -63,7 +63,7 @@ namespace TaskManagementWebAPI.Application.Services
                     throw new DuplicateEmailException(string.Format(ExceptionMessages.Validations.DuplicateEmail, dto.Email)); 
                 }
                 //RoleId validation
-                var roleid = await _userRepository.CheckRoleExists(dto.RoleId);
+                var roleid = await _userRepository.CheckRoleExists(dto.RoleId??throw new ArgumentNullException(nameof(dto.RoleId),"RoleId is required"));
                 if (!roleid)
                 {
                     throw new InvalidRoleIdException(string.Format(ExceptionMessages.Validations.InvalidRole, dto.RoleId)); 
@@ -90,7 +90,7 @@ namespace TaskManagementWebAPI.Application.Services
                     UserName = dto.UserName,
                     Email = dto.Email,
                     PhoneNumber = dto.PhoneNumber,
-                    RoleID = dto.RoleId,
+                    RoleID = dto.RoleId ??throw new ArgumentNullException(nameof(dto.RoleId), "RoleId is required"),
                     gender = dto.Gender,
                     Password = hashedPassword,
                     CreatedDate = DateTime.UtcNow,
@@ -98,7 +98,7 @@ namespace TaskManagementWebAPI.Application.Services
                     RefreshToken = "",
                     RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7),
 
-                    Role = new Roles { RoleId = dto.RoleId, RoleName = string.Empty } 
+                    Role = new Roles { RoleId = dto.RoleId ?? throw new ArgumentNullException(nameof(dto.RoleId), "RoleId is required"), RoleName = string.Empty } 
                 };
 
                 var userId = await _userRepository.RegisterAsync(user);
@@ -212,11 +212,11 @@ namespace TaskManagementWebAPI.Application.Services
                 // Mapping DTO to entity
                 user.UserName = obj.UserName;
                 user.Email = obj.Email;
-                user.RoleID = obj.RoleID;
+                user.RoleID = obj.RoleID ?? throw new ArgumentNullException(nameof(obj.RoleID), "RoleId is required");
                 user.Name = obj.Name;
                 user.PhoneNumber = obj.PhoneNumber;
                 user.gender = obj.Gender;
-                user.IsActive = obj.IsActive;
+                user.IsActive = obj.IsActive ?? throw new ArgumentNullException(nameof(obj.IsActive), "IsActive is required");
 
                 // Save changes via repo
                 await _userRepository.SaveAsync();

@@ -4,7 +4,7 @@ using TaskManagementWebAPI.Application.Interfaces;
 
 namespace TaskManagementWebAPI.Application.Services.EmailService
 {
-    public class EmailServiceFactory
+    public static class EmailServiceFactory
     {
         public static IEmailService CreateEmailService(IConfiguration config)
         {

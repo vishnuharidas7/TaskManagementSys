@@ -20,6 +20,11 @@ jobs:
         with:
           java-version: 17
           distribution: 'zulu'
+          
+      - name: Allow PowerShell script execution
+        shell: powershell
+        run: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process -Force
+
 
       - name: Cache SonarQube packages
         uses: actions/cache@v4
