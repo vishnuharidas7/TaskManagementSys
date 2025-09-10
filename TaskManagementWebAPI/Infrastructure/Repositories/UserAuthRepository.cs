@@ -64,10 +64,10 @@ namespace TaskManagementWebAPI.Infrastructure.Repositories
                         throw new BadRequestException($"Bad request: {content}");
 
                     case HttpStatusCode.InternalServerError:
-                        throw new Exception($"Auth service internal error: {content}");
+                        throw new HttpRequestException($"Auth service internal error: {content}");
 
                     default:
-                        throw new Exception($"Unhandled error from Auth API ({response.StatusCode}): {content}");
+                        throw new HttpRequestException($"Unhandled error from Auth API ({response.StatusCode}): {content}");
                 }
             }
             catch (Exception ex)

@@ -54,20 +54,28 @@ namespace TaskManagementWebAPI.Application.Services
                 //Email Format validation
                 if (!IsValidEmailFormat(dto.Email))
                 {
-                    throw new InvalidEmailFormatException(string.Format(ExceptionMessages.Validations.InvalidEmailFormat , dto.Email)); 
+                    throw new InvalidEmailFormatException($"{ExceptionMessages.Validations.InvalidEmailFormat}: '{dto.Email}'");
                 }
                 //Email already exists validation
                 var emailexists = await _userRepository.CheckEmailExists(dto.Email);
                 if (emailexists)
                 {
-                    throw new DuplicateEmailException(string.Format(ExceptionMessages.Validations.DuplicateEmail, dto.Email)); 
+                    throw new DuplicateEmailException($"{ExceptionMessages.Validations.DuplicateEmail}: '{dto.Email}'");
                 }
-                //RoleId validation
-                var roleid = await _userRepository.CheckRoleExists(dto.RoleId??throw new ArgumentNullException(nameof(dto.RoleId),"RoleId is required"));
-                if (!roleid)
+                // RoleId validation
+                if (dto.RoleId == null)
                 {
-                    throw new InvalidRoleIdException(string.Format(ExceptionMessages.Validations.InvalidRole, dto.RoleId)); 
+                    throw new InvalidOperationException("RoleId is required.");
                 }
+
+                var roleExists = await _userRepository.CheckRoleExists(dto.RoleId.Value);
+                if (!roleExists)
+                {
+                    throw new InvalidRoleIdException(
+                        string.Format(ExceptionMessages.Validations.InvalidRole, dto.RoleId.Value)
+                    );
+                }
+
                 //Username validation
                 string username = dto.UserName;
                 if (string.IsNullOrWhiteSpace(username))
@@ -77,7 +85,7 @@ namespace TaskManagementWebAPI.Application.Services
                 var checkUsernameExist = await _userRepository.CheckUserExists(username);
                 if (checkUsernameExist)
                 {
-                    throw new DuplicateUsernameException(string.Format(ExceptionMessages.UserExceptions.UsernameAlreadyExists, username)); 
+                    throw new DuplicateUsernameException($"{ExceptionMessages.UserExceptions.UsernameAlreadyExists}: '{username}'"); 
                 }
 
 
@@ -90,7 +98,7 @@ namespace TaskManagementWebAPI.Application.Services
                     UserName = dto.UserName,
                     Email = dto.Email,
                     PhoneNumber = dto.PhoneNumber,
-                    RoleID = dto.RoleId ??throw new ArgumentNullException(nameof(dto.RoleId), "RoleId is required"),
+                    RoleID = dto.RoleId ??throw new InvalidOperationException("RoleId is required."),
                     gender = dto.Gender,
                     Password = hashedPassword,
                     CreatedDate = DateTime.UtcNow,
@@ -139,8 +147,7 @@ namespace TaskManagementWebAPI.Application.Services
                 {
                     throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound); 
                 }
-                //return null;
-
+               
                 string newPassword;
                 string hashedPassword;
 
@@ -212,11 +219,11 @@ namespace TaskManagementWebAPI.Application.Services
                 // Mapping DTO to entity
                 user.UserName = obj.UserName;
                 user.Email = obj.Email;
-                user.RoleID = obj.RoleID ?? throw new ArgumentNullException(nameof(obj.RoleID), "RoleId is required");
+                user.RoleID = obj.RoleID ?? throw new InvalidOperationException("RoleId is required.");
                 user.Name = obj.Name;
                 user.PhoneNumber = obj.PhoneNumber;
                 user.gender = obj.Gender;
-                user.IsActive = obj.IsActive ?? throw new ArgumentNullException(nameof(obj.IsActive), "IsActive is required");
+                user.IsActive = obj.IsActive ?? throw new InvalidOperationException("IsActive is required.");
 
                 // Save changes via repo
                 await _userRepository.SaveAsync();
@@ -231,15 +238,14 @@ namespace TaskManagementWebAPI.Application.Services
         {
             try
             {
-                var user = await _userRepository.GetUserByIdAsync(id); //_db.User.FindAsync(id);
+                var user = await _userRepository.GetUserByIdAsync(id); 
                 if (user == null)
                 {
                     _logger.LoggWarning("DeleteUser-User not found");
                     throw new NotFoundException(ExceptionMessages.UserExceptions.UserNotFound);
-                    //throw new NotFoundException("User not found");
                 }
 
-                var usertasks = _taskManagementRepository.GetAllTasksByUserId(id);// (t => t.UserId == id);
+                var usertasks = _taskManagementRepository.GetAllTasksByUserId(id);
                 if (usertasks.Any())
                 {
                     _logger.LoggWarning("DeleteUser - Cannot delete user ID {UserId}, tasks are assigned.", id);
@@ -264,7 +270,7 @@ namespace TaskManagementWebAPI.Application.Services
                 {
                     throw new ArgumentException(ExceptionMessages.UserExceptions.PasswordNotMatch); 
                 }
-                var user = await _userRepository.GetUserByIdAsync(id); //_db.User.FindAsync(id);
+                var user = await _userRepository.GetUserByIdAsync(id); 
                 if (user == null)
                 {
                     _logger.LoggWarning("UpdatePassword-User not found");
@@ -280,7 +286,7 @@ namespace TaskManagementWebAPI.Application.Services
                 try
                 {
                     user.Password = BCrypt.Net.BCrypt.HashPassword(obj.confrmNewpswd);
-                    await _userRepository.SaveAsync(); //_db.SaveChangesAsync();
+                    await _userRepository.SaveAsync();
                 }
                 catch (CryptographicException cryptoEx)
                 {

@@ -11,7 +11,7 @@ namespace TaskManagementWebAPI.Extensions
             var secretkey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
             if (string.IsNullOrWhiteSpace(secretkey))
             {
-                throw new Exception("JWT_SECRET_KEY environment variable is not set.");
+                throw new InvalidOperationException("JWT_SECRET_KEY environment variable is not set.");
             }
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

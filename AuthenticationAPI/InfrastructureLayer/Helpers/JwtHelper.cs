@@ -48,7 +48,7 @@ namespace AuthenticationAPI.InfrastructureLayer.Helpers
                     _logger.LoggWarning("JWT_SECRET_KEY environment variable is missing.");
                     throw new SecurityTokenException("JWT secret key not configured.");
                 }
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));//Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
                 var token = new JwtSecurityToken(
                     issuer: _jwtSettings.Issuer,
                     audience: _jwtSettings.Audience,

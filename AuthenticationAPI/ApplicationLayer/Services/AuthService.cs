@@ -1,9 +1,7 @@
 ﻿using AuthenticationAPI.ApplicationLayer.DTOs;
-using AuthenticationAPI.InfrastructureLayer.Data;
 using AuthenticationAPI.InfrastructureLayer.Helpers;
 using AuthenticationAPI.Repositories;
 using LoggingLibrary.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,13 +12,11 @@ namespace AuthenticationAPI.Services
     public class AuthService : IAuthService
     { 
         private readonly IJwtHelper _jwtHelper;
-        private readonly IConfiguration _config;
         private readonly IAppLogger<AuthService> _logger;
         private readonly IAuthRepository _authRepository;
         public AuthService(IConfiguration config, IJwtHelper jwthelper, IAppLogger<AuthService> logger, IAuthRepository authRepository)
         { 
             _jwtHelper = jwthelper ?? throw new ArgumentNullException(nameof(jwthelper));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _authRepository = authRepository ?? throw new ArgumentNullException(nameof(authRepository));
 
@@ -51,7 +47,7 @@ namespace AuthenticationAPI.Services
             var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
             if (string.IsNullOrWhiteSpace(secretKey))
             {
-                throw new Exception("JWT_SECRET_KEY environment variable is not set.");
+                throw new InvalidOperationException("JWT_SECRET_KEY environment variable is not set.");
             }
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var tokenValidationParameters = new TokenValidationParameters

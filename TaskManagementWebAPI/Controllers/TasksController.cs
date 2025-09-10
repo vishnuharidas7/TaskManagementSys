@@ -12,7 +12,7 @@ namespace TaskManagementWebAPI.Controllers
     [ApiController]
     public class TasksController : ControllerBase
     {
-        private ITaskManagementRepository _task;
+        private readonly ITaskManagementRepository _task;
         private readonly IAppLogger<TasksController> _logger;
         private readonly ITaskApplicationService _taskControllerService;
         private readonly ITaskEmailDispatcher _taskEmailDispatcher;
@@ -74,7 +74,6 @@ namespace TaskManagementWebAPI.Controllers
         [HttpPost(TaskAPIEndpoints.Post.AddTask)]
         public async Task<IActionResult> AddTask(AddTaskDTO dto)
         {
-                //await _task.AddTask(dto);
                 await _taskControllerService.AddTaskAsync(dto);
                 return Ok(dto);
         }
@@ -193,6 +192,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="200">Task statuses updated successfully</response>
         /// <response code="500">Internal server error</response> 
         [HttpPost(TaskAPIEndpoints.Post.UpdateTaskStatuses)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdateTaskStatuses()
         {
                 _taskApplicationService.UpdateTaskStatuses();
@@ -208,6 +209,8 @@ namespace TaskManagementWebAPI.Controllers
         /// <response code="200">Emails dispatched successfully</response>
         /// <response code="500">Internal server error</response> 
         [HttpPost(TaskAPIEndpoints.Post.SendOverdueTaskMail)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult OverdueTaskEmail()
         {
                 _taskEmailDispatcher.DispatchEmailsAsync();

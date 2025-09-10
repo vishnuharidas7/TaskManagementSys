@@ -39,7 +39,6 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
 
                     if (tasks.Any())
                     {
-                        //await _emailService.SendEmailAsync(user.Email, "Task Completion Reminder — Action Required", content);
                         var content= _taskNotificationService.SendNotificationAsync(user, tasks);
 
                         _logger.LogInformation("📧 Email sent to {Email} with {TaskCount} tasks.", user.Email, tasks.Count);
@@ -58,7 +57,7 @@ namespace TaskManagementWebAPI.Application.Services.EmailService
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "❌ Unexpected error while sending email to user {UserId} ({Email})", user.UserId, user.Email);
-                    throw new Exception($"Unexpected error while sending email to user {user.UserId} ({user.Email})", ex);
+                    throw new InvalidOperationException($"Unexpected error while sending email to user {user.UserId} ({user.Email})", ex);
 
                 }
             }

@@ -42,13 +42,6 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         Task<List<ViewUserDTO>> ViewUsers();
 
         /// <summary>
-        /// To reset user password which is forgotten by user and need to login
-        /// </summary>
-        /// <param name="email"></param>
-        /// <returns></returns>
-       // Task<Users?> ForgotPassword(string email);
-
-        /// <summary>
         /// For email validation for forgot password functionality. 
         /// </summary>
         /// <param name="email"></param>
@@ -77,14 +70,6 @@ namespace TaskManagementWebAPI.Domain.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<ViewUserDTO?> UserListById(int id);
-
-        ///// <summary>
-        ///// For updating User Password by the corresponding user.
-        ///// </summary>
-        ///// <param name="id"></param>
-        ///// <param name="obj"></param>
-        ///// <returns></returns>
-        //Task UpdatePassword(int id, UpdatePasswordDTO obj);
 
         /// <summary>
         /// Get users with userId for sending mail
